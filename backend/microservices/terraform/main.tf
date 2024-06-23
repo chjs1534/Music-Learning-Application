@@ -4,6 +4,7 @@ output "module_path" {
 
 terraform {
   cloud {
+    organization = "Mewsic"
     workspaces {
       name = "Mewsic-workspace"
     }
@@ -21,8 +22,6 @@ terraform {
 # TODO: add the keys
 provider "aws" {
   region = "ap-southeast-2"
-  shared_credentials_files = ["~/.aws/credentials"]
-  profile = "default"
 }
 
 # Generate id
