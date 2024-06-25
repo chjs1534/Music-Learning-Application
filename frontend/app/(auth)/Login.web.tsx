@@ -7,6 +7,8 @@ const Login = () => {
 
   const navigate = useNavigate();
 
+
+
   // call something for remember me 
   // useEffect(() => {
   //   if (props.token) {
@@ -15,34 +17,37 @@ const Login = () => {
   // }, [props.token]);
 
   // login logic here set token for above 
-  // const login = async
+  const login = async () => {
+    
+  }
 
   return (
-    <div className="login-container">
-      <h2>Login</h2>
-      <form>
-        <div className="form-group">
-          <label htmlFor="username">Username:</label>
-          <input
-            type="text"
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="password">Password:</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <button type="submit">Login</button>
-      </form>
-      <button type="submit" onClick={()=>navigate('/register')}>go to register</button>
+    <div className="auth-screen">
+      <h1>Mewsic 🎵</h1>
+      <div className="auth-container">
+        <h2>Login</h2>
+            <input
+              className="form-inputs"
+              placeholder="username/email"
+              type="text"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+
+            <input
+              className="form-inputs"
+              placeholder="password"
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+              <button className="button1" type="submit" onClick={login}>Login</button>
+              <span>Don't have an account? <a className="anchor1" href="/login">Register Now</a></span>
+      </div>
     </div>
+    
   );
 };
 
