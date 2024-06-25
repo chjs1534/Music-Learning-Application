@@ -125,14 +125,14 @@ resource "aws_iam_role" "authLambdaExec" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_policy" {
+resource "aws_iam_role_policy_attachment" "authLambdaPolicy" {
   role       = aws_iam_role.authLambdaExec.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
 # Sign in function
 resource "aws_lambda_function" "signIn" {
-  function_name = "SignIn"
+  function_name = "signIn"
 
   s3_bucket = aws_s3_bucket.authBucket.id
   s3_key    = aws_s3_object.authObject.key
@@ -144,9 +144,10 @@ resource "aws_lambda_function" "signIn" {
 
   role = aws_iam_role.authLambdaExec.arn
 
-  timeout = 5
+  timeout = 3
 }
 
+# Logging
 resource "aws_cloudwatch_log_group" "signIn" {
   name = "/aws/lambda/${aws_lambda_function.signIn.function_name}"
   

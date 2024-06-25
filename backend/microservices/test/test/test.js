@@ -3,15 +3,15 @@ const ddb = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = (event, context, callback) => {    
     const requestBody = JSON.parse(event.body);
-    const userId = requestBody.UserId;
+    const testId = requestBody.testId;
 
-    console.log('Received event (', userId, '): ', event);
+    console.log('Received event (', testId, '): ', event);
 
-    recordRide(userId).then(() => {
+    recordRide(testId).then(() => {
         callback(null, {
             statusCode: 201,
             body: JSON.stringify({
-                UserId: userId
+                testId: testId
             }),
             headers: {
                 'Access-Control-Allow-Origin': '*',
@@ -23,11 +23,11 @@ exports.handler = (event, context, callback) => {
     });
 };
 
-function recordRide(userId) {
+function recordRide(testId) {
     return ddb.put({
-        TableName: 'Mewsic_User_Table',
+        TableName: 'testTable',
         Item: {
-            userId: userId
+            testId: testId
         },
     }).promise();
 }

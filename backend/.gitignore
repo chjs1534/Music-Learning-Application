@@ -1,4 +1,1 @@
-microservices/terraform/.terraform
-microservices/terraform/node_modules
 microservices/.terraform
-microservices/auth/.terraform
