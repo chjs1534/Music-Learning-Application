@@ -2,7 +2,7 @@ terraform {
   cloud {
     organization = "Mewsic"
     workspaces {
-      name = "Mewsic-auth"
+      name = "Mewsic-workspace"
     }
   }
 
@@ -20,13 +20,21 @@ provider "aws" {
 }
 
 # Modules
+module "upload" {
+    source = "./upload"
+}
+
 module "auth" {
     source = "./auth"
 }
 
+module "test" {
+  source = "./test"
+}
+
 # Create API Gateway
-resource "aws_apigatewayv2_api" "mewsic_api2" {
-  name          = "mewsic_api2"
+resource "aws_apigatewayv2_api" "mewsic_api" {
+  name          = "mewsic_api"
   protocol_type = "HTTP"
   cors_configuration {
     allow_headers = ["Content-Type", "Authorization"]
@@ -35,14 +43,14 @@ resource "aws_apigatewayv2_api" "mewsic_api2" {
   }
 }
 
-resource "aws_apigatewayv2_stage" "mewsic_stage2" {
-  api_id = aws_apigatewayv2_api.mewsic_api2.id
+resource "aws_apigatewayv2_stage" "mewsic_stage" {
+  api_id = aws_apigatewayv2_api.mewsic_api.id
 
-  name        = "mewsic_stage2"
+  name        = "mewsic_stage"
   auto_deploy = true
 
   access_log_settings {
-    destination_arn = aws_cloudwatch_log_group.api_gw2.arn
+    destination_arn = aws_cloudwatch_log_group.api_gw.arn
 
     format = jsonencode({
       requestId               = "$context.requestId"
@@ -61,7 +69,7 @@ resource "aws_apigatewayv2_stage" "mewsic_stage2" {
 }
 
 resource "aws_apigatewayv2_authorizer" "gatewayAuth" {
-  api_id           = aws_apigatewayv2_api.mewsic_api2.id
+  api_id           = aws_apigatewayv2_api.mewsic_api.id
   authorizer_type  = "JWT"
   identity_sources = ["$request.header.Authorization"]
   name             = "Mewsic-cognito-authorizer"
@@ -72,9 +80,83 @@ resource "aws_apigatewayv2_authorizer" "gatewayAuth" {
   }
 }
 
+# Integration of test lambda
+resource "aws_apigatewayv2_integration" "upload" {
+  api_id = aws_apigatewayv2_api.mewsic_api.id
+
+  integration_uri    = module.upload.upload_lambda.invoke_arn
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_route" "upload" {
+  api_id = aws_apigatewayv2_api.mewsic_api.id
+
+  route_key = "POST /upload"
+  target    = "integrations/${aws_apigatewayv2_integration.upload.id}"
+  authorization_type = "JWT"
+  authorizer_id = aws_apigatewayv2_authorizer.gatewayAuth.id
+}
+
+resource "aws_apigatewayv2_integration" "download" {
+  api_id = aws_apigatewayv2_api.mewsic_api.id
+
+  integration_uri    = module.upload.download_lambda.invoke_arn
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_route" "download" {
+  api_id = aws_apigatewayv2_api.mewsic_api.id
+
+  route_key = "POST /download"
+  target    = "integrations/${aws_apigatewayv2_integration.download.id}"
+  authorization_type = "JWT"
+  authorizer_id = aws_apigatewayv2_authorizer.gatewayAuth.id
+}
+
 # Logging
-resource "aws_cloudwatch_log_group" "api_gw2" {
-  name = "/aws/api_gw2/${aws_apigatewayv2_api.mewsic_api2.name}"
+resource "aws_cloudwatch_log_group" "api_gw" {
+  name = "/aws/api_gw/${aws_apigatewayv2_api.mewsic_api.name}"
 
   retention_in_days = 30
 }
+
+# Permission for test lambda
+resource "aws_lambda_permission" "api_gw_upload" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = module.upload.upload_lambda.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${aws_apigatewayv2_api.mewsic_api.execution_arn}/*/*"
+}
+
+resource "aws_lambda_permission" "api_gw_download" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = module.upload.download_lambda.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${aws_apigatewayv2_api.mewsic_api.execution_arn}/*/*"
+}
+
+output "base_url" {
+  description = "Base URL for API Gateway stage."
+
+  value = aws_apigatewayv2_stage.mewsic_stage.invoke_url
+}
+
+output "video_storage_name" {
+  description = "Name of the S3 bucket used to store function code."
+
+  value = module.upload.video_storage_name
+}
+
+
+
+
+
+
+
+
