@@ -24,10 +24,23 @@ module "upload" {
     source = "./upload"
 }
 
+module "auth" {
+    source = "./auth"
+}
+
+module "test" {
+  source = "./test"
+}
+
 # Create API Gateway
 resource "aws_apigatewayv2_api" "mewsic_api" {
   name          = "mewsic_api"
   protocol_type = "HTTP"
+  cors_configuration {
+    allow_headers = ["Content-Type", "Authorization"]
+    allow_origins = ["http://localhost:8081"]
+    allow_methods = ["POST", "GET", "OPTIONS"]
+  }
 }
 
 resource "aws_apigatewayv2_stage" "mewsic_stage" {
@@ -55,6 +68,18 @@ resource "aws_apigatewayv2_stage" "mewsic_stage" {
   }
 }
 
+resource "aws_apigatewayv2_authorizer" "gatewayAuth" {
+  api_id           = aws_apigatewayv2_api.mewsic_api.id
+  authorizer_type  = "JWT"
+  identity_sources = ["$request.header.Authorization"]
+  name             = "Mewsic-cognito-authorizer"
+
+  jwt_configuration {
+    audience = [module.auth.userPoolClient.id]
+    issuer   = "https://${module.auth.userPool.endpoint}"
+  }
+}
+
 # Integration of test lambda
 resource "aws_apigatewayv2_integration" "upload" {
   api_id = aws_apigatewayv2_api.mewsic_api.id
@@ -69,6 +94,8 @@ resource "aws_apigatewayv2_route" "upload" {
 
   route_key = "POST /upload"
   target    = "integrations/${aws_apigatewayv2_integration.upload.id}"
+  authorization_type = "JWT"
+  authorizer_id = aws_apigatewayv2_authorizer.gatewayAuth.id
 }
 
 resource "aws_apigatewayv2_integration" "download" {
@@ -84,6 +111,8 @@ resource "aws_apigatewayv2_route" "download" {
 
   route_key = "POST /download"
   target    = "integrations/${aws_apigatewayv2_integration.download.id}"
+  authorization_type = "JWT"
+  authorizer_id = aws_apigatewayv2_authorizer.gatewayAuth.id
 }
 
 # Logging
@@ -123,3 +152,11 @@ output "video_storage_name" {
 
   value = module.upload.video_storage_name
 }
+
+
+
+
+
+
+
+
