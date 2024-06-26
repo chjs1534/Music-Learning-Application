@@ -1,2 +1,5 @@
 backend/microservices/terraform/.terraform
 backend/microservices/terraform/node_modules
+backend/microservices/upload/node_modules
+backend/microservices/upload/.terraform
+backend/microservices/.terraform
