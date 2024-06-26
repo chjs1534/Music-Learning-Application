@@ -2,7 +2,7 @@
 resource "aws_cognito_user_pool" "mewsic_user_pool" {
     name = "mewsicUserPool"
 
-    alias_attributes           = ["email"]
+    # alias_attributes           = ["email"]
     auto_verified_attributes   = ["email"]
 
     password_policy {

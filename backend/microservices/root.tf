@@ -126,3 +126,14 @@ resource "aws_apigatewayv2_route" "auth" {
   authorizer_id = aws_apigatewayv2_authorizer.auth.id
 }
 
+resource "aws_apigatewayv2_authorizer" "gatewayAuth" {
+  api_id           = aws_apigatewayv2_api.mewsic_api2.id
+  authorizer_type  = "JWT"
+  identity_sources = ["$request.header.Authorization"]
+  name             = "Mewsic-cognito-authorizer"
+
+  jwt_configuration {
+    audience = [module.auth.userPoolClient.id]
+    issuer   = "https://${module.auth.userPool.endpoint}"
+  }
+}
