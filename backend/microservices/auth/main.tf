@@ -52,7 +52,7 @@ resource "aws_cognito_user_pool" "mewsic_user_pool" {
 resource "aws_cognito_user_pool_client" "mewsic_user_pool_client" {
     name                         = "mewsicUserPoolClient"
     user_pool_id = aws_cognito_user_pool.mewsic_user_pool.id
-    explicit_auth_flows          = ["ALLOW_USER_PASSWORD_AUTH", "ALLOW_REFRESH_TOKEN_AUTH"]
+    explicit_auth_flows          = ["ALLOW_USER_PASSWORD_AUTH", "ALLOW_REFRESH_TOKEN_AUTH", "ALLOW_USER_SRP_AUTH"]
 }
 
 output "userPool" {
