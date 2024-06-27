@@ -9,6 +9,8 @@ const poolData = {
   ClientId: CLIENT_ID
 };
 
+const UserPool = new CognitoUserPool(poolData);
+
 const Register = () => {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
@@ -43,8 +45,6 @@ const Register = () => {
       alert("Passwords do not match");
       return;
     }
-
-    const UserPool = new CognitoUserPool(poolData);
 
     let attributeList = [];
     let dataEmail = {

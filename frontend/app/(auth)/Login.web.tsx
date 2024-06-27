@@ -41,7 +41,6 @@ const Login = () => {
   const navigate = useNavigate();
 
   const login = async () => {
-    // Input error checking
     if (username.length <= 3) {
       alert("Username must be longer than 3 characters");
       return;

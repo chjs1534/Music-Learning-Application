@@ -1,0 +1,52 @@
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+.homepage {
+    width: 100vw;
+}
+
+.profile {
+    width: 100vw;
+}
+
+.settings {
+    width: 100vw;
+}
+
+.navbar {
+    background-color: #ffffff;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    padding: 0px 0px;
+}
+
+/* Navbar button styles */
+.nav-button {
+    background-color: #ffffff;
+    background-image: url('../assets/profile.png');
+    color: rgb(0, 0, 0);
+    border: none;
+    padding: 14px 20px;
+    margin: 0 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.75s ease-out;
+}
+
+.nav-button:hover {
+    background-color: #bebebe;
+}
+
+.nav-button:focus {
+    outline: none;
+}
+
