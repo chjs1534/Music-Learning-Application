@@ -75,9 +75,9 @@ const Register = () => {
 
   return (
     <div className="auth-screen">
-      <h1>Mewsic 🎵</h1>
+      <h1 className="header-logo">Mewsic 🎵</h1>
       <div className="auth-container">
-        <h2>Register</h2>
+        <h2 className="auth-header">Register</h2>
         <input
           className="form-inputs"
           placeholder="email"

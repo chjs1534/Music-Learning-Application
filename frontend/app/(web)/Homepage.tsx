@@ -45,7 +45,7 @@ const Homepage = () => {
     return (
         <div className="homepage">
             <NavBar />
-            <div className="content">
+            <div className="dashboard">
                 Welcome to the Homepage!
                 <button onClick={clickMe}>click me!</button>
             </div>

@@ -38,7 +38,16 @@ export const authenticate = (Email, Password) => {
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [dragging, setDragging] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const randomX = Math.random() * (window.innerWidth - 128);
+    const randomY = Math.random() * (window.innerHeight - 128);
+    setPosition({ x: randomX, y: randomY });
+  }, []);
 
   const login = async () => {
     if (username.length <= 3) {
@@ -75,11 +84,45 @@ const Login = () => {
       });
   }
 
+  const handleMouseDown = (e) => {
+    setDragging(true);
+    setOffset({
+      x: e.clientX - position.x,
+      y: e.clientY - position.y
+    });
+  };
+
+  const handleMouseMove = (e) => {
+    if (dragging) {
+      setPosition({
+        x: e.clientX - offset.x,
+        y: e.clientY - offset.y
+      });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setDragging(false);
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [dragging]);
+
   return (
     <div className="auth-screen">
-      <h1>Mewsic 🎵</h1>
+      <img src={"https://cdn-icons-png.flaticon.com/128/461/461238.png"} alt="Note" className="drag" draggable="false"
+          onMouseDown={handleMouseDown}
+          style={{ position: 'absolute', top: position.y, left: position.x, cursor: 'move' }}/>
+      <h1 className="header-logo">Mewsic 🎵</h1>
       <div className="auth-container">
-        <h2>Login</h2>
+        <h2 className="auth-header">Login</h2>
         <input
           className="form-inputs"
           placeholder="username/email"
