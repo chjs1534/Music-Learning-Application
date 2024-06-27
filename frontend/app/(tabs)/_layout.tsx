@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image } from 'react-native'
+import { Platform, StyleSheet, Text, View, Image } from 'react-native'
 import React from 'react'
 import { Tabs, Redirect } from 'expo-router'
 import cog from "../assets/cog.png"
@@ -7,10 +7,9 @@ import upload from "../assets/upload.png"
 import profile from "../assets/profile.png"
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-
 const TabIcon = ({ icon, color, name, focused }) => {
   return (
-    <View className="flex items-center justify-center gap-2">
+    <View className={`flex items-center justify-center gap-2 ${(Platform.OS === 'ios') ? "pt-10" : ""}`}>
       <Image
         source={icon}
         resizeMode="contain"
@@ -30,7 +29,7 @@ const TabIcon = ({ icon, color, name, focused }) => {
 
 const TabsLayout = () => {
   return (
-      <SafeAreaView className="h-full">
+      <SafeAreaView style={styles.container}>
         <Tabs
           screenOptions={{
             tabBarActiveTintColor: "#DC7F2E",
@@ -38,10 +37,10 @@ const TabsLayout = () => {
             tabBarShowLabel: false,
             tabBarStyle: {
               backgroundColor: "#C9DDFF",
-              borderTopWidth: 1,
-              borderBottomWidth: 1,
+              borderTopWidth: 0,
+              borderBottomWidth: 0,
               borderTopColor: "#4059AD",
-              height: 70,
+              height: 80,
             },
           }}
         >
@@ -105,5 +104,12 @@ const TabsLayout = () => {
       </SafeAreaView>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#C9DDFF",
+  },
+});
 
 export default TabsLayout
