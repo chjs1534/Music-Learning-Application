@@ -81,10 +81,9 @@ const Login = () => {
           resolve(null);
         }
       })
-      .then(authToken => 
+      .then((authToken: string) => 
         {console.log(authToken); 
-          router.replace("/Home")
-          { state: { authToken } }
+          router.replace({ pathname: '/Home', params: { authToken } })
       })
     })
     .catch((err) => {

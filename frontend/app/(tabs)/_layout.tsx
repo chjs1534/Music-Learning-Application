@@ -30,7 +30,6 @@ const TabIcon = ({ icon, color, name, focused }) => {
 
 const TabsLayout = () => {
   return (
-    <>
       <SafeAreaView className="h-full">
         <Tabs
           screenOptions={{
@@ -104,7 +103,6 @@ const TabsLayout = () => {
             }}/>
         </Tabs>
       </SafeAreaView>
-    </>
   )
 }
 

@@ -5,14 +5,20 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import Button from '../../components/Button'
 import * as ImagePicker from "expo-image-picker"
 import { Video } from 'expo-av'
-
+import { USERPOOL_ID } from '@env'
+import { useGlobalSearchParams } from "expo-router"
+import { ffmpeg } from 'fluent-ffmpeg'
 const Upload = () => {
   // const camera = useRef(null);
   // const [cameraPermission, setCameraPermission] = useState('');
   // const [microphonePermission, setMicrophonePermission] = useState('');
   // const [videoPath, setVideoPath] = useState();
   const [video, setVideo] = useState([]);
-
+  const params = useGlobalSearchParams();
+  console.log(params);
+  const { authToken } = params;
+  console.log(authToken);
+  console.log(USERPOOL_ID);
   // useEffect(() => {
   //   (async () => {
   //     const cameraPermissionStatus = await Camera.requestCameraPermission();
@@ -98,6 +104,25 @@ const Upload = () => {
     })();
   }, []);
 
+  const uploadToS3 = async (uri) => {
+    const res = await fetch(uri);
+    const content = await res.blob();
+    fetch("https://ywi1k1tgpg.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/upload", {
+      method: 'POST',
+      headers: {
+          Authorization: authToken as string,
+      },
+      body: JSON.stringify({
+        userId: USERPOOL_ID
+      }),
+    })
+    .then(response => response.json())
+    .then(json => json.uploadURL)
+    .then(url => {
+      fetch(url, { method: 'PUT', body: content });
+    });
+  };
+
   const pickVideo = async () => {
     console.log("clicked button");
 
@@ -106,6 +131,7 @@ const Upload = () => {
       allowsEditing: true,
       aspect: [3, 4],
       quality: 1,
+      base64: true, 
     });
     await new Promise(resolve => setTimeout(resolve, 100));
     console.log(result);
@@ -113,6 +139,7 @@ const Upload = () => {
       console.log(":D");
       setVideo(prevVideos => [...prevVideos, result.assets[0].uri]);
       // send the video to the backend
+      uploadToS3(result.assets[0].uri)
     }
 
   };
@@ -125,6 +152,7 @@ const Upload = () => {
         allowsEditing: true,
         aspect: [3, 4],
         quality: 1,
+        base64: true, 
       });
 
       console.log(result);
@@ -133,6 +161,7 @@ const Upload = () => {
         console.log("Video recorded:", result.assets[0].uri);
         setVideo(prevVideos => [...prevVideos, result.assets[0].uri]);
         // send video to backend
+        uploadToS3(result.assets[0].uri)
       } else {
         console.log("Video recording canceled");
       }
