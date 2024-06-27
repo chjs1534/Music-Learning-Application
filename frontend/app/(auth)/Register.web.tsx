@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
 import '../styles/auth.css';
+import { USERPOOL_ID, CLIENT_ID } from '@env';
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -26,8 +27,8 @@ const Register = () => {
 
     console.log(username, email, password, confirmPassword);
     const poolData = {
-      UserPoolId: 'ap-southeast-2_mA5H8qPfE',
-      ClientId: '4tp5jsv1nh92hahc4md4v9m5vb',
+      UserPoolId: USERPOOL_ID,
+      ClientId: CLIENT_ID
     };
 
     if (username.length <= 3) {

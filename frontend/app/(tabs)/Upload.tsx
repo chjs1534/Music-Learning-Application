@@ -151,7 +151,7 @@ const Upload = () => {
     <View>
       <SafeAreaView className="bg-green-200 h-full">
         <ScrollView>
-        {video.length > 0 && video.map((videoUri, index) => (
+        {video.length > 0 ? video.map((videoUri, index) => (
           <View key={index} className="m-1 border-black border-2 p-1">
             <Video
               source={{ uri: videoUri }}
@@ -163,7 +163,11 @@ const Upload = () => {
               useNativeControls
             />
           </View>
-        ))}
+        )) :
+        <View className="justify-center items-center min-h-[75vh]">
+          <Text className="text-3xl font-bold">Start by uploading a video</Text>
+        </View>
+        }
         </ScrollView>
         <View className="flex flex-row justify-around">
           <Button 
@@ -179,13 +183,6 @@ const Upload = () => {
             handlePress={recordVideo}      
           />
         </View>
-        <Button 
-          title="Clear Videos"
-          containerStyles="bg-green-400 mb-5 ml-3 mr-3"
-          textStyles="text-lg font-semibold"    
-          handlePress={clearVideos}      
-        />
-       
       </SafeAreaView>
     </View>
   )

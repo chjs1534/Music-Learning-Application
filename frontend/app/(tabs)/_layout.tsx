@@ -5,6 +5,7 @@ import cog from "../assets/cog.png"
 import home from "../assets/home.png"
 import upload from "../assets/upload.png"
 import profile from "../assets/profile.png"
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 
 const TabIcon = ({ icon, color, name, focused }) => {
@@ -30,81 +31,81 @@ const TabIcon = ({ icon, color, name, focused }) => {
 const TabsLayout = () => {
   return (
     <>
-      <Tabs
-        screenOptions={{
-          tabBarActiveTintColor: "#DC7F2E",
-          tabBarInactiveTintColor: "#4059AD",
-          tabBarShowLabel: false,
-          tabBarStyle: {
-            backgroundColor: "#C9DDFF",
-            borderTopWidth: 1,
-            borderBottomWidth: 1,
-            borderTopColor: "#4059AD",
-            height: 70,
-          },
-        }}
-      >
-        <Tabs.Screen 
-            name="Home"
-            options={{
-            title: 'Home',
-            headerShown: false,
-            tabBarIcon: ({ color, focused }) => (
-              <TabIcon
-                icon={home}
-                color={color}
-                name="Home"
-                focused={focused}
-              />
-            ),
-          }}/>
+      <SafeAreaView className="h-full">
+        <Tabs
+          screenOptions={{
+            tabBarActiveTintColor: "#DC7F2E",
+            tabBarInactiveTintColor: "#4059AD",
+            tabBarShowLabel: false,
+            tabBarStyle: {
+              backgroundColor: "#C9DDFF",
+              borderTopWidth: 1,
+              borderBottomWidth: 1,
+              borderTopColor: "#4059AD",
+              height: 70,
+            },
+          }}
+        >
           <Tabs.Screen 
-            name="Upload" 
-            options={{
-            title: 'Upload',
-            headerShown: false,
-            tabBarIcon: ({ color, focused }) => (
-              <TabIcon
-                icon={upload}
-                color={color}
-                name="Uploads"
-                focused={focused}
-              />
-            ),
-          }}/>
-          <Tabs.Screen 
-            name="Profile" 
-            options={{
-            title: 'Profile',
-            headerShown: false,
-            tabBarIcon: ({ color, focused }) => (
-              <TabIcon
-                icon={profile}
-                color={color}
-                name="Profile"
-                focused={focused}
-              />
-            ),
-          }}/>
-          <Tabs.Screen 
-            name="Settings" 
-            options={{
-            title: 'Settings',
-            headerShown: false,
-            tabBarIcon: ({ color, focused }) => (
-              <TabIcon
-                icon={cog}
-                color={color}
-                name="Settings"
-                focused={focused}
-              />
-            ),
-          }}/>
-      </Tabs>
+              name="Home"
+              options={{
+              title: 'Home',
+              headerShown: false,
+              tabBarIcon: ({ color, focused }) => (
+                <TabIcon
+                  icon={home}
+                  color={color}
+                  name="Home"
+                  focused={focused}
+                />
+              ),
+            }}/>
+            <Tabs.Screen 
+              name="Upload" 
+              options={{
+              title: 'Upload',
+              headerShown: false,
+              tabBarIcon: ({ color, focused }) => (
+                <TabIcon
+                  icon={upload}
+                  color={color}
+                  name="Uploads"
+                  focused={focused}
+                />
+              ),
+            }}/>
+            <Tabs.Screen 
+              name="Profile" 
+              options={{
+              title: 'Profile',
+              headerShown: false,
+              tabBarIcon: ({ color, focused }) => (
+                <TabIcon
+                  icon={profile}
+                  color={color}
+                  name="Profile"
+                  focused={focused}
+                />
+              ),
+            }}/>
+            <Tabs.Screen 
+              name="Settings" 
+              options={{
+              title: 'Settings',
+              headerShown: false,
+              tabBarIcon: ({ color, focused }) => (
+                <TabIcon
+                  icon={cog}
+                  color={color}
+                  name="Settings"
+                  focused={focused}
+                />
+              ),
+            }}/>
+        </Tabs>
+      </SafeAreaView>
     </>
   )
 }
 
 export default TabsLayout
-
-const styles = StyleSheet.create({})
