@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, ScrollView } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { Camera, useCameraDevices } from 'react-native-vision-camera'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -11,7 +11,7 @@ const Upload = () => {
   // const [cameraPermission, setCameraPermission] = useState('');
   // const [microphonePermission, setMicrophonePermission] = useState('');
   // const [videoPath, setVideoPath] = useState();
-  const [video, setVideo] = useState(null);
+  const [video, setVideo] = useState([]);
 
   // useEffect(() => {
   //   (async () => {
@@ -98,27 +98,8 @@ const Upload = () => {
     })();
   }, []);
 
-  const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    console.log(result);
-
-    if (!result.canceled) {
-      setVideo(result.assets[0].uri);
-    }
-  };
-
   const pickVideo = async () => {
     console.log("clicked button");
-  
-    // Wait for 200 milliseconds before launching the image library
-    await new Promise(resolve => setTimeout(resolve, 100));
 
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Videos,
@@ -130,8 +111,8 @@ const Upload = () => {
     console.log(result);
     if (!result.canceled) {
       console.log(":D");
-      setVideo(result.assets[0].uri);
-      // Now you can send the video to the backend
+      setVideo(prevVideos => [...prevVideos, result.assets[0].uri]);
+      // send the video to the backend
     }
 
   };
@@ -146,11 +127,11 @@ const Upload = () => {
         quality: 1,
       });
 
-      console.log(result); // Log the entire result object
+      console.log(result);
 
       if (!result.canceled) {
         console.log("Video recorded:", result.assets[0].uri);
-        setVideo(result.assets[0].uri);
+        setVideo(prevVideos => [...prevVideos, result.assets[0].uri]);
         // send video to backend
       } else {
         console.log("Video recording canceled");
@@ -161,7 +142,7 @@ const Upload = () => {
   };
 
   const clearVideos = () => {
-    setVideo('');
+    setVideo([]);
   }
 
   // function to send video to backend
@@ -169,34 +150,42 @@ const Upload = () => {
   return (
     <View>
       <SafeAreaView className="bg-green-200 h-full">
-        <Button 
-          title="Upload Video"
-          containerStyles="bg-green-400 m-10"
-          textStyles="text-lg font-semibold"  
-          handlePress={pickImage}     
-        />
-      <Button 
-        title="Record Video"
-        containerStyles="bg-green-400 m-10"
-        textStyles="text-lg font-semibold"    
-        handlePress={recordVideo}      
-      />
-      <Button 
-        title="Clear Videos"
-        containerStyles="bg-green-400 m-10"
-        textStyles="text-lg font-semibold"    
-        handlePress={clearVideos}      
-      />
-       {video && (
-          <Video
-            source={{ uri: video }}
-            rate={1.0}
-            volume={1.0}
-            isMuted={false}
-            style={{ width: '100%', height: 200 }}
-            useNativeControls
+        <ScrollView>
+        {video.length > 0 && video.map((videoUri, index) => (
+          <View key={index} className="m-1 border-black border-2 p-1">
+            <Video
+              source={{ uri: videoUri }}
+              rate={1.0}
+              volume={1.0}
+              isMuted={false}
+              resizeMode="contain"
+              style={{ width: '100%', height: 200 }}
+              useNativeControls
+            />
+          </View>
+        ))}
+        </ScrollView>
+        <View className="flex flex-row justify-around">
+          <Button 
+            title="Upload Video"
+            containerStyles="bg-green-400 m-5 pt-5 pb-5 pl-7 pr-7"
+            textStyles="text-lg font-semibold"  
+            handlePress={pickVideo}     
           />
-        )}
+          <Button 
+            title="Record Video"
+            containerStyles="bg-green-400 m-5 pt-5 pb-5 pl-7 pr-7"
+            textStyles="text-lg font-semibold"    
+            handlePress={recordVideo}      
+          />
+        </View>
+        <Button 
+          title="Clear Videos"
+          containerStyles="bg-green-400 mb-5 ml-3 mr-3"
+          textStyles="text-lg font-semibold"    
+          handlePress={clearVideos}      
+        />
+       
       </SafeAreaView>
     </View>
   )
