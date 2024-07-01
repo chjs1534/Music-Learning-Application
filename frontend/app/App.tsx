@@ -1,13 +1,13 @@
 import React from 'react'
-import { BrowserRouter as Router } from 'react-router-dom'
+import { BrowserRouter, BrowserRouter as Router } from 'react-router-dom'
 import PageList from "./PageList"
 
-const App = () => {
+const App: React.FC = () => {
   return (
     <>
-        <Router>
+        <BrowserRouter>
             <PageList />
-        </Router>
+        </BrowserRouter>
     </>
   )
 }

@@ -1,21 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthenticationDetails, CognitoUser, CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
 import '../styles/auth.css';
-import { USERPOOL_ID, CLIENT_ID } from '@env';
-
-const poolData = {
-  UserPoolId: USERPOOL_ID,
-  ClientId: CLIENT_ID
-};
+import { poolData } from '../config/poolData';
 
 const UserPool = new CognitoUserPool(poolData);
 
-const Register = () => {
-  const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+const Register: React.FC = () => {
+  const [email, setEmail] = useState<string>('');
+  const [username, setUsername] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
 
   const navigate = useNavigate();
 
@@ -46,32 +41,37 @@ const Register = () => {
       return;
     }
 
-    let attributeList = [];
-    let dataEmail = {
+    const attributeList: CognitoUserAttribute[] = [];
+    const dataEmail = {
       Name: 'email',
       Value: email
     };
-    let dataUsername = {
+    const dataUsername = {
       Name: 'username',
       Value: username
     };
-    let attributeEmail = new CognitoUserAttribute(dataEmail);
-    let attributeUsername = new CognitoUserAttribute(dataUsername);
+    const attributeEmail = new CognitoUserAttribute(dataEmail);
+    const attributeUsername = new CognitoUserAttribute(dataUsername);
 
     attributeList.push(attributeEmail);
     attributeList.push(attributeUsername);
 
-    UserPool.signUp(
-      email,
-      password,
-      attributeList,
-      null,
-      (err, data) => {
-        if (err) console.error(err);
-        else navigate('/verification', { state: { email, password } });
+    UserPool.signUp(email, password, attributeList, null, (err, result) => {
+      if (err) {
+        console.error(err);
+      } else {
+        navigate('/verification', { state: { email, password } });
       }
-    );
-  }
+    });
+  };
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    if (id === 'email') setEmail(value);
+    if (id === 'username') setUsername(value);
+    if (id === 'password') setPassword(value);
+    if (id === 'confirmPassword') setConfirmPassword(value);
+  };
 
   return (
     <div className="auth-screen">
@@ -82,9 +82,9 @@ const Register = () => {
           className="form-inputs"
           placeholder="email"
           type="text"
-          id="name"
+          id="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={handleInputChange}
         />
         <input
           className="form-inputs"
@@ -92,7 +92,7 @@ const Register = () => {
           type="text"
           id="username"
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={handleInputChange}
         />
         <input
           className="form-inputs"
@@ -100,15 +100,15 @@ const Register = () => {
           type="password"
           id="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={handleInputChange}
         />
         <input
           className="form-inputs"
           placeholder="confirm password"
           type="password"
-          id="password"
+          id="confirmPassword"
           value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          onChange={handleInputChange}
         />
         <button className="button1" type="submit" onClick={register}>Register</button>
         <span>Already have an account? <a className="anchor1" href="/login">Log In</a></span>

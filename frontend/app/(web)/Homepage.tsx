@@ -4,18 +4,19 @@ import { CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-j
 import NavBar from './NavBar';
 import '../styles/website.css';
 
-const Homepage = () => {
+const Homepage: React.FC = () => {
     const location = useLocation();
     const authToken = location.state?.authToken;
-    const token = `Bearer ${encodeURIComponent(authToken)}`;
-
+    const token = `Bearer ${encodeURIComponent(authToken || '')}`;
+    
     const clickMe = async () => {
         console.log('authToken:', authToken);
 
         await fetch('https://x5yhk546p1.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage2/hello', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${authToken}`,
+                // 'Authorization': `Bearer ${authToken}`,
+                'Authorization': token,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ testId: 'Adam nib' }),

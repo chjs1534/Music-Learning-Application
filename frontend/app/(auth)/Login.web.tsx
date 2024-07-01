@@ -1,16 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, MouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthenticationDetails, CognitoUser, CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
-import { USERPOOL_ID, CLIENT_ID } from '@env';
+import {
+  AuthenticationDetails,
+  CognitoUser,
+  CognitoUserPool,
+  CognitoUserAttribute,
+  CognitoUserSession,
+  ISignUpResult
+} from 'amazon-cognito-identity-js';
+import { poolData } from '../config/poolData';
 
-const poolData = {
-  UserPoolId: USERPOOL_ID,
-  ClientId: CLIENT_ID,
-};
+interface Position {
+  x: number;
+  y: number;
+}
 
 const UserPool = new CognitoUserPool(poolData);
 
-export const authenticate = (Email, Password) => {
+export const authenticate = (Email: string, Password: string): Promise<CognitoUserSession> => {
   return new Promise((resolve, reject) => {
     const user = new CognitoUser({
       Username: Email,
@@ -23,11 +30,11 @@ export const authenticate = (Email, Password) => {
     });
 
     user.authenticateUser(authDetails, {
-      onSuccess: (result) => {
+      onSuccess: (result: CognitoUserSession) => {
         console.log("login successful");
         resolve(result);
       },
-      onFailure: (err) => {
+      onFailure: (err: Error) => {
         console.log("login failed", err);
         reject(err);
       }
@@ -35,12 +42,12 @@ export const authenticate = (Email, Password) => {
   });
 };
 
-const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [dragging, setDragging] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
+const Login: React.FC = () => {
+  const [username, setUsername] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [dragging, setDragging] = useState<boolean>(false);
+  const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
+  const [offset, setOffset] = useState<Position>({ x: 0, y: 0 });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -59,32 +66,32 @@ const Login = () => {
       return;
     }
 
-    authenticate(username, password)
-      .then((data) => {
-        new Promise(function fetchCurrentAuthToken(resolve, reject) {
-          var cognitoUser = UserPool.getCurrentUser();
-          if (cognitoUser) {
-            cognitoUser.getSession(function sessionCallback(err, session) {
-              if (err) {
-                reject(err);
-              } else if (!session.isValid()) {
-                resolve(null);
-              } else {
-                resolve(session.getIdToken().getJwtToken());
-              }
-            });
-          } else {
-            resolve(null);
-          }
-        })
-          .then(authToken => { navigate('/homepage', { state: { authToken } }) })
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
+    try {
+      await authenticate(username, password);
 
-  const handleMouseDown = (e) => {
+      const authToken = await new Promise<string | null>((resolve, reject) => {
+        const cognitoUser = UserPool.getCurrentUser();
+        if (cognitoUser) {
+          cognitoUser.getSession((err: Error | null, session: CognitoUserSession | null) => {
+            if (err) {
+              reject(err);
+            } else if (!session?.isValid()) {
+              resolve(null);
+            } else {
+              resolve(session?.getIdToken().getJwtToken() || null);
+            }
+          });
+        } else {
+          resolve(null);
+        }
+      });
+      navigate('/homepage', { state: { authToken } });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleMouseDown = (e: MouseEvent<HTMLImageElement>) => {
     setDragging(true);
     setOffset({
       x: e.clientX - position.x,
@@ -92,17 +99,17 @@ const Login = () => {
     });
   };
 
-  const handleMouseMove = (e) => {
+  const handleMouseUp = () => {
+    setDragging(false);
+  };
+
+  const handleMouseMove = (e: MouseEvent<Document>) => {
     if (dragging) {
       setPosition({
         x: e.clientX - offset.x,
         y: e.clientY - offset.y
       });
     }
-  };
-
-  const handleMouseUp = () => {
-    setDragging(false);
   };
 
   useEffect(() => {
@@ -117,9 +124,14 @@ const Login = () => {
 
   return (
     <div className="auth-screen">
-      <img src={"https://cdn-icons-png.flaticon.com/128/461/461238.png"} alt="Note" className="drag" draggable="false"
-          onMouseDown={handleMouseDown}
-          style={{ position: 'absolute', top: position.y, left: position.x, cursor: 'move' }}/>
+      <img
+        src="https://cdn-icons-png.flaticon.com/128/461/461238.png"
+        alt="Note"
+        className="drag"
+        draggable="false"
+        onMouseDown={handleMouseDown}
+        style={{ position: 'absolute', top: position.y, left: position.x, cursor: 'move' }}
+      />
       <h1 className="header-logo">Mewsic 🎵</h1>
       <div className="auth-container">
         <h2 className="auth-header">Login</h2>
@@ -143,7 +155,6 @@ const Login = () => {
         <span>Don't have an account? <a className="anchor1" href="/register">Register Now</a></span>
       </div>
     </div>
-
   );
 };
 

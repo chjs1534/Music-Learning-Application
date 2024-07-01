@@ -2,7 +2,7 @@ import React from 'react'
 import '../styles/website.css';
 import NavBar from './NavBar';
 
-const Profile = () => {
+const Profile: React.FC = () => {
   return (
     <div className="homepage">
             <NavBar />

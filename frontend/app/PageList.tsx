@@ -8,7 +8,7 @@ import Homepage from './(web)/Homepage'
 import Profile from './(web)/Profile'
 import Settings from './(web)/Settings'
 
-const PageList = () => {
+const PageList: React.FC = () => {
   return (
     <>
       <Routes>
