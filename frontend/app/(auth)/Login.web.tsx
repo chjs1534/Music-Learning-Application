@@ -1,4 +1,4 @@
-import React, { useEffect, useState, MouseEvent } from 'react';
+import React, { useEffect, useState, MouseEvent, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   AuthenticationDetails,
@@ -48,7 +48,36 @@ const Login: React.FC = () => {
   const [dragging, setDragging] = useState<boolean>(false);
   const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
   const [offset, setOffset] = useState<Position>({ x: 0, y: 0 });
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
+
   const navigate = useNavigate();
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    if (id === 'username') setUsername(value);
+    if (id === 'password') setPassword(value);
+  };
+
+  const handleInputFocus = (e: ChangeEvent<HTMLInputElement>) => {
+    const { id } = e.target;
+    const label = document.querySelector(`label[for=${id}]`);
+    if (label) {
+      label.classList.add('active');
+    }
+  };
+
+  const handleInputBlur = (e: ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    const label = document.querySelector(`label[for=${id}]`);
+    if (label && !value) {
+      label.classList.remove('active');
+    }
+  };
+  
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
+  };
 
   useEffect(() => {
     const randomX = Math.random() * (window.innerWidth - 128);
@@ -57,12 +86,12 @@ const Login: React.FC = () => {
   }, []);
 
   const login = async () => {
-    if (username.length <= 3) {
-      alert("Username must be longer than 3 characters");
+    if (username.length < 3) {
+      setErrorMessage("Invalid email or username is less than 3 characters");
       return;
     }
     if (password.length < 8) {
-      alert("Password must be longer than 8 characters");
+      setErrorMessage("Password should be longer than 8 characters");
       return;
     }
 
@@ -132,27 +161,46 @@ const Login: React.FC = () => {
         onMouseDown={handleMouseDown}
         style={{ position: 'absolute', top: position.y, left: position.x, cursor: 'move' }}
       />
-      <h1 className="header-logo">Mewsic 🎵</h1>
+      <h1 className="header-logo">Mewsic🎵</h1>
       <div className="auth-container">
         <h2 className="auth-header">Login</h2>
-        <input
-          className="form-inputs"
-          placeholder="username/email"
-          type="text"
-          id="username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          className="form-inputs"
-          placeholder="password"
-          type="password"
-          id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <div className="input-container">
+          <input
+            className="form-inputs"
+            placeholder=""
+            type="text"
+            id="username"
+            value={username}
+            onChange={handleInputChange}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+          />
+          <label htmlFor="email">Email or Username</label>
+        </div>
+        <div className="input-container">
+          <input
+            className="form-inputs"
+            placeholder=""
+            type="text"
+            id="password"
+            value={password}
+            onChange={handleInputChange}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+          />
+          <label htmlFor="email">Password</label>
+          <img
+            src={passwordVisible ? "https://cdn-icons-png.flaticon.com/128/2767/2767146.png" : "https://cdn-icons-png.flaticon.com/128/709/709612.png"}
+            alt={passwordVisible ? "Hide password" : "Show password"}
+            className="password-toggle"
+            onClick={togglePasswordVisibility}
+          />
+        </div>
+        <div className="error-message-container">
+          {errorMessage && <span className="error-message">{'*' + errorMessage}</span>}
+        </div>
         <button className="button1" type="submit" onClick={login}>Login</button>
-        <span>Don't have an account? <a className="anchor1" href="/register">Register Now</a></span>
+        <span className="auth-text">Don't have an account? <a className="anchor1" href="/register">Register Now</a></span>
       </div>
     </div>
   );

@@ -11,37 +11,69 @@ const Register: React.FC = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
+  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState<boolean>(false);
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    console.log(username);
-  }, [username]);
 
   const validateEmail = (email: string): boolean => {
     const regex = /^[a-zA-Z0-9]+@[a-zA-Z\.]+$/;
     return regex.test(email);
   };
 
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    if (id === 'email') setEmail(value);
+    if (id === 'username') setUsername(value);
+    if (id === 'password') setPassword(value);
+    if (id === 'confirmPassword') setConfirmPassword(value);
+  };
+
+  const handleInputFocus = (e: ChangeEvent<HTMLInputElement>) => {
+    const { id } = e.target;
+    const label = document.querySelector(`label[for=${id}]`);
+    if (label) {
+      label.classList.add('active');
+    }
+  };
+
+  const handleInputBlur = (e: ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    const label = document.querySelector(`label[for=${id}]`);
+    if (label && !value) {
+      label.classList.remove('active');
+    }
+  };
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setConfirmPasswordVisible(!confirmPasswordVisible);
+  };
+
   const register = async () => {
-    if (username.length <= 3) {
-      alert("Username must be longer than 3 characters");
-      return;
-    }
-    if (password.length <= 8) {
-      alert("Password must be longer than 8 characters");
-      return;
-    }
     if (!validateEmail(email)) {
-      alert("Invalid email format");
+      setErrorMessage("Please enter a valid email address");
+      return;
+    }
+    if (username.length < 3) {
+      setErrorMessage("Username must be longer than 3 characters");
+      return;
+    }
+    if (password.length < 8) {
+      setErrorMessage("Password must be longer than 8 characters");
       return;
     }
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+      setErrorMessage("Passwords do not match");
       return;
     }
 
     const attributeList: CognitoUserAttribute[] = [];
+
     const dataEmail = {
       Name: 'email',
       Value: email
@@ -60,58 +92,86 @@ const Register: React.FC = () => {
       if (err) {
         console.error(err);
       } else {
+        console.log(result);
         navigate('/verification', { state: { email, password } });
       }
     });
   };
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    if (id === 'email') setEmail(value);
-    if (id === 'username') setUsername(value);
-    if (id === 'password') setPassword(value);
-    if (id === 'confirmPassword') setConfirmPassword(value);
-  };
-
   return (
     <div className="auth-screen">
-      <h1 className="header-logo">Mewsic 🎵</h1>
+      <h1 className="header-logo">Mewsic🎵</h1>
       <div className="auth-container">
         <h2 className="auth-header">Register</h2>
-        <input
-          className="form-inputs"
-          placeholder="email"
-          type="text"
-          id="email"
-          value={email}
-          onChange={handleInputChange}
-        />
-        <input
-          className="form-inputs"
-          placeholder="username"
-          type="text"
-          id="username"
-          value={username}
-          onChange={handleInputChange}
-        />
-        <input
-          className="form-inputs"
-          placeholder="password"
-          type="password"
-          id="password"
-          value={password}
-          onChange={handleInputChange}
-        />
-        <input
-          className="form-inputs"
-          placeholder="confirm password"
-          type="password"
-          id="confirmPassword"
-          value={confirmPassword}
-          onChange={handleInputChange}
-        />
+        <div className="input-container">
+          <input
+            className="form-inputs"
+            placeholder=""
+            type="text"
+            id="email"
+            value={email}
+            onChange={handleInputChange}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+          />
+          <label htmlFor="email">Email</label>
+        </div>
+        <div className="input-container">
+          <input
+            className="form-inputs"
+            placeholder=""
+            type="text"
+            id="username"
+            value={username}
+            onChange={handleInputChange}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+          />
+          <label htmlFor="username">Username</label>
+        </div>
+        <div className="input-container password-container">
+          <input
+            className="form-inputs"
+            placeholder=""
+            type={passwordVisible ? "text" : "password"}
+            id="password"
+            value={password}
+            onChange={handleInputChange}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+          />
+          <label htmlFor="password">Password</label>
+          <img
+            src={passwordVisible ? "https://cdn-icons-png.flaticon.com/128/2767/2767146.png" : "https://cdn-icons-png.flaticon.com/128/709/709612.png"}
+            alt={passwordVisible ? "Hide password" : "Show password"}
+            className="password-toggle"
+            onClick={togglePasswordVisibility}
+          />
+        </div>
+        <div className="input-container password-container">
+          <input
+            className="form-inputs"
+            placeholder=""
+            type={confirmPasswordVisible ? "text" : "password"}
+            id="confirmPassword"
+            value={confirmPassword}
+            onChange={handleInputChange}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+          />
+          <label htmlFor="confirmPassword">Confirm Password</label>
+          <img
+            src={confirmPasswordVisible ? "https://cdn-icons-png.flaticon.com/128/2767/2767146.png" : "https://cdn-icons-png.flaticon.com/128/709/709612.png"}
+            alt={confirmPasswordVisible ? "Hide password" : "Show password"}
+            className="password-toggle"
+            onClick={toggleConfirmPasswordVisibility}
+          />
+        </div>
+        <div className="error-message-container">
+          {errorMessage && <span className="error-message">{'*' + errorMessage}</span>}
+        </div>
         <button className="button1" type="submit" onClick={register}>Register</button>
-        <span>Already have an account? <a className="anchor1" href="/login">Log In</a></span>
+        <span className="auth-text">Already have an account? <a className="anchor1" href="/login">Log In</a></span>
       </div>
     </div>
   );
