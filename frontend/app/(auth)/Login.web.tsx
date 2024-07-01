@@ -175,20 +175,20 @@ const Login: React.FC = () => {
             onFocus={handleInputFocus}
             onBlur={handleInputBlur}
           />
-          <label htmlFor="email">Email or Username</label>
+          <label htmlFor="email">Email / Username</label>
         </div>
-        <div className="input-container">
+        <div className="input-container password-container">
           <input
             className="form-inputs"
             placeholder=""
-            type="text"
+            type={passwordVisible ? "text" : "password"}
             id="password"
             value={password}
             onChange={handleInputChange}
             onFocus={handleInputFocus}
             onBlur={handleInputBlur}
           />
-          <label htmlFor="email">Password</label>
+          <label htmlFor="password">Password</label>
           <img
             src={passwordVisible ? "https://cdn-icons-png.flaticon.com/128/2767/2767146.png" : "https://cdn-icons-png.flaticon.com/128/709/709612.png"}
             alt={passwordVisible ? "Hide password" : "Show password"}
