@@ -100,7 +100,9 @@ const Register: React.FC = () => {
 
   return (
     <div className="auth-screen">
-      <h1 className="header-logo">Mewsic🎵</h1>
+      <div className="auth-banner">
+        <h1 className="header-logo">Mewsic🎵</h1>
+      </div>
       <div className="auth-container">
         <h2 className="auth-header">Register</h2>
         <div className="input-container">
@@ -171,6 +173,24 @@ const Register: React.FC = () => {
           {errorMessage && <span className="error-message">{'*' + errorMessage}</span>}
         </div>
         <button className="button1" type="submit" onClick={register}>Register</button>
+        <p>--- Or Continue With ---</p>
+        <div className="alternate-auth-options">
+          <img
+              src="https://cdn-icons-png.flaticon.com/128/300/300221.png"
+              alt="Google"
+              className="company-button"
+            />
+            <img
+              src="https://cdn-icons-png.flaticon.com/128/731/731985.png"
+              alt="Apple"
+              className="company-button"
+            />
+            <img
+              src="https://cdn-icons-png.flaticon.com/128/5968/5968764.png"
+              alt="Facebook"
+              className="company-button"
+            />
+        </div>
         <span className="auth-text">Already have an account? <a className="anchor1" href="/login">Log In</a></span>
       </div>
     </div>

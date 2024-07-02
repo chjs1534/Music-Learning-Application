@@ -17,26 +17,46 @@
 
 .auth-screen {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
+    justify-content: space-evenly;
     width: 100vw;
     height: 100vh;
     margin: 0 0;
     overflow-y: auto;
+    /* background-image: url("https://t4.ftcdn.net/jpg/02/57/33/93/360_F_257339302_LWVM6ZkukZUoVVo8CY0UHx5y283PG9RR.jpg"); */
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 .auth-container {
-    width: 500px;
+    width: 40vw;
+    height: 85vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: top;
     padding: 0 0 0 0;
     margin: 0 0 0 0;
     /* border: 2px solid #8a8a8a;
     border-radius: 4px;
     padding: 24px 64px 24px 64px;
     box-shadow: 2px 2px 4px 0px rgb(106, 106, 106); */
+}
+
+.auth-banner {
+    width: 40vw;
+    height: 85vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0 0 0;
+    margin: 0 0 0 0;
+    border: 1px solid #8a8a8a;
+    border-radius: 8px;
+    padding: 24px 64px 24px 64px;
+    /* box-shadow: 2px 2px 4px 0px rgb(106, 106, 106); */
 }
 
 .input-container {
@@ -109,7 +129,30 @@
 }
 
 .button1:hover {
-    background-color: #5a6268;
+    background-color: #cdceff;
+}
+
+.alternate-auth-options {
+    display: flex;
+    flex-direction: horizontal;
+    align-items: center;
+    justify-content: space-around;
+    width: 75%;
+    margin: 12px;
+}
+
+.company-button {
+    width: 36px;
+    height: 36px;
+}
+
+.anchor1 {
+    color: #000dff;
+}
+
+.anchor1:hover {
+    color: #cdceff;
+    text-decoration-line: none;
 }
 
 .error-message-container {
