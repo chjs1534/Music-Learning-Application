@@ -15,7 +15,6 @@ const Homepage: React.FC = () => {
         await fetch('https://x5yhk546p1.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage2/hello', {
             method: 'POST',
             headers: {
-                // 'Authorization': `Bearer ${authToken}`,
                 'Authorization': token,
                 'Content-Type': 'application/json'
             },
@@ -45,8 +44,8 @@ const Homepage: React.FC = () => {
 
     return (
         <div className="homepage">
-            <NavBar />
             <div className="dashboard">
+                <NavBar />
                 Welcome to the Homepage!
                 <button onClick={clickMe}>click me!</button>
             </div>

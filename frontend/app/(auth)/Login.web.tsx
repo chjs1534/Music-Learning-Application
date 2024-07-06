@@ -165,7 +165,7 @@ const Login: React.FC = () => {
         <h1 className="header-logo">Mewsic🎵</h1>
       </div>
       <div className="auth-container">
-        <h2 className="auth-header">Login</h2>
+        <h2 className="auth-header">Login to Mewsic</h2>
         <div className="input-container">
           <input
             className="form-inputs"
@@ -202,7 +202,7 @@ const Login: React.FC = () => {
           {errorMessage && <span className="error-message">{'*' + errorMessage}</span>}
         </div>
         <button className="button1" type="submit" onClick={login}>Login</button>
-        <p>--- Or Continue With ---</p>
+        <p className="auth-text">──────────   Or Continue With   ──────────</p>
         <div className="alternate-auth-options">
           <img
               src="https://cdn-icons-png.flaticon.com/128/300/300221.png"

@@ -101,7 +101,8 @@ const Register: React.FC = () => {
   return (
     <div className="auth-screen">
       <div className="auth-banner">
-        <h1 className="header-logo">Mewsic🎵</h1>
+        <h1 className="header-logo">Mewsic</h1>
+        <img className="gif" src="https://media0.giphy.com/media/CPWmNCzfMFgC8QUAbp/giphy.gif?cid=6c09b952s5rjd6w005v10j0yd1movcoho6iaixxs3pdguhig&ep=v1_internal_gif_by_id&rid=giphy.gif&ct=s"/>
       </div>
       <div className="auth-container">
         <h2 className="auth-header">Register</h2>
@@ -173,7 +174,7 @@ const Register: React.FC = () => {
           {errorMessage && <span className="error-message">{'*' + errorMessage}</span>}
         </div>
         <button className="button1" type="submit" onClick={register}>Register</button>
-        <p>--- Or Continue With ---</p>
+        <p className="auth-text">────────── Or Continue With ──────────</p>
         <div className="alternate-auth-options">
           <img
               src="https://cdn-icons-png.flaticon.com/128/300/300221.png"
