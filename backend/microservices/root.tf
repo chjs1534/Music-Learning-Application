@@ -28,10 +28,6 @@ module "auth" {
     source = "./auth"
 }
 
-module "test" {
-  source = "./test"
-}
-
 # Create API Gateway
 resource "aws_apigatewayv2_api" "mewsic_api" {
   name          = "mewsic_api"
