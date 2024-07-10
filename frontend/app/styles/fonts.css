@@ -1,0 +1,17 @@
+@font-face {
+    font-family: 'Cat';
+    src: url('./app/fonts/cats.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+  font-family: 'Music';
+  src: url('./app/fonts/music.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+* {
+    font-family: 'Helvetica';
+}
