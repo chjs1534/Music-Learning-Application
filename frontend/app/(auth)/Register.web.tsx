@@ -2,11 +2,13 @@ import React, { useEffect, useState, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthenticationDetails, CognitoUser, CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
 import '../styles/auth.css';
+import '../styles/mobile_auth.css';
 import { poolData } from '../config/poolData';
 
 const UserPool = new CognitoUserPool(poolData);
 
 const Register: React.FC = () => {
+  const [userType, setUserType] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -20,6 +22,10 @@ const Register: React.FC = () => {
   const validateEmail = (email: string): boolean => {
     const regex = /^[a-zA-Z0-9]+@[a-zA-Z\.]+$/;
     return regex.test(email);
+  };
+
+  const handleUserTypeClick = (type: string) => {
+    setUserType(type);
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -98,6 +104,7 @@ const Register: React.FC = () => {
         window.location.href = '/verification', { state: { email, password } };
       }
     });
+    console.log(userType, "hi")
   };
 
   return (
@@ -108,6 +115,20 @@ const Register: React.FC = () => {
       </div>
       <div className="auth-container">
         <h2 className="auth-header">Register</h2>
+        <div className="input-container user-type">
+          {['Student', 'Parent', 'Teacher'].map((type) => (
+            <button
+              key={type}
+              className={`button2 ${userType === type ? 'selected' : ''}`}
+              type="button"
+              onClick={() => handleUserTypeClick(type)}
+              onMouseEnter={(e) => e.currentTarget.classList.add('hovered')}
+              onMouseLeave={(e) => e.currentTarget.classList.remove('hovered')}
+            >
+              {type}
+            </button>
+          ))}
+        </div>
         <div className="input-container">
           <input
             className="form-inputs"

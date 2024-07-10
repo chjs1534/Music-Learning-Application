@@ -8,6 +8,8 @@ import {
   CognitoUserSession,
   ISignUpResult
 } from 'amazon-cognito-identity-js';
+import '../styles/auth.css';
+import '../styles/mobile_auth.css';
 import { poolData } from '../config/poolData';
 
 interface Position {

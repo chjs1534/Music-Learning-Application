@@ -24,9 +24,6 @@
     height: 100vh;
     margin: 0 0;
     overflow-y: auto;
-    /* background-image: url("https://t4.ftcdn.net/jpg/02/57/33/93/360_F_257339302_LWVM6ZkukZUoVVo8CY0UHx5y283PG9RR.jpg"); */
-    background-repeat: no-repeat;
-    background-size: cover;
 }
 
 .auth-container {
@@ -102,8 +99,8 @@
     z-index: 1;
 }
 
-.form-inputs:focus + label,
-.form-inputs:not(:placeholder-shown) + label {
+.form-inputs:focus+label,
+.form-inputs:not(:placeholder-shown)+label {
     top: -20%;
     font-size: 12px;
     color: #555;
@@ -137,6 +134,36 @@
 
 .button1:hover {
     background-color: #cdceff;
+}
+
+.button2 {
+    width: 100%;
+    margin: 8px;
+    padding: 12px 24px;
+    font-size: 18px;
+    color: #555;
+    background-color: rgb(255, 255, 255);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid rgb(78, 84, 255);
+}
+
+.button2.selected {
+    width: 100%;
+    margin: 8px;
+    padding: 12px 24px;
+    font-size: 18px;
+    color: white;
+    background-color: rgb(150, 153, 255);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.button2.hovered:not(.selected) {
+    background-color: #cdceff;
+    color: black;
 }
 
 .alternate-auth-options {
