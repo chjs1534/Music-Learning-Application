@@ -1,5 +1,5 @@
 import React, { useEffect, useState, MouseEvent, ChangeEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import {
   AuthenticationDetails,
   CognitoUser,
@@ -51,7 +51,7 @@ const Login: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -113,8 +113,9 @@ const Login: React.FC = () => {
         } else {
           resolve(null);
         }
+        // navigate('/homepage', { state: { authToken } });
+        window.location.href = '/homepage', { state: { authToken } };
       });
-      navigate('/homepage', { state: { authToken } });
     } catch (err) {
       console.log(err);
     }

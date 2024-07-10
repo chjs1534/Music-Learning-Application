@@ -62,7 +62,7 @@ export const authenticate = (Email: string, Password: string): Promise<string | 
 
 const Verification: React.FC = () => {
   const [verificationCode, setVerificationCode] = useState<string>('');
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const location = useLocation();
   const username = location.state?.email || '';
   const password = location.state?.password || '';
@@ -79,7 +79,8 @@ const Verification: React.FC = () => {
 
       const authToken = await authenticate(username, password);
       if (authToken) {
-        navigate('/homepage', { state: { authToken } });
+        // navigate('/homepage', { state: { authToken } });
+        window.location.href = '/homepage', { state: { authToken } };
       }
     } catch (err) {
       console.log(err);

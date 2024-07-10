@@ -1,15 +1,17 @@
 import React from "react";
-import ReactDOM from "react-dom";
+// import { createRoot } from 'react-dom/client';
+import ReactDOM from "react-dom/client";
 import App from "./App";
 
-const rootElement = document.getElementById('root');
+// const rootElement = document.getElementById('root');
+const rootElement = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
 if (rootElement) {
-    ReactDOM.render(
+    console.log('hddddi');
+    rootElement.render(
         <React.StrictMode>
             <App />
-        </React.StrictMode>,
-        rootElement
+        </React.StrictMode>
     );
 } else {
     console.error('Root element not found');

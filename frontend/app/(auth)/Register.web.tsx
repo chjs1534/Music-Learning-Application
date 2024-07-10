@@ -15,7 +15,7 @@ const Register: React.FC = () => {
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState<boolean>(false);
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const validateEmail = (email: string): boolean => {
     const regex = /^[a-zA-Z0-9]+@[a-zA-Z\.]+$/;
@@ -94,7 +94,8 @@ const Register: React.FC = () => {
         console.error(err);
       } else {
         console.log(result);
-        navigate('/verification', { state: { email, password } });
+        // navigate('/verification', { state: { email, password } });
+        window.location.href = '/verification', { state: { email, password } };
       }
     });
   };
@@ -193,7 +194,7 @@ const Register: React.FC = () => {
               className="company-button"
             />
         </div>
-        <span className="auth-text">Already have an account? <a className="anchor1" href="/login">Log In</a></span>
+        <span className="auth-text">Already have an account? <a className="anchor1" href="/">Log In</a></span>
       </div>
     </div>
   );
