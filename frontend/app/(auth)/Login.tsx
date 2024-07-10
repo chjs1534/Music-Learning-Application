@@ -5,13 +5,7 @@ import FormField from '../../components/FormField'
 import Button from '../../components/Button'
 import { router } from 'expo-router'
 import { AuthenticationDetails, CognitoUser, CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
-import { USERPOOL_ID, CLIENT_ID } from '@env';
-
-
-const poolData = {
-  UserPoolId: USERPOOL_ID,
-  ClientId: CLIENT_ID
-};
+import { poolData } from '../config/poolData';
 
 const UserPool = new CognitoUserPool(poolData);
 
@@ -46,8 +40,8 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  console.log(USERPOOL_ID)
-  console.log(CLIENT_ID)
+  // console.log(USERPOOL_ID)
+  // console.log(CLIENT_ID)
 
   const login = async () => {
     // Input error checking

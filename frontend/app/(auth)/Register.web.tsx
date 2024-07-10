@@ -55,6 +55,7 @@ const Register: React.FC = () => {
   };
 
   const register = async () => {
+    console.log(poolData)
     if (!validateEmail(email)) {
       setErrorMessage("Please enter a valid email address");
       return;

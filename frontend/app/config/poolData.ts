@@ -1,6 +1,6 @@
-import { USERPOOL_ID, CLIENT_ID } from '@env';
+// import { REACT_APP_USERPOOL_ID, REACT_APP_CLIENT_ID } from '@env';
 
 export const poolData = {
-    UserPoolId: USERPOOL_ID,
-    ClientId: CLIENT_ID,
+    UserPoolId: process.env.REACT_APP_USERPOOL_ID,
+    ClientId: process.env.REACT_APP_CLIENT_ID,
 };

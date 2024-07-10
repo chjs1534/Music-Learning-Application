@@ -7,17 +7,12 @@ import {
   CognitoUserPool,
   CognitoUserAttribute,
 } from 'amazon-cognito-identity-js';
-import { USERPOOL_ID, CLIENT_ID } from '@env';
+import { poolData } from '../config/poolData';
 
 interface LocationState {
   email: string;
   password: string;
 }
-
-const poolData = {
-  UserPoolId: USERPOOL_ID,
-  ClientId: CLIENT_ID,
-};
 
 const UserPool = new CognitoUserPool(poolData);
 
