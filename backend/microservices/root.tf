@@ -64,6 +64,7 @@ resource "aws_apigatewayv2_stage" "mewsic_stage" {
   }
 }
 
+# Authorisation
 resource "aws_apigatewayv2_authorizer" "gatewayAuth" {
   api_id           = aws_apigatewayv2_api.mewsic_api.id
   authorizer_type  = "JWT"
@@ -73,6 +74,18 @@ resource "aws_apigatewayv2_authorizer" "gatewayAuth" {
   jwt_configuration {
     audience = [module.auth.userPoolClient.id]
     issuer   = "https://${module.auth.userPool.endpoint}"
+  }
+}
+
+resource "aws_apigatewayv2_authorizer" "gatewayAuthMobile" {
+  api_id           = aws_apigatewayv2_api.mewsic_api.id
+  authorizer_type  = "JWT"
+  identity_sources = ["$request.header.Authorization"]
+  name             = "Mewsic-cognito-authorizer-mobile"
+
+  jwt_configuration {
+    audience = [module.auth.userPoolClientMobile.id]
+    issuer   = "https://${module.auth.userPoolMobile.endpoint}"
   }
 }
 
