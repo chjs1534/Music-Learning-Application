@@ -104,7 +104,7 @@ const Register: React.FC = () => {
     <div className="auth-screen">
       <div className="auth-banner">
         <h1 className="header-logo">Mewsic</h1>
-        <img className="gif" src="https://media0.giphy.com/media/CPWmNCzfMFgC8QUAbp/giphy.gif?cid=6c09b952s5rjd6w005v10j0yd1movcoho6iaixxs3pdguhig&ep=v1_internal_gif_by_id&rid=giphy.gif&ct=s"/>
+        <img className="gif" src="https://media0.giphy.com/media/CPWmNCzfMFgC8QUAbp/giphy.gif?cid=6c09b952s5rjd6w005v10j0yd1movcoho6iaixxs3pdguhig&ep=v1_internal_gif_by_id&rid=giphy.gif&ct=s" />
       </div>
       <div className="auth-container">
         <h2 className="auth-header">Register</h2>
@@ -179,20 +179,20 @@ const Register: React.FC = () => {
         <p className="auth-text">────────── Or Continue With ──────────</p>
         <div className="alternate-auth-options">
           <img
-              src="https://cdn-icons-png.flaticon.com/128/300/300221.png"
-              alt="Google"
-              className="company-button"
-            />
-            <img
-              src="https://cdn-icons-png.flaticon.com/128/731/731985.png"
-              alt="Apple"
-              className="company-button"
-            />
-            <img
-              src="https://cdn-icons-png.flaticon.com/128/5968/5968764.png"
-              alt="Facebook"
-              className="company-button"
-            />
+            src="https://cdn-icons-png.flaticon.com/128/300/300221.png"
+            alt="Google"
+            className="company-button"
+          />
+          <img
+            src="https://cdn-icons-png.flaticon.com/128/731/731985.png"
+            alt="Apple"
+            className="company-button"
+          />
+          <img
+            src="https://cdn-icons-png.flaticon.com/128/5968/5968764.png"
+            alt="Facebook"
+            className="company-button"
+          />
         </div>
         <span className="auth-text">Already have an account? <a className="anchor1" href="/">Log In</a></span>
       </div>

@@ -20,6 +20,9 @@ const NavBar: React.FC = () => {
         Mewsic
       </button>
       <div className="nav-icons">
+        <button className="nav-button" onClick={() => handleNavigation('/my-accounts')}>
+          <img src={"https://cdn-icons-png.flaticon.com/128/3524/3524636.png"} alt="Settings" className="nav-icon" />
+        </button>
         <button className="nav-button" onClick={() => handleNavigation('/profile')}>
           <img src={"https://cdn-icons-png.flaticon.com/128/1144/1144760.png"} alt="Profile" className="nav-icon" />
         </button>
