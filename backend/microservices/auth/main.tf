@@ -2,7 +2,6 @@
 resource "aws_cognito_user_pool" "mewsic_user_pool" {
     name = "mewsicUserPool"
 
-    # alias_attributes           = ["email"]
     auto_verified_attributes   = ["email"]
 
     password_policy {
@@ -24,19 +23,6 @@ resource "aws_cognito_user_pool" "mewsic_user_pool" {
 
     schema {
         name                     = "email"
-        attribute_data_type      = "String"
-        developer_only_attribute = false
-        mutable                  = true
-        required                 = false
-
-        string_attribute_constraints {
-            min_length = 3
-            max_length = 256
-        }
-    }
-
-    schema {
-        name                     = "username"
         attribute_data_type      = "String"
         developer_only_attribute = false
         mutable                  = true
