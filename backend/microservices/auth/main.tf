@@ -14,11 +14,6 @@ terraform {
   }
 }
 
-output "vpc_id" {
-  description = "The VPC ID"
-  value = aws_vpc.my_vpc.id
-}
-
 # Cognito user pool
 resource "aws_cognito_user_pool" "mewsic_user_pool" {
     name = "mewsicUserPool"
