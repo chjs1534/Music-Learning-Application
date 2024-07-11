@@ -82,8 +82,6 @@ const MyAccounts: React.FC = () => {
                 console.error(err);
             } else {
                 console.log(result);
-                // navigate('/verification', { state: { email, password } });
-                // window.location.href = '/verification', { state: { username, password } };
             }
         });
     };

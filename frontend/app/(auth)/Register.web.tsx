@@ -101,7 +101,9 @@ const Register: React.FC = () => {
       } else {
         console.log(result);
         // navigate('/verification', { state: { email, password } });
-        window.location.href = '/verification', { state: { email, password } };
+        // window.location.href = '/verification', { state: { email, password } };
+        const queryParams = new URLSearchParams({ email, password });
+        window.location.href = `/verification?${queryParams.toString()}`;
       }
     });
     console.log(userType, "hi")

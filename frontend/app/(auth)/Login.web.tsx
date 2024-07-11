@@ -1,5 +1,5 @@
 import React, { useEffect, useState, MouseEvent, ChangeEvent } from 'react';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   AuthenticationDetails,
   CognitoUser,
@@ -116,7 +116,10 @@ const Login: React.FC = () => {
           resolve(null);
         }
         // navigate('/homepage', { state: { authToken } });
-        window.location.href = '/homepage', { state: { authToken } };
+        // window.location.href = '/homepage', { state: { authToken } };
+        const queryParams = new URLSearchParams({ username });
+        window.location.href = `/homepage?${queryParams.toString()}`;
+        console.log(authToken)
       });
     } catch (err) {
       console.log(err);
