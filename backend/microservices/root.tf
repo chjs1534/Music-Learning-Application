@@ -89,7 +89,8 @@ resource "aws_apigatewayv2_authorizer" "gatewayAuthMobile" {
   }
 }
 
-# Integration of test lambda
+# Integrations of lambdas
+# Integration of upload lambda
 resource "aws_apigatewayv2_integration" "upload" {
   api_id = aws_apigatewayv2_api.mewsic_api.id
 
@@ -107,6 +108,7 @@ resource "aws_apigatewayv2_route" "upload" {
   authorizer_id = aws_apigatewayv2_authorizer.gatewayAuth.id
 }
 
+# Integration of download lambda
 resource "aws_apigatewayv2_integration" "download" {
   api_id = aws_apigatewayv2_api.mewsic_api.id
 
@@ -131,7 +133,8 @@ resource "aws_cloudwatch_log_group" "api_gw" {
   retention_in_days = 30
 }
 
-# Permission for test lambda
+# Permissions for lambdas
+# Permission for upload lambda
 resource "aws_lambda_permission" "api_gw_upload" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
@@ -141,6 +144,7 @@ resource "aws_lambda_permission" "api_gw_upload" {
   source_arn = "${aws_apigatewayv2_api.mewsic_api.execution_arn}/*/*"
 }
 
+# Permission for download lambda
 resource "aws_lambda_permission" "api_gw_download" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
@@ -150,6 +154,7 @@ resource "aws_lambda_permission" "api_gw_download" {
   source_arn = "${aws_apigatewayv2_api.mewsic_api.execution_arn}/*/*"
 }
 
+# Outputs
 output "base_url" {
   description = "Base URL for API Gateway stage."
 

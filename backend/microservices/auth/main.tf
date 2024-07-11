@@ -77,6 +77,10 @@ resource "aws_cognito_user_pool" "mewsic_user_pool_mobile" {
             max_length = 256
         }
     }
+
+    lambda_config {
+        pre_authentication = aws_lambda_function.verify.arn
+    }
 }
 
 resource "aws_cognito_user_pool_client" "mewsic_user_pool_client_mobile" {
@@ -91,4 +95,97 @@ output "userPoolMobile" {
 
 output "userPoolClientMobile" {
     value = aws_cognito_user_pool_client.mewsic_user_pool_client_mobile
+}
+
+# Verify lambda
+# Generate s3 bucket name
+resource "random_pet" "lambda_bucket_name" {
+  length = 4
+}
+
+# Generate s3 bucket
+resource "aws_s3_bucket" "lambda_bucket" {
+  bucket = random_pet.lambda_bucket_name.id
+}
+
+# Configure s3 bucket
+resource "aws_s3_bucket_ownership_controls" "lambda_bucket" {
+  bucket = aws_s3_bucket.lambda_bucket.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_acl" "lambda_bucket" {
+  depends_on = [aws_s3_bucket_ownership_controls.lambda_bucket]
+
+  bucket = aws_s3_bucket.lambda_bucket.id
+  acl    = "private"
+}
+
+# Create zip file of lambdas
+data "archive_file" "lambdas" {
+  type = "zip"
+  
+  source_dir  = "${path.module}/lambdas"
+  output_path = "${path.module}/authLambdas.zip"
+}
+
+# Store lambdas zip in s3
+resource "aws_s3_object" "lambdas" {
+  bucket = aws_s3_bucket.lambda_bucket.id
+
+  key    = "authLambdas.zip"
+  source = data.archive_file.lambdas.output_path
+
+  etag = filemd5(data.archive_file.lambdas.output_path)
+}
+
+# Policies and roles for lambdas
+resource "aws_iam_role" "lambda_exec" {
+  name = "serverless_lambda_auth"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Sid    = ""
+      Principal = {
+        Service = "lambda.amazonaws.com"
+      }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_policy" {
+  for_each = {
+    "AWSLambdaBasicExecutionRole": "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  }
+  role       = aws_iam_role.lambda_exec.name
+  policy_arn = each.value
+}
+
+# Lambda function
+resource "aws_lambda_function" "verify" {
+  function_name = "Verify"
+
+  s3_bucket = aws_s3_bucket.lambda_bucket.id
+  s3_key    = aws_s3_object.lambdas.key
+
+  runtime = "nodejs18.x"
+  handler = "verify.handler"
+
+  source_code_hash = data.archive_file.lambdas.output_base64sha256
+
+  role = aws_iam_role.lambda_exec.arn
+
+  timeout = 5
+}
+
+resource "aws_cloudwatch_log_group" "verify" {
+  name = "/aws/lambda/${aws_lambda_function.verify.function_name}"
+
+  retention_in_days = 30
 }
