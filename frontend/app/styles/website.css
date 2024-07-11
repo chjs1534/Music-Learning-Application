@@ -60,9 +60,9 @@ body {
 
 .nav-button {
     display: flex;
-    text-align: center;
+    align-items: center;
     justify-content: center;
-    flex-direction: row;
+    flex-direction: column;
     border: none;
     border-radius: 100px;
     font-size: 25px;
@@ -71,6 +71,8 @@ body {
     background-color: #ffffff;
     margin: 4px 16px 4px 16px;
     padding: 12px 12px;
+    width: 75px;
+    height: 40px;
 }
 
 .website-logo {
@@ -85,17 +87,20 @@ body {
     transition: background-color 0.5s ease-out;
     margin: 4px 16px 4px 16px;
     padding: 12px 12px;
+    width: 100px;
+    height: 50px;
 }
 
 .nav-button:hover {
     background-color: #e5e5e5;
 }
 
-.nav-button:focus {
-    outline: none;
+.nav-button-text {
+    font-size: 10px;
+    margin: 2px;
 }
 
-.nav-icons {
+.nav-options {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -108,8 +113,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 30px;
-    height: 30px;
+    width: 27px;
+    height: 27px;
     margin: 0 0;
     padding: 0 0;
 }

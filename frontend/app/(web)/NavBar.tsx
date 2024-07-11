@@ -19,15 +19,18 @@ const NavBar: React.FC = () => {
       <button className="nav-button website-logo" onClick={() => handleNavigation('/homepage')}>
         Mewsic
       </button>
-      <div className="nav-icons">
+      <div className="nav-options">
         <button className="nav-button" onClick={() => handleNavigation('/my-accounts')}>
-          <img src={"https://cdn-icons-png.flaticon.com/128/3524/3524636.png"} alt="Settings" className="nav-icon" />
+          <img src={"https://cdn-icons-png.flaticon.com/128/646/646395.png"} alt="Settings" className="nav-icon" />
+          <span className="nav-button-text">Accounts</span>
         </button>
         <button className="nav-button" onClick={() => handleNavigation('/profile')}>
           <img src={"https://cdn-icons-png.flaticon.com/128/1144/1144760.png"} alt="Profile" className="nav-icon" />
+          <span className="nav-button-text">Profile</span>
         </button>
         <button className="nav-button" onClick={() => handleNavigation('/settings')}>
-          <img src={"https://cdn-icons-png.flaticon.com/128/3524/3524636.png"} alt="Settings" className="nav-icon" />
+          <img src={"https://cdn-icons-png.flaticon.com/128/4044/4044064.png"} alt="Settings" className="nav-icon" />
+          <span className="nav-button-text">Settings</span>
         </button>
       </div>
     </div>
