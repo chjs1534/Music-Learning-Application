@@ -1,3 +1,24 @@
+terraform {
+  cloud {
+    organization = "Mewsic"
+    workspaces {
+      name = "Mewsic-workspace-auth"
+    }
+  }
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+output "vpc_id" {
+  description = "The VPC ID"
+  value = aws_vpc.my_vpc.id
+}
+
 # Cognito user pool
 resource "aws_cognito_user_pool" "mewsic_user_pool" {
     name = "mewsicUserPool"
@@ -47,6 +68,7 @@ output "userPool" {
 
 output "userPoolClient" {
     value = aws_cognito_user_pool_client.mewsic_user_pool_client
+    sensitive = true
 }
 
 # Cognito user pool for mobile
@@ -95,6 +117,7 @@ output "userPoolMobile" {
 
 output "userPoolClientMobile" {
     value = aws_cognito_user_pool_client.mewsic_user_pool_client_mobile
+    sensitive = true
 }
 
 # Verify lambda
