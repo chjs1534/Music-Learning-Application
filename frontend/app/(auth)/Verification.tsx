@@ -65,22 +65,24 @@ export const authenticate = (Email: string, Password: string): Promise<string | 
 const Verification: React.FC = () => {
   const [verificationCode, setVerificationCode] = useState<string>('');
   // const navigate = useNavigate();
-  const location = useLocation();
-  // const username = location.state?.email || '';
-  // const password = location.state?.password || '';
+  // const location = useLocation();
+  // const userType = location.state?.userType || 'no';
+  // const email = location.state?.email || 'no2';
+  // const password = location.state?.password || '3';
 
   const queryParams = new URLSearchParams(location.search);
+  const userType = queryParams.get('userType') || '';
   const email = queryParams.get('email') || '';
   const password = queryParams.get('password') || '';
 
+  console.log(userType, email, password)
+
   useEffect(() => {
-    if (!email || !password) {
+    if (!userType || !email || !password) {
       const queryParams = new URLSearchParams({ email, password });
       window.location.href = `/register?${queryParams.toString()}`;
     }
-  }, [email, password]);
-
-  console.log(email, password, "ghelfkdsoijoijoijj")
+  }, [userType, email, password]);
 
   const verify = async () => {
     try {
@@ -96,7 +98,7 @@ const Verification: React.FC = () => {
       const authToken = await authenticate(email, password);
       if (authToken) {
         // navigate('/homepage', { state: { authToken } });
-        const queryParams = new URLSearchParams({ authToken });
+        const queryParams = new URLSearchParams({ authToken, userType, email, password });
         window.location.href = `/homepage?${queryParams.toString()}`;
       }
     } catch (err) {

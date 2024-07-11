@@ -117,9 +117,8 @@ const Login: React.FC = () => {
         }
         // navigate('/homepage', { state: { authToken } });
         // window.location.href = '/homepage', { state: { authToken } };
-        const queryParams = new URLSearchParams({ username });
+        const queryParams = new URLSearchParams({ username }); // should be authtoken
         window.location.href = `/homepage?${queryParams.toString()}`;
-        console.log(authToken)
       });
     } catch (err) {
       console.log(err);

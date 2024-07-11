@@ -18,7 +18,7 @@ const Homepage: React.FC = () => {
                 'Authorization': token,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ testId: 'Adam nib' }),
+            body: JSON.stringify({ testId: 'Adam' }),
         })
             .then(response => {
                 console.log('Success IMKIDIDNG HAAHBHAAHAH stop its not funny acutally');

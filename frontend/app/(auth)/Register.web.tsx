@@ -17,6 +17,33 @@ const Register: React.FC = () => {
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState<boolean>(false);
 
+
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  useEffect(() => {
+    // Initialize dark mode state from local storage
+    const storedDarkMode = localStorage.getItem('darkMode');
+    if (storedDarkMode === 'enabled') {
+      setIsDarkMode(true);
+      document.body.classList.add('dark-mode');
+    } else {
+      setIsDarkMode(false);
+      document.body.classList.remove('dark-mode');
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(prevMode => !prevMode);
+    if (!isDarkMode) {
+      localStorage.setItem('darkMode', 'enabled');
+      document.body.classList.add('dark-mode');
+      console.log("black time");
+    } else {
+      localStorage.setItem('darkMode', 'disabled');
+      document.body.classList.remove('dark-mode');
+      console.log("white time");
+    }
+  };
+
   // const navigate = useNavigate();
 
   const validateEmail = (email: string): boolean => {
@@ -62,6 +89,10 @@ const Register: React.FC = () => {
 
   const register = async () => {
     console.log(poolData)
+    if (!userType) {
+      setErrorMessage("Please select a user type");
+      return;
+    }
     if (!validateEmail(email)) {
       setErrorMessage("Please enter a valid email address");
       return;
@@ -101,9 +132,9 @@ const Register: React.FC = () => {
       } else {
         console.log(result);
         // navigate('/verification', { state: { email, password } });
-        // window.location.href = '/verification', { state: { email, password } };
-        const queryParams = new URLSearchParams({ email, password });
-        window.location.href = `/verification?${queryParams.toString()}`;
+        window.location.href = '/verification', { state: { userType, email, password } };
+        // const queryParams = new URLSearchParams({ userType, email, password });
+        // window.location.href = `/verification?${queryParams.toString()}`;
       }
     });
     console.log(userType, "hi")
@@ -218,6 +249,15 @@ const Register: React.FC = () => {
           />
         </div>
         <span className="auth-text">Already have an account? <a className="anchor1" href="/">Log In</a></span>
+        <div className="dark-mode-toggle">
+            <label htmlFor="darkModeSwitch">Dark Mode</label>
+            <input
+              type="checkbox"
+              id="darkModeSwitch"
+              checked={isDarkMode}
+              onChange={toggleDarkMode}
+            />
+          </div>
       </div>
     </div>
   );

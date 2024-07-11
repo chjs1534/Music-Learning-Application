@@ -1,10 +1,14 @@
-import React, { useEffect, useState, ChangeEvent } from 'react';
-import { AuthenticationDetails, CognitoUser, CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
+import React, { useState, ChangeEvent, useRef } from 'react';
+import { CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
 import '../styles/website.css';
 import NavBar from './NavBar';
 import { mobilePoolData } from '../config/poolData';
 
 const UserPool = new CognitoUserPool(mobilePoolData);
+
+interface AccountDetails {
+    username: string;
+}
 
 const MyAccounts: React.FC = () => {
     const [username, setUsername] = useState<string>('');
@@ -13,6 +17,9 @@ const MyAccounts: React.FC = () => {
     const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
     const [confirmPasswordVisible, setConfirmPasswordVisible] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>('');
+    const [showModal, setShowModal] = useState<boolean>(false);
+    const [accounts, setAccounts] = useState<AccountDetails[]>([]);
+    const modalRef = useRef<HTMLDivElement>(null);
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
@@ -60,98 +67,128 @@ const MyAccounts: React.FC = () => {
         }
 
         const attributeList: CognitoUserAttribute[] = [];
-
-        const dataUsername = {
-            Name: 'username',
-            Value: username
-        };
-
-        // const dataPassword = {
-        //     Name: 'password',
-        //     Value: password
-        // };
-
+        const dataUsername = { Name: 'username', Value: username };
         const attributeUsername = new CognitoUserAttribute(dataUsername);
-        // const attributePassword = new CognitoUserAttribute(dataPassword);
 
         attributeList.push(attributeUsername);
-        // attributeList.push(attributePassword);
 
         UserPool.signUp(username, password, attributeList, null, (err, result) => {
             if (err) {
-                console.error(err);
+                setErrorMessage(err.message || JSON.stringify(err));
             } else {
-                console.log(result);
+                setAccounts(prevAccounts => [...prevAccounts, { username }]);
+                setUsername('');
+                setPassword('');
+                setConfirmPassword('');
+                setShowModal(false);
+                setErrorMessage('');
             }
         });
     };
 
+    const handleCloseModal = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (modalRef.current === e.target) {
+            setShowModal(false);
+            setUsername('');
+            setPassword('');
+            setConfirmPassword('');
+            setErrorMessage('');
+        }
+    };
+
+    const handleViewProfile = (username: string) => {
+        console.log(`View profile for ${username}`);
+    };
+
+    const handleEditProfile = (username: string) => {
+        console.log(`Edit profile for ${username}`);
+    };
+
+    const handleDeleteProfile = (username: string) => {
+        console.log(`Delete profile for ${username}`);
+    };
+
     return (
         <div className="homepage">
+            <NavBar />
             <div className="profile">
-                <NavBar />
-                <div className="input-container">
-                    <input
-                        className="form-inputs"
-                        placeholder=""
-                        type="text"
-                        id="username"
-                        value={username}
-                        onChange={handleInputChange}
-                        onFocus={handleInputFocus}
-                        onBlur={handleInputBlur}
-                    />
-                    <label htmlFor="username">Username</label>
-                </div>
-                <div className="input-container password-container">
-                    <input
-                        className="form-inputs"
-                        placeholder=""
-                        type={passwordVisible ? "text" : "password"}
-                        id="password"
-                        value={password}
-                        onChange={handleInputChange}
-                        onFocus={handleInputFocus}
-                        onBlur={handleInputBlur}
-                    />
-                    <label htmlFor="password">Password</label>
-                    <img
-                        src={passwordVisible ? "https://cdn-icons-png.flaticon.com/128/2767/2767146.png" : "https://cdn-icons-png.flaticon.com/128/709/709612.png"}
-                        alt={passwordVisible ? "Hide password" : "Show password"}
-                        className="password-toggle"
-                        onClick={togglePasswordVisibility}
-                    />
-                </div>
-                <div className="input-container password-container">
-                    <input
-                        className="form-inputs"
-                        placeholder=""
-                        type={confirmPasswordVisible ? "text" : "password"}
-                        id="confirmPassword"
-                        value={confirmPassword}
-                        onChange={handleInputChange}
-                        onFocus={handleInputFocus}
-                        onBlur={handleInputBlur}
-                    />
-                    <label htmlFor="confirmPassword">Confirm Password</label>
-                    <img
-                        src={confirmPasswordVisible ? "https://cdn-icons-png.flaticon.com/128/2767/2767146.png" : "https://cdn-icons-png.flaticon.com/128/709/709612.png"}
-                        alt={confirmPasswordVisible ? "Hide password" : "Show password"}
-                        className="password-toggle"
-                        onClick={toggleConfirmPasswordVisibility}
-                    />
-                </div>
-                <div className="error-message-container">
-                    {errorMessage && <span className="error-message">{'*' + errorMessage}</span>}
-                </div>
-                <button className="button1" type="submit" onClick={registerMobile}>Register</button>
+                <button className="button1" onClick={() => setShowModal(true)}>Create Account</button>
+                {showModal && (
+                    <div className="modal" ref={modalRef} onClick={handleCloseModal}>
+                        <div className="modal-content">
+                            <span className="close" onClick={() => setShowModal(false)}>&times;</span>
+                            Register for mobile app account!
+                            <div className="input-container">
+                                <input
+                                    className="form-inputs"
+                                    placeholder=""
+                                    type="text"
+                                    id="username"
+                                    value={username}
+                                    onChange={handleInputChange}
+                                    onFocus={handleInputFocus}
+                                    onBlur={handleInputBlur}
+                                />
+                                <label htmlFor="username">Username</label>
+                            </div>
+                            <div className="input-container password-container">
+                                <input
+                                    className="form-inputs"
+                                    placeholder=""
+                                    type={passwordVisible ? "text" : "password"}
+                                    id="password"
+                                    value={password}
+                                    onChange={handleInputChange}
+                                    onFocus={handleInputFocus}
+                                    onBlur={handleInputBlur}
+                                />
+                                <label htmlFor="password">Password</label>
+                                <img
+                                    src={passwordVisible ? "https://cdn-icons-png.flaticon.com/128/2767/2767146.png" : "https://cdn-icons-png.flaticon.com/128/709/709612.png"}
+                                    alt={passwordVisible ? "Hide password" : "Show password"}
+                                    className="password-toggle"
+                                    onClick={togglePasswordVisibility}
+                                />
+                            </div>
+                            <div className="input-container password-container">
+                                <input
+                                    className="form-inputs"
+                                    placeholder=""
+                                    type={confirmPasswordVisible ? "text" : "password"}
+                                    id="confirmPassword"
+                                    value={confirmPassword}
+                                    onChange={handleInputChange}
+                                    onFocus={handleInputFocus}
+                                    onBlur={handleInputBlur}
+                                />
+                                <label htmlFor="confirmPassword">Confirm Password</label>
+                                <img
+                                    src={confirmPasswordVisible ? "https://cdn-icons-png.flaticon.com/128/2767/2767146.png" : "https://cdn-icons-png.flaticon.com/128/709/709612.png"}
+                                    alt={confirmPasswordVisible ? "Hide password" : "Show password"}
+                                    className="password-toggle"
+                                    onClick={toggleConfirmPasswordVisibility}
+                                />
+                            </div>
+                            <div className="error-message-container">
+                                {errorMessage && <span className="error-message">{'*' + errorMessage}</span>}
+                            </div>
+                            <button className="button1" type="submit" onClick={registerMobile}>Register</button>
+                        </div>
+                    </div>
+                )}
+                {accounts.map((account, index) => (
+                    <div key={index} className="account-details">
+                        <p>Username: {account.username}</p>
+                        <div>
+                            <button className="button1" onClick={() => handleViewProfile(account.username)}>View Profile</button>
+                            <button className="button1" onClick={() => handleEditProfile(account.username)}>Edit Profile</button>
+                            <button className="button1" onClick={() => handleDeleteProfile(account.username)}>Delete Profile</button>
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default MyAccounts
-
-function setErrorMessage(arg0: string) {
-    throw new Error('Function not implemented.');
-}
+export default MyAccounts;

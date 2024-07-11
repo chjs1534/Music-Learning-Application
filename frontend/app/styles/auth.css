@@ -1,3 +1,55 @@
+/* Light mode variables */
+:root {
+    --text-color: #555;
+    --background-color: rgb(255, 255, 255);
+    --header-logo-color: black;
+    --auth-header-color: black;
+    --border-color: #8a8a8a;
+    --box-shadow-color: rgb(106, 106, 106);
+    --input-border-color: #ccc;
+    --input-focus-border-color: #0004ff;
+    --label-color: #8a8a8a;
+    --label-focus-color: #555;
+    --button1-bg-color: rgb(150, 153, 255);
+    --button1-hover-bg-color: #cdceff;
+    --button2-bg-color: rgb(255, 255, 255);
+    --button2-border-color: rgb(78, 84, 255);
+    --button2-selected-bg-color: rgb(150, 153, 255);
+    --button2-hover-bg-color: #cdceff;
+    --company-button-hover-bg-color: #dbdbdb;
+    --anchor1-color: #000dff;
+    --anchor1-hover-color: #cdceff;
+    --error-message-color: red;
+    --forgot-password-anchor-color: #000dff;
+    --auth-text-color: #555;
+}
+
+/* Dark mode variables */
+body.dark-mode {
+    --text-color: #eeeeee;
+    --background-color: rgb(45, 45, 45);
+    --header-logo-color: #eeeeee;
+    --auth-header-color: #eeeeee;
+    --border-color: #8a8a8a;
+    --box-shadow-color: rgb(255, 255, 255);
+    --input-border-color: #ccc;
+    --input-focus-border-color: #cdceff;
+    --label-color: #8a8a8a;
+    --label-focus-color: #eeeeee;
+    --button1-bg-color: rgb(150, 153, 255);
+    --button1-hover-bg-color: #cdceff;
+    --button2-bg-color: rgb(255, 255, 255);
+    --button2-border-color: rgb(78, 84, 255);
+    --button2-selected-bg-color: rgb(150, 153, 255);
+    --button2-hover-bg-color: #cdceff;
+    --company-button-hover-bg-color: #555;
+    --anchor1-color: #000dff;
+    --anchor1-hover-color: #cdceff;
+    --error-message-color: red;
+    --forgot-password-anchor-color: #000dff;
+    --auth-text-color: #eeeeee;
+}
+
 .header-logo {
     font-family: 'Music';
     margin-top: 12px;
@@ -5,6 +57,7 @@
     padding: 0 0;
     font-size: 72px;
     font-weight: 700;
+    color: var(--header-logo-color);
 }
 
 .auth-header {
@@ -13,6 +66,7 @@
     padding: 0 0;
     font-weight: 400;
     align-self: flex-start;
+    color: var(--auth-header-color);
 }
 
 .auth-screen {
@@ -20,6 +74,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-evenly;
+    background-color: var(--background-color);
     width: 100vw;
     height: 100vh;
     margin: 0 0;
@@ -35,10 +90,10 @@
     justify-content: center;
     padding: 0 0 0 0;
     margin: 0 0 0 0;
-    /* border: 2px solid #8a8a8a;
+    /* border: 2px solid var(--border-color);
     border-radius: 4px;
     padding: 24px 64px 24px 64px;
-    box-shadow: 2px 2px 4px 0px rgb(106, 106, 106); */
+    box-shadow: 2px 2px 4px 0px var(--box-shadow-color); */
 }
 
 .auth-banner {
@@ -50,10 +105,9 @@
     justify-content: center;
     padding: 0 0 0 0;
     margin: 0 0 0 0;
-    border: 1px solid #8a8a8a;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 24px 64px 24px 64px;
-    /* box-shadow: 2px 2px 4px 0px rgb(106, 106, 106); */
 }
 
 .gif {
@@ -76,14 +130,14 @@
 .form-inputs {
     width: 100%;
     padding: 12px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--input-border-color);
     border-radius: 8px;
     box-sizing: border-box;
     transition: border-color 1s;
 }
 
 .form-inputs:focus {
-    border-color: #0004ff;
+    border-color: var(--input-focus-border-color);
     outline: none;
 }
 
@@ -93,7 +147,7 @@
     left: 8px;
     top: 50%;
     transform: translateY(-50%);
-    color: #8a8a8a;
+    color: var(--label-color);
     transition: top 0.5s, font-size 0.5s, color 0.5s;
     pointer-events: none;
     z-index: 1;
@@ -103,7 +157,7 @@
 .form-inputs:not(:placeholder-shown)+label {
     top: -20%;
     font-size: 12px;
-    color: #555;
+    color: var(--label-focus-color);
 }
 
 .password-container {
@@ -125,15 +179,15 @@
     margin-bottom: 8px;
     padding: 12px 24px;
     font-size: 18px;
-    color: white;
-    background-color: rgb(150, 153, 255);
+    color: var(--text-color);
+    background-color: var(--button1-bg-color);
     border: none;
     border-radius: 8px;
     cursor: pointer;
 }
 
 .button1:hover {
-    background-color: #cdceff;
+    background-color: var(--button1-hover-bg-color);
 }
 
 .button2 {
@@ -141,12 +195,12 @@
     margin: 8px;
     padding: 12px 24px;
     font-size: 18px;
-    color: #555;
-    background-color: rgb(255, 255, 255);
+    color: var(--text-color);
+    background-color: var(--button2-bg-color);
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    border: 1px solid rgb(78, 84, 255);
+    border: 1px solid var(--button2-border-color);
 }
 
 .button2.selected {
@@ -154,16 +208,16 @@
     margin: 8px;
     padding: 12px 24px;
     font-size: 18px;
-    color: white;
-    background-color: rgb(150, 153, 255);
+    color: var(--text-color);
+    background-color: var(--button2-selected-bg-color);
     border: none;
     border-radius: 8px;
     cursor: pointer;
 }
 
 .button2.hovered:not(.selected) {
-    background-color: #cdceff;
-    color: black;
+    background-color: var(--button2-hover-bg-color);
+    color: var(--text-color);
 }
 
 .alternate-auth-options {
@@ -185,17 +239,17 @@
 }
 
 .company-button:hover {
-    background-color: #dbdbdb;
-    color: black;
+    background-color: var(--company-button-hover-bg-color);
+    color: var(--text-color);
 }
 
 .anchor1 {
-    color: #000dff;
+    color: var(--anchor1-color);
     font-size: 12px;
 }
 
 .anchor1:hover {
-    color: #cdceff;
+    color: var(--anchor1-hover-color);
     text-decoration-line: none;
 }
 
@@ -210,7 +264,7 @@
 }
 
 .forgot-password-anchor {
-    color: #000dff;
+    color: var(--forgot-password-anchor-color);
     font-size: 12px;
     display: flex;
     width: 50%;
@@ -219,16 +273,16 @@
 }
 
 .error-message {
-    display: block;
-    width: 50%;
+    display: flex;
+    width: 100%;
     height: 24px;
-    color: red;
+    color: var(--error-message-color);
     font-size: 12px;
-    align-self: flex-start;
+    justify-content: left;
 }
 
 .auth-text {
     font-size: 12px;
     margin: 12px;
-    color: #555;
+    color: var(--auth-text-color);
 }

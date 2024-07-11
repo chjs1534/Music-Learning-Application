@@ -1,9 +1,94 @@
 @media only screen and (max-width: 600px) {
-    body {
-      background-color: lightblue;
-    }
 
+  /* Light mode variables */
+  :root {
+    --text-color: #555;
+    --background-color: rgb(255, 255, 255);
+    --header-logo-color: black;
+    --auth-header-color: black;
+    --border-color: #8a8a8a;
+    --box-shadow-color: rgb(106, 106, 106);
+    --input-border-color: #ccc;
+    --input-focus-border-color: #0004ff;
+    --label-color: #8a8a8a;
+    --label-focus-color: #555;
+    --button1-bg-color: rgb(150, 153, 255);
+    --button1-hover-bg-color: #cdceff;
+    --button2-bg-color: rgb(255, 255, 255);
+    --button2-border-color: rgb(78, 84, 255);
+    --button2-selected-bg-color: rgb(150, 153, 255);
+    --button2-hover-bg-color: #cdceff;
+    --company-button-hover-bg-color: #dbdbdb;
+    --anchor1-color: #000dff;
+    --anchor1-hover-color: #cdceff;
+    --error-message-color: red;
+    --forgot-password-anchor-color: #000dff;
+    --auth-text-color: #555;
+  }
+
+  /* Dark mode variables */
+  body.dark-mode {
+    --text-color: #eeeeee;
+    --background-color: rgb(45, 45, 45);
+    --header-logo-color: #eeeeee;
+    --auth-header-color: #eeeeee;
+    --border-color: #8a8a8a;
+    --box-shadow-color: rgb(255, 255, 255);
+    --input-border-color: #ccc;
+    --input-focus-border-color: #cdceff;
+    --label-color: #8a8a8a;
+    --label-focus-color: #eeeeee;
+    --button1-bg-color: rgb(150, 153, 255);
+    --button1-hover-bg-color: #cdceff;
+    --button2-bg-color: rgb(255, 255, 255);
+    --button2-border-color: rgb(78, 84, 255);
+    --button2-selected-bg-color: rgb(150, 153, 255);
+    --button2-hover-bg-color: #cdceff;
+    --company-button-hover-bg-color: #555;
+    --anchor1-color: #000dff;
+    --anchor1-hover-color: #cdceff;
+    --error-message-color: red;
+    --forgot-password-anchor-color: #000dff;
+    --auth-text-color: #eeeeee;
+  }
+
+  @media only screen and (max-width: 600px) {
     .auth-banner {
         display: none;
     }
-  }
+    .auth-container {
+        width: 90vw;
+        height: auto;
+        padding: 16px;
+    }
+    .header-logo {
+        font-size: 48px;
+    }
+    .auth-header {
+        font-size: 24px;
+    }
+    .form-inputs {
+        padding: 8px;
+    }
+    .input-container label {
+        font-size: 14px;
+    }
+    .password-toggle {
+        height: 20px;
+        width: 20px;
+    }
+    .button1, .button2 {
+        font-size: 16px;
+        padding: 10px 20px;
+    }
+    .alternate-auth-options {
+        width: 100%;
+    }
+    .anchor1, .forgot-password-anchor {
+        font-size: 10px;
+    }
+    .auth-text {
+        font-size: 10px;
+    }
+}
+}
