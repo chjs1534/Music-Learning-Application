@@ -96,7 +96,7 @@ resource "aws_cognito_user_pool" "mewsic_user_pool_mobile" {
     }
 
     lambda_config {
-        pre_authentication = aws_lambda_function.verify.arn
+        pre_sign_up = aws_lambda_function.verify.arn
     }
 }
 
@@ -200,6 +200,15 @@ resource "aws_lambda_function" "verify" {
   role = aws_iam_role.lambda_exec.arn
 
   timeout = 5
+}
+
+# Permission for AWS cognito to invoke verify lambda
+resource "aws_lambda_permission" "allow_execution_from_user_pool" {
+  statement_id = "AllowExecutionFromUserPool"
+  action = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.verify.function_name
+  principal = "cognito-idp.amazonaws.com"
+  source_arn = aws_cognito_user_pool.mewsic_user_pool_mobile.arn
 }
 
 resource "aws_cloudwatch_log_group" "verify" {
