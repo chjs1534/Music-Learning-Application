@@ -1,5 +1,28 @@
-output "module_path" {
-  value = path.module
+terraform {
+  cloud {
+    organization = "Mewsic"
+    workspaces {
+      name = "Mewsic-workspace-upload"
+    }
+  }
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+# Access outputs from apigateway workspace
+data "terraform_remote_state" "Mewsic-workspace-apigateway" {
+  backend = "remote"
+  config = {
+    organization = "Mewsic"
+    workspaces = {
+      name = "Mewsic-workspace-apigateway"
+    }
+  }
 }
 
 # Generate id
@@ -170,14 +193,68 @@ resource "aws_cloudwatch_log_group" "upload" {
   retention_in_days = 30
 }
 
-output "upload_lambda" {
-  description = "Lambda function."
+# API Gateway integration
+# Integration of upload lambda
+resource "aws_apigatewayv2_integration" "upload" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
 
-  value = aws_lambda_function.upload
+  integration_uri    = aws_lambda_function.upload.invoke_arn
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
 }
 
-output "download_lambda" {
-  description = "Lambda function."
+resource "aws_apigatewayv2_route" "upload" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.id
 
-  value = aws_lambda_function.download
+  route_key = "POST /upload"
+  target    = "integrations/${aws_apigatewayv2_integration.upload.id}"
+  authorization_type = "JWT"
+  authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_mobile_id
+}
+
+# Integration of download lambda
+resource "aws_apigatewayv2_integration" "download" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  integration_uri    = aws_lambda_function.download.invoke_arn
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_route" "download" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  route_key = "POST /download"
+  target    = "integrations/${aws_apigatewayv2_integration.download.id}"
+  authorization_type = "JWT"
+  authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+}
+
+resource "aws_apigatewayv2_route" "download_mobile" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  route_key = "POST /download_mobile"
+  target    = "integrations/${aws_apigatewayv2_integration.download.id}"
+  authorization_type = "JWT"
+  authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_mobile_id
+}
+
+# Permission for upload lambda
+resource "aws_lambda_permission" "api_gw_upload" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.upload.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"
+}
+
+# Permission for download lambda
+resource "aws_lambda_permission" "api_gw_download" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.download.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"
 }

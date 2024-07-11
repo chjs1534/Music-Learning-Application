@@ -1,7 +1,8 @@
-microservices/.terraform
+microservices/auth/.terraform
+microservices/upload/.terraform
+apigateway/.terraform
 node_modules
 microservices/terraform/.terraform
 microservices/terraform/node_modules
 microservices/upload/node_modules
-microservices/upload/.terraform
 microservices/.terraform
