@@ -1,0 +1,116 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.homepage {
+    width: 100vw;
+    height: 100vh;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+}
+
+.dashboard {
+    width: 100vw;
+    height: 100vh;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: top;
+    align-items: center;
+}
+
+.profile {
+    width: 100vw;
+    height: 100vh;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: top;
+    align-items: center;
+}
+
+.settings {
+    width: 100vw;
+    height: 100vh;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: top;
+    align-items: center;
+}
+
+.navbar {
+    width: 50%;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(255, 255, 255);
+    border-radius: 100px;
+    overflow: hidden;
+    margin: 12px 12px;
+    padding: 0px 0px;
+    box-shadow: -1px 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.nav-button {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    flex-direction: row;
+    border: none;
+    border-radius: 100px;
+    font-size: 25px;
+    cursor: pointer;
+    transition: background-color 0.75s ease-out;
+    background-color: #ffffff;
+    margin: 4px 16px 4px 16px;
+    padding: 12px 12px;
+}
+
+.website-logo {
+    border: none;
+    border-radius: 100000;
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    font-family: 'Music';
+    font-size: 36px;
+    cursor: pointer;
+    transition: background-color 0.5s ease-out;
+    margin: 4px 16px 4px 16px;
+    padding: 12px 12px;
+}
+
+.nav-button:hover {
+    background-color: #e5e5e5;
+}
+
+.nav-button:focus {
+    outline: none;
+}
+
+.nav-icons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0;
+    padding: 0 0;
+    height: 50px;
+}
+
+.nav-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    margin: 0 0;
+    padding: 0 0;
+}
+
