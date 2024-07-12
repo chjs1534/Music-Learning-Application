@@ -87,6 +87,13 @@ const Login: React.FC = () => {
     setPosition({ x: randomX, y: randomY });
   }, []);
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      login();
+    }
+  }
+
+
   const login = async () => {
     if (username.length < 3) {
       setErrorMessage("Invalid email or username is less than 3 characters");
@@ -122,6 +129,8 @@ const Login: React.FC = () => {
       });
     } catch (err) {
       console.log(err);
+        setErrorMessage(err);
+        setPassword("");
     }
   };
 
@@ -181,6 +190,7 @@ const Login: React.FC = () => {
             onChange={handleInputChange}
             onFocus={handleInputFocus}
             onBlur={handleInputBlur}
+            onKeyDown={handleKeyDown}
           />
           <label htmlFor="email">Email / Username</label>
         </div>
@@ -194,6 +204,7 @@ const Login: React.FC = () => {
             onChange={handleInputChange}
             onFocus={handleInputFocus}
             onBlur={handleInputBlur}
+            onKeyDown={handleKeyDown}
           />
           <label htmlFor="password">Password</label>
           <img
