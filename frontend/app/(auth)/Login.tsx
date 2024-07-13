@@ -5,9 +5,9 @@ import FormField from '../../components/FormField'
 import Button from '../../components/Button'
 import { router } from 'expo-router'
 import { AuthenticationDetails, CognitoUser, CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
-import { poolData } from '../config/poolData';
+import { mobilePoolData } from '../config/poolData';
 
-const UserPool = new CognitoUserPool(poolData);
+const UserPool = new CognitoUserPool(mobilePoolData);
 
 export const authenticate = (Email, Password) => {
   return new Promise((resolve, reject) => {

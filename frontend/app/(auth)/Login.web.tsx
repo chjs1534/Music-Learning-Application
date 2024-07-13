@@ -1,5 +1,5 @@
 import React, { useEffect, useState, MouseEvent, ChangeEvent } from 'react';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   AuthenticationDetails,
   CognitoUser,
@@ -8,6 +8,8 @@ import {
   CognitoUserSession,
   ISignUpResult
 } from 'amazon-cognito-identity-js';
+import '../styles/auth.css';
+import '../styles/mobile_auth.css';
 import { poolData } from '../config/poolData';
 
 interface Position {
@@ -74,7 +76,7 @@ const Login: React.FC = () => {
       label.classList.remove('active');
     }
   };
-  
+
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
@@ -84,6 +86,13 @@ const Login: React.FC = () => {
     const randomY = Math.random() * (window.innerHeight - 128);
     setPosition({ x: randomX, y: randomY });
   }, []);
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      login();
+    }
+  }
+
 
   const login = async () => {
     if (username.length < 3) {
@@ -113,11 +122,15 @@ const Login: React.FC = () => {
         } else {
           resolve(null);
         }
-        // navigate('/homepage', { state: { authToken } });
-        window.location.href = '/homepage', { state: { authToken } };
       });
+      // navigate('/homepage', { state: { authToken } });
+      // window.location.href = '/homepage', { state: { authToken } };
+      const queryParams = new URLSearchParams({ authToken });
+      window.location.href = `/homepage?${queryParams.toString()}`;
+      console.log(authToken)
     } catch (err) {
-      console.log(err);
+      setErrorMessage(err);
+      setPassword("");
     }
   };
 
@@ -133,7 +146,7 @@ const Login: React.FC = () => {
     setDragging(false);
   };
 
-  const handleMouseMove = (e: MouseEvent<Document>) => {
+  const handleMouseMove = (e) => {
     if (dragging) {
       setPosition({
         x: e.clientX - offset.x,
@@ -177,6 +190,7 @@ const Login: React.FC = () => {
             onChange={handleInputChange}
             onFocus={handleInputFocus}
             onBlur={handleInputBlur}
+            onKeyDown={handleKeyDown}
           />
           <label htmlFor="email">Email / Username</label>
         </div>
@@ -190,6 +204,7 @@ const Login: React.FC = () => {
             onChange={handleInputChange}
             onFocus={handleInputFocus}
             onBlur={handleInputBlur}
+            onKeyDown={handleKeyDown}
           />
           <label htmlFor="password">Password</label>
           <img
@@ -200,26 +215,27 @@ const Login: React.FC = () => {
           />
         </div>
         <div className="error-message-container">
-          {errorMessage && <span className="error-message">{'*' + errorMessage}</span>}
+          {errorMessage && <span className="error-message">{'*' + errorMessage}</span>}<a className="forgot-password-anchor" href="/">Forgot Password?</a>
+
         </div>
         <button className="button1" type="submit" onClick={login}>Login</button>
         <p className="auth-text">──────────   Or Continue With   ──────────</p>
         <div className="alternate-auth-options">
           <img
-              src="https://cdn-icons-png.flaticon.com/128/300/300221.png"
-              alt="Google"
-              className="company-button"
-            />
-            <img
-              src="https://cdn-icons-png.flaticon.com/128/731/731985.png"
-              alt="Apple"
-              className="company-button"
-            />
-            <img
-              src="https://cdn-icons-png.flaticon.com/128/5968/5968764.png"
-              alt="Facebook"
-              className="company-button"
-            />
+            src="https://cdn-icons-png.flaticon.com/128/300/300221.png"
+            alt="Google"
+            className="company-button"
+          />
+          <img
+            src="https://cdn-icons-png.flaticon.com/128/731/731985.png"
+            alt="Apple"
+            className="company-button"
+          />
+          <img
+            src="https://cdn-icons-png.flaticon.com/128/5968/5968764.png"
+            alt="Facebook"
+            className="company-button"
+          />
         </div>
         <span className="auth-text">Don't have an account? <a className="anchor1" href="/register">Register Now</a></span>
       </div>

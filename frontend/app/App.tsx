@@ -8,7 +8,10 @@ import Verification from './(auth)/Verification'
 import Homepage from './(web)/Homepage'
 import Profile from './(web)/Profile'
 import Settings from './(web)/Settings'
-
+import MyAccounts from './(web)/MyAccounts'
+import Message from './(web)/Message'
+import Students from './(web)/Students'
+import Teachers from './(web)/Teachers'
 
 // const router = createBrowserRouter([
 //   {
@@ -50,6 +53,10 @@ const App: React.FC = () => {
           <Route path="/homepage" element={<Homepage />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/my-accounts" element={<MyAccounts />} />
+          <Route path="/message" element={<Message />} />
+          <Route path="/students" element={<Students />} />
+          <Route path="/teachers" element={<Teachers />} />
         </Routes>
       </Router>
     </>
