@@ -5,12 +5,16 @@ import NavBar from './NavBar';
 import '../styles/website.css';
 
 const Homepage: React.FC = () => {
-    const location = useLocation();
-    const authToken = location.state?.authToken;
+    // const location = useLocation();
+    // const authToken = location.state?.authToken;
+
+    const queryParams = new URLSearchParams(location.search);
+    const authToken = queryParams.get('authToken') || '';
+
     const token = `Bearer ${encodeURIComponent(authToken || '')}`;
     
     const clickMe = async () => {
-        console.log('authToken:', authToken);
+        console.log('authToken:', token);
 
         await fetch('https://x5yhk546p1.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage2/hello', {
             method: 'POST',
@@ -18,7 +22,7 @@ const Homepage: React.FC = () => {
                 'Authorization': token,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ testId: 'Adam' }),
+            body: JSON.stringify({ testId: 'Adam nib' }),
         })
             .then(response => {
                 console.log('Success IMKIDIDNG HAAHBHAAHAH stop its not funny acutally');

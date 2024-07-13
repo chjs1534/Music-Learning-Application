@@ -24,8 +24,6 @@ body {
     align-items: center;
 }
 
-
-
 .settings {
     width: 100vw;
     height: 100vh;
@@ -36,6 +34,7 @@ body {
     align-items: center;
 }
 
+/* Nav Bar */
 .navbar {
     width: 75%;
     position: relative;
@@ -112,6 +111,16 @@ body {
 }
 
 /* My Accounts */
+.my-accounts {
+    width: 100vw;
+    height: 100vh;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: top;
+    align-items: center;
+}
+
 .modal {
     display: flex;
     justify-content: center;
@@ -155,7 +164,6 @@ body {
 }
 
 /* profile stylesa */
-
 .profile {
     width: 100vw;
     height: 100vh;
@@ -195,7 +203,7 @@ body {
     padding: 15px;
 }
 
-.pfp {  
+.pfp {
     border: 1px solid black;
     width: 15vw;
     padding-left: 10px;
@@ -206,9 +214,7 @@ body {
     border-radius: 1000px;
 }
 
-.profileName {
-
-}
+.profileName {}
 
 .editprofile {
     width: 10vw;
@@ -222,34 +228,175 @@ body {
 
 
 /* message styles */
-.message {
+.messages {
+    width: 100vw;
+    height: 100vh;
+    background-color: #ffffff;
     display: flex;
-    flex-direction: row;
-    width: 90vw;
-    height: 80vh;
+    flex-direction: column;
+    justify-content: top;
+    align-items: center;
 }
 
-.friendslist {
-    border: 1px solid black;
-    width: 25vw;
+.messages {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.message-screen {
+    display: flex;
+    width: 100%;
+}
+
+.friend-list {
+    width: 25%;
+    border-right: 1px solid #ccc;
+    padding: 10px;
+}
+
+.friend-list h2 {
+    margin-bottom: 10px;
+}
+
+.friend {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    cursor: pointer;
+}
+
+.friend img.profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.friend .friend-name {
+    font-size: 16px;
 }
 
 .message-box {
-    border: 1px solid black;
-    width: 75vw;
+    width: 75%;
+    display: flex;
+    flex-direction: column;
 }
 
 .user-container {
-    border: 1px solid black;
-    height: 19%;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.user-container img.profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.user-container .username {
+    font-size: 18px;
+    font-weight: bold;
 }
 
 .message-container {
-    border: 1px solid black;
-    height: 60%;
+    flex-grow: 1;
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    max-height: 400px;
+    /* Set a fixed height */
+}
+
+.message {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.message img.profile-pic {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.message .message-content {
+    background-color: #f1f1f1;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 60%;
+}
+
+.message.user-message {
+    flex-direction: row-reverse;
+    /* Align user messages to the right */
+}
+
+.message.user-message .message-content {
+    background-color: #dcf8c6;
+    margin-left: auto;
+}
+
+.message.user-message img.profile-pic {
+    margin-left: 10px;
+    margin-right: 0;
+}
+
+.message .message-sender {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.message .message-text {
+    margin: 0;
+}
+
+.message .message-time {
+    font-size: 12px;
+    color: #888;
+    margin-top: 5px;
+}
+
+.message .message-image {
+    max-width: 100%;
+    border-radius: 10px;
 }
 
 .chat-container {
-    border: 1px solid black;
-    height: 20%;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+}
+
+.message-input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    margin-right: 10px;
+}
+
+.send-button,
+.emoji-button,
+.file-button,
+.image-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.image-input {
+    display: none;
+}
+
+.user-pic {
+    margin-left: 10px;
+    margin-right: 0;
 }

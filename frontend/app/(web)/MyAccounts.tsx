@@ -88,11 +88,12 @@ const MyAccounts: React.FC = () => {
 
     const handleCloseModal = (e: React.MouseEvent<HTMLDivElement>) => {
         if (modalRef.current === e.target) {
-            setShowModal(false);
-            setUsername('');
-            setPassword('');
-            setConfirmPassword('');
-            setErrorMessage('');
+            // setShowModal(false);
+            // setUsername('');
+            // setPassword('');
+            // setConfirmPassword('');
+            // setErrorMessage('');
+            console.log("handleCloseModal if click outside to close")
         }
     };
 
@@ -111,7 +112,7 @@ const MyAccounts: React.FC = () => {
     return (
         <div className="homepage">
             <NavBar />
-            <div className="profile">
+            <div className="my-accounts">
                 <button className="button1" onClick={() => setShowModal(true)}>Create Account</button>
                 {showModal && (
                     <div className="modal" ref={modalRef} onClick={handleCloseModal}>
