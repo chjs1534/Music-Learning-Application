@@ -31,16 +31,10 @@ resource "aws_dynamodb_table" "user-table" {
   billing_mode   = "PROVISIONED"
   read_capacity  = 1
   write_capacity = 1
-  hash_key       = "AccountId"
-  range_key      = "UserId"
+  hash_key       = "userId"
 
   attribute {
-    name = "AccountId"
-    type = "S"
-  }
-
-  attribute {
-    name = "UserId"
+    name = "userId"
     type = "S"
   }
 
@@ -112,9 +106,29 @@ resource "aws_iam_role" "lambda_exec" {
   })
 }
 
+resource "aws_iam_policy" "lambda_dynamodb_policy_user" {
+  name = "lambda_dynamodb_policy_user"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:PutItem"
+        ],
+        Resource = [
+          aws_dynamodb_table.user-table.arn
+        ],
+      },
+    ],
+  })
+}
+
 resource "aws_iam_role_policy_attachment" "lambda_policy" {
   for_each = {
-    "AWSLambdaBasicExecutionRole": "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+    "AWSLambdaBasicExecutionRole": "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+    "AWSDynamodbRole": aws_iam_policy.lambda_dynamodb_policy_user.arn
   }
   role       = aws_iam_role.lambda_exec.name
   policy_arn = each.value
@@ -128,7 +142,7 @@ resource "aws_lambda_function" "addUser" {
   s3_bucket = aws_s3_bucket.lambda_bucket.id
   s3_key    = aws_s3_object.lambdas.key
 
-  runtime = "nodejs16.x"
+  runtime = "nodejs18.x"
   handler = "addUser.handler"
 
   source_code_hash = data.archive_file.lambdas.output_base64sha256
@@ -177,7 +191,7 @@ resource "aws_lambda_function" "getUser" {
   s3_bucket = aws_s3_bucket.lambda_bucket.id
   s3_key    = aws_s3_object.lambdas.key
 
-  runtime = "nodejs16.x"
+  runtime = "nodejs18.x"
   handler = "getUser.handler"
 
   source_code_hash = data.archive_file.lambdas.output_base64sha256

@@ -9,6 +9,9 @@ const tableName = "UserTable";
 exports.handler = async (event, context) => {
     let body;
     let statusCode = 200;
+    const headers = {
+        'Access-Control-Allow-Origin': '*',
+    };
 
     try {
         let requestJSON = JSON.parse(event.body);
@@ -16,11 +19,12 @@ exports.handler = async (event, context) => {
             new PutCommand({
                 TableName: tableName,
                 Item: {
-                    AccountId: requestJSON.email,
-                    UserId: requestJSON.username,
-                    UserType: requestJSON.usertype,
-                    FirstName: requestJSON.firstname,
-                    LastName: requestJSON.lastname,
+                    userId: requestJSON.userId,
+                    email: requestJSON.email,
+                    username: requestJSON.username,
+                    userType: requestJSON.userType,
+                    firstName: requestJSON.firstName,
+                    lastName: requestJSON.lastName
                 },
             })
         );
