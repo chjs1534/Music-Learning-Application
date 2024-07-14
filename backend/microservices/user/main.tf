@@ -142,7 +142,7 @@ resource "aws_lambda_function" "addUser" {
   s3_bucket = aws_s3_bucket.lambda_bucket.id
   s3_key    = aws_s3_object.lambdas.key
 
-  runtime = "nodejs18.x"
+  runtime = "nodejs16.x"
   handler = "addUser.handler"
 
   source_code_hash = data.archive_file.lambdas.output_base64sha256
@@ -191,7 +191,7 @@ resource "aws_lambda_function" "getUser" {
   s3_bucket = aws_s3_bucket.lambda_bucket.id
   s3_key    = aws_s3_object.lambdas.key
 
-  runtime = "nodejs18.x"
+  runtime = "nodejs16.x"
   handler = "getUser.handler"
 
   source_code_hash = data.archive_file.lambdas.output_base64sha256

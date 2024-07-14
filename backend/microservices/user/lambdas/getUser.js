@@ -1,8 +1,5 @@
-const { DynamoDBClient } = require("@aws-sdk/client-dynamodb")
-const { DynamoDBDocumentClient, GetCommand } = require("@aws-sdk/lib-dynamodb")
-
-const client = new DynamoDBClient({});
-const dynamo = DynamoDBDocumentClient.from(client);
+const aws = require('aws-sdk');
+const dynamo = new aws.DynamoDB.DocumentClient();
 
 const tableName = "UserTable";
 
@@ -15,14 +12,14 @@ exports.handler = async (event, context) => {
 
     try {
         let requestJSON = JSON.parse(event.body);
-        body = await dynamo.send(
-            new GetCommand({
+        body = await dynamo.get(
+            {
               TableName: tableName,
               Key: {
                 userId: requestJSON.userId
               },
-            })
-          );
+            }
+          ).promise();
           body = body.Item;
     } catch (err) {
         statusCode = 400;
