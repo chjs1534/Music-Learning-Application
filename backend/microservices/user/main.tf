@@ -165,8 +165,6 @@ resource "aws_apigatewayv2_route" "addUser" {
 
   route_key = "POST /addUser"
   target    = "integrations/${aws_apigatewayv2_integration.addUser.id}"
-  # authorization_type = "JWT"
-  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
 }
 
 resource "aws_lambda_permission" "api_gw_addUser" {
@@ -212,10 +210,10 @@ resource "aws_apigatewayv2_integration" "getUser" {
 resource "aws_apigatewayv2_route" "getUser" {
   api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.id
 
-  route_key = "POST /getUser"
+  route_key = "GET /getUser/{userId}"
   target    = "integrations/${aws_apigatewayv2_integration.getUser.id}"
-  # authorization_type = "JWT"
-  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+  authorization_type = "JWT"
+  authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
 }
 
 resource "aws_lambda_permission" "api_gw_getUser" {

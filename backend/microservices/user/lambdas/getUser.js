@@ -11,21 +11,20 @@ exports.handler = async (event, context) => {
     };
 
     try {
-        let requestJSON = JSON.parse(event.body);
+        const userId = event.pathParameters.userId;
         body = await dynamo.get(
             {
               TableName: tableName,
               Key: {
-                userId: requestJSON.userId
+                userId: userId
               },
             }
           ).promise();
-          body = body.Item;
     } catch (err) {
         statusCode = 400;
         body = err.message;
     } finally {
-        body = JSON.stringify(body);
+        body = JSON.stringify(body.Item);
     }
 
     return {

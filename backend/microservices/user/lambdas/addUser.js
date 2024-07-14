@@ -1,8 +1,6 @@
-const { DynamoDBClient } = require("@aws-sdk/client-dynamodb")
-const { DynamoDBDocumentClient, PutCommand } = require("@aws-sdk/lib-dynamodb")
-
-const client = new DynamoDBClient({});
-const dynamo = DynamoDBDocumentClient.from(client);
+const aws = require('aws-sdk');
+const dynamo = new aws.DynamoDB.DocumentClient();
+const crypto = require("crypto");
 
 const tableName = "UserTable";
 
@@ -14,21 +12,22 @@ exports.handler = async (event, context) => {
     };
 
     try {
+        let uuid = crypto.randomUUID();
         let requestJSON = JSON.parse(event.body);
-        await dynamo.send(
-            new PutCommand({
+        body = await dynamo.put(
+            {
                 TableName: tableName,
                 Item: {
-                    userId: requestJSON.userId,
+                    userId: uuid,
                     email: requestJSON.email,
                     username: requestJSON.username,
                     userType: requestJSON.userType,
                     firstName: requestJSON.firstName,
                     lastName: requestJSON.lastName
                 },
-            })
-        );
-        body = `Put user ${requestJSON.email}, ${requestJSON.username}`;
+            }
+        ).promise();
+        body = {userId: uuid};
     } catch (err) {
         statusCode = 400;
         body = err.message;
