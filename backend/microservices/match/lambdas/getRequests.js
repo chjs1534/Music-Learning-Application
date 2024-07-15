@@ -11,12 +11,12 @@ exports.handler = async (event, context) => {
     };
     
     try {
-        body = await queryPairs(event.pathParameters.userId);
+        body = await query(event.pathParameters.userId);
     } catch (err) {
         statusCode = 400;
         body = err.message;
     } finally {
-        body = JSON.stringify(body);
+        body = JSON.stringify({user: body.Items});
     }
 
     return {
@@ -26,37 +26,22 @@ exports.handler = async (event, context) => {
     };
 };
 
-const queryPairs = async (userId) => {
-    // Query as userId1
-    const params1 = {
-        TableName: tableName,
-        KeyConditionExpression: "#uid1 = :userId, #request = :request",
-        ExpressionAttributeNames: {
-            "#uid1": "userId1",
-            "#request": "request"
-        },
-        ExpressionAttributeValues: {
-            ":userId": userId,
-            ":request": false
-        }
-    };
-    const result1 = await dynamo.query(params1).promise();
-
+const query = async (userId) => {
     // Query as userId2
-    const params2 = {
+    const params = {
         TableName: tableName,
         IndexName: "UserId2Index",
         KeyConditionExpression: "#uid2 = :userId, #request = :request",
         ExpressionAttributeNames: {
             "#uid2": "userId2",
-            "request": "request"
+            "#request": "request"
         },
         ExpressionAttributeValues: {
             ":userId": userId,
-            ":request": false
+            ":request": true
         }
     };
-    const result2 = await dynamo.query(params2).promise();
+    const result2 = await dynamo.query(params).promise();
 
-    return result1.Items.concat(result2.Items);
+    return result2;
 };

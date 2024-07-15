@@ -12,23 +12,17 @@ exports.handler = async (event, context) => {
 
     try {
         let requestJSON = JSON.parse(event.body);
-        body = await dynamo.update(
+        body = await dynamo.put(
             {
                 TableName: tableName,
-                Key: {
+                Item: {
                     userId1: requestJSON.userId1,
-                    userId2: requestJSON.userId2
+                    userId2: requestJSON.userId2,
+                    request: true
                 },
-                UpdateExpression: "set #request = :match",
-                ExpressionAttributeNames: {
-                    "#request": "request"
-                },
-                ExpressionAttributeValues: {
-                    ":match": false
-                }
             }
         ).promise();
-        body = {message: "Match added"};
+        body = {message: "Request added"};
     } catch (err) {
         statusCode = 400;
         body = err.message;

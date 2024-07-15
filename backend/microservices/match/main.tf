@@ -131,7 +131,8 @@ resource "aws_iam_policy" "lambda_dynamodb_policy_match" {
         Action = [
           "dynamodb:GetItem",
           "dynamodb:PutItem",
-          "dynamodb:Query"
+          "dynamodb:Query",
+          "dynamodb:Update"
         ],
         Resource = [
           aws_dynamodb_table.match-table.arn,
@@ -246,6 +247,104 @@ resource "aws_lambda_permission" "api_gw_getMatches" {
 
 resource "aws_cloudwatch_log_group" "getMatches" {
   name = "/aws/lambda/${aws_lambda_function.getMatches.function_name}"
+
+  retention_in_days = 30
+}
+
+# Add match lambda
+resource "aws_lambda_function" "addRequest" {
+  function_name = "AddRequest"
+
+  s3_bucket = aws_s3_bucket.lambda_bucket.id
+  s3_key    = aws_s3_object.lambdas.key
+
+  runtime = "nodejs16.x"
+  handler = "addRequest.handler"
+
+  source_code_hash = data.archive_file.lambdas.output_base64sha256
+
+  role = aws_iam_role.lambda_exec.arn
+
+  timeout = 10
+}
+
+resource "aws_apigatewayv2_integration" "addRequest" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  integration_uri    = aws_lambda_function.addRequest.invoke_arn
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_route" "addRequest" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.id
+
+  route_key = "POST /match/addRequest"
+  target    = "integrations/${aws_apigatewayv2_integration.addRequest.id}"
+#   authorization_type = "JWT"
+#   authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+}
+
+resource "aws_lambda_permission" "api_gw_addRequest" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.addRequest.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"
+}
+
+resource "aws_cloudwatch_log_group" "addRequest" {
+  name = "/aws/lambda/${aws_lambda_function.addRequest.function_name}"
+
+  retention_in_days = 30
+}
+
+# Get matches lambda
+resource "aws_lambda_function" "getRequests" {
+  function_name = "GetRequests"
+
+  s3_bucket = aws_s3_bucket.lambda_bucket.id
+  s3_key    = aws_s3_object.lambdas.key
+
+  runtime = "nodejs16.x"
+  handler = "getRequests.handler"
+
+  source_code_hash = data.archive_file.lambdas.output_base64sha256
+
+  role = aws_iam_role.lambda_exec.arn
+
+  timeout = 10
+}
+
+resource "aws_apigatewayv2_integration" "getRequests" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  integration_uri    = aws_lambda_function.getRequests.invoke_arn
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_route" "getRequests" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.id
+
+  route_key = "GET /match/getRequests/{userId}"
+  target    = "integrations/${aws_apigatewayv2_integration.getRequests.id}"
+#   authorization_type = "JWT"
+#   authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+}
+
+resource "aws_lambda_permission" "api_gw_getRequests" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.getRequests.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"
+}
+
+resource "aws_cloudwatch_log_group" "getRequests" {
+  name = "/aws/lambda/${aws_lambda_function.getRequests.function_name}"
 
   retention_in_days = 30
 }
