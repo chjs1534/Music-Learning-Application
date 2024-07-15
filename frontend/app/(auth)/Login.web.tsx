@@ -34,6 +34,7 @@ export const authenticate = (Email: string, Password: string): Promise<CognitoUs
     user.authenticateUser(authDetails, {
       onSuccess: (result: CognitoUserSession) => {
         console.log("login successful");
+
         resolve(result);
       },
       onFailure: (err: Error) => {
@@ -44,7 +45,11 @@ export const authenticate = (Email: string, Password: string): Promise<CognitoUs
   });
 };
 
-const Login: React.FC = () => {
+interface LoginProps {
+  setId: (id: string) => void;
+}
+
+const Login: React.FC<LoginProps> = ({ setId }) => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [dragging, setDragging] = useState<boolean>(false);
@@ -125,9 +130,41 @@ const Login: React.FC = () => {
       });
       // navigate('/homepage', { state: { authToken } });
       // window.location.href = '/homepage', { state: { authToken } };
+      await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getUserId/${username}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': authToken,
+          'Content-Type': 'application/json'
+        },
+      }).then(response => {
+        console.log('Success IMKIDIDNG HAAHBHAAHAH stop its not funny acutally');
+        if (response.status === 204) {
+          console.log('Success: No content returned from the server.');
+          return;
+        }
+        if (!response.ok) {
+          return response.text().then(text => { throw new Error(text) });
+        }
+        else {
+          console.log(response);
+        }
+        return response.json();
+      })
+        .then(data => {
+          console.log('Success:', data);
+          localStorage.setItem('id', data.userId);
+          setId(data.userId);
+        })
+        .catch(error => {
+          console.error('Error:', error.message, error.code || error);
+        });
+
       const queryParams = new URLSearchParams({ authToken });
       window.location.href = `/homepage?${queryParams.toString()}`;
       console.log(authToken)
+      localStorage.setItem('token', authToken);
+
+
     } catch (err) {
       setErrorMessage(err);
       setPassword("");

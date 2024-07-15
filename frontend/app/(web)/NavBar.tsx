@@ -7,7 +7,11 @@ import { poolData } from '../config/poolData';
 
 const UserPool = new CognitoUserPool(poolData);
 
-const NavBar: React.FC = () => {
+interface NavBarProps {
+  id: string;
+}
+
+const NavBar: React.FC<NavBarProps> = ({ id }) => {
   const [userType, setUserType] = useState<string>('Techer');
   const navigate = useNavigate();
 
@@ -45,13 +49,13 @@ const NavBar: React.FC = () => {
           <span className="nav-button-text">Message</span>
         </button>
 
-        <button className="nav-button">
+        <button className="nav-button" onClick={() => handleNavigation('/notifications')}>
           <img src={"https://cdn-icons-png.flaticon.com/128/2529/2529521.png"} alt="Notifications" className="nav-icon" />
           <span className="nav-button-text">Notifications</span>
         </button>
 
         
-        <button className="nav-button" onClick={() => handleNavigation('/profile')}>
+        <button className="nav-button" onClick={() => handleNavigation(`/profile/${id}`)}>
           <img src={"https://cdn-icons-png.flaticon.com/128/1144/1144760.png"} alt="Profile" className="nav-icon" />
           <span className="nav-button-text">Profile</span>
         </button>

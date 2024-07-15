@@ -4,9 +4,17 @@ import { CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-j
 import NavBar from './NavBar';
 import '../styles/website.css';
 
-const Homepage: React.FC = () => {
+interface HomepageProps {
+    id: string
+}
+
+const Homepage: React.FC<HomepageProps> = ({ id }) => {
     // const location = useLocation();
     // const authToken = location.state?.authToken;
+
+    useEffect(()=>{
+        console.log(id);
+    }, [])
 
     const queryParams = new URLSearchParams(location.search);
     const authToken = queryParams.get('authToken') || '';
@@ -49,7 +57,7 @@ const Homepage: React.FC = () => {
     return (
         <div className="homepage">
             <div className="dashboard">
-                <NavBar />
+                <NavBar id={id}/>
                 Welcome to the Homepage!
                 <button onClick={clickMe}>click me!</button>
             </div>
