@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from 'react'
+import { useParams } from 'react-router-dom';
 import '../styles/website.css';
 import NavBar from './NavBar';
 
 
 interface ProfileProps {
-  id: string;
   token: string;
 }
 
-const Profile: React.FC<ProfileProps> = ({ id, token }) => {
+const Profile: React.FC<ProfileProps> = ({ token }) => {
   // const [userType, setUserType] = useState<string>('Techer');
-  const [user, setUser] = useState<string>(null); 
+  const [user, setUser] = useState<string>(null);
+
+  const { id } = useParams();
+  console.log("asd", id)
 
   useEffect(() => {
     getDetails();
-    console.log("xdd", token, id)
   }, []);
 
   // fetch user using id
@@ -47,32 +49,48 @@ const Profile: React.FC<ProfileProps> = ({ id, token }) => {
       });
   }
 
-
+  const handleRequest = async () => {
+    console.log(localStorage.getItem('id'), id)
+    await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/match/addRequest`, {
+      method: 'POST',
+      body: JSON.stringify({
+        'userId1': localStorage.getItem('id'),
+        'userId2': id,
+      }),
+      headers: {
+        'Authorization': token,
+        'Content-Type': 'application/json'
+      },
+    })
+      .catch(error => {
+        console.error('Error:', error.message, error.code || error);
+      });
+  }
 
   return (
     <div className="homepage">
       <div className="profile">
-        <NavBar id={id} />
+        <NavBar id={id} token={token}/>
         <div className="details-container">
           <div className="pfp">
             <h2 className="profileword">Profile</h2>
             <img src={"https://cdn-icons-png.flaticon.com/128/5653/5653986.png"} alt="Teachers" className="pfp-icon" />
           </div>
-          <div className="profiledeets">
+          {user && <div className="profiledeets">
             <p className="profileName">{user.firstName} {user.lastName}</p>
             <p className="profileUserName">{user.username}</p>
             <p className="aboutme">aboutme</p>
-          </div>
-          <div className="editprofile">
+          </div>}
+          {id === localStorage.getItem('id') ? <div className="editprofile">
             <img src={"https://cdn-icons-png.flaticon.com/128/860/860814.png"} alt="Teachers" className="editprofilebutton" />
           </div>
+          : <button onClick={handleRequest}>rrquest</button>}
         </div>
         <div className="details-container2">
           <h2 className="profileword">Teacher Details</h2>
           <p>heloolhelho</p>
         </div>
       </div>
-
     </div>
   )
 }

@@ -479,5 +479,21 @@ body {
 
 .request-container{
     border: 1px solid black;
+    width: 40vw;
+    display: flex;
+    justify-content: space-around;
+}
+
+.request-button-container {
+    display: flex;  
+    padding: 10px;
+    gap: 10px;
+}
+
+.pfp-name-container {
+    display: flex;
+}
+
+.request-button {
 
 }

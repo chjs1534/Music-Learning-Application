@@ -10,11 +10,17 @@ export const logout = (): void => {
   const user: CognitoUser | null = UserPool.getCurrentUser();
   if (user) {
     user.signOut();
+    localStorage.clear();
   }
   window.location.href = '/login';
 };
 
-const Settings: React.FC = () => {
+interface SettingsProps {
+  id: string;
+  token: string;
+}
+
+const Settings: React.FC<SettingProps> = ({ id, token }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
@@ -49,7 +55,7 @@ const Settings: React.FC = () => {
   return (
     <div className={`homepage ${isDarkMode ? 'dark-mode' : ''}`}>
       <div className="settings">
-        <NavBar />
+        <NavBar id={id} token={token} />
 
         <div className="settings-profile">
           <h2>Profile</h2>

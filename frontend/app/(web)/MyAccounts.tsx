@@ -10,7 +10,12 @@ interface AccountDetails {
     username: string;
 }
 
-const MyAccounts: React.FC = () => {
+interface AccountProps {
+    id: string;
+    token: string;
+}
+
+const MyAccounts: React.FC<AccountProps> = ({ id, token }) => {
     const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
@@ -111,7 +116,7 @@ const MyAccounts: React.FC = () => {
 
     return (
         <div className="homepage">
-            <NavBar />
+            <NavBar id={id} token={token}/>
             <div className="my-accounts">
                 <button className="button1" onClick={() => setShowModal(true)}>Create Account</button>
                 {showModal && (

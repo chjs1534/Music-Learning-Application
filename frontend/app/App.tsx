@@ -69,14 +69,14 @@ const App: React.FC = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login setId={setId} />} />
           <Route path="/verification" element={<Verification />} />
-          <Route path="/homepage" element={<Homepage id={id}/>} />
-          <Route path="/profile/:id" element={<Profile id={id} token={token} />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/my-accounts" element={<MyAccounts />} />
-          <Route path="/message" element={<Message />} />
-          <Route path="/students" element={<Students />} />
+          <Route path="/homepage" element={<Homepage id={id} token2={token} />} />
+          <Route path="/profile/:id" element={<Profile token={token} />} />
+          <Route path="/settings" element={<Settings id={id} token={token}/>} />
+          <Route path="/my-accounts" element={<MyAccounts id={id} token={token} />} />
+          <Route path="/message" element={<Message id={id} token={token} />} />
+          <Route path="/students" element={<Students id={id} token={token} />} />
           <Route path="/teachers" element={<Teachers id={id} token={token}/>} />
-          <Route path="/notifications" element={<Notifications />} />
+          <Route path="/notifications" element={<Notifications id={id} token={token}/>} />
         </Routes>
       </Router>
     </>

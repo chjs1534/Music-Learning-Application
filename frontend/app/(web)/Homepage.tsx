@@ -3,12 +3,14 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
 import NavBar from './NavBar';
 import '../styles/website.css';
+import { StringLiteral } from 'typescript';
 
 interface HomepageProps {
-    id: string
+    id: string;
+    token2: string;
 }
 
-const Homepage: React.FC<HomepageProps> = ({ id }) => {
+const Homepage: React.FC<HomepageProps> = ({ id, token2 }) => {
     // const location = useLocation();
     // const authToken = location.state?.authToken;
 
@@ -57,7 +59,7 @@ const Homepage: React.FC<HomepageProps> = ({ id }) => {
     return (
         <div className="homepage">
             <div className="dashboard">
-                <NavBar id={id}/>
+                <NavBar id={id} token={token2}/>
                 Welcome to the Homepage!
                 <button onClick={clickMe}>click me!</button>
             </div>
