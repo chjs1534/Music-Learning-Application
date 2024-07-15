@@ -16,7 +16,8 @@ exports.handler = async (event, context) => {
         statusCode = 400;
         body = err.message;
     } finally {
-        body = JSON.stringify({user: body.Items});
+        const newBody = body.Items.map(item => ({ userId: item.userId1 }));
+        body = JSON.stringify({requests: newBody});
     }
 
     return {
@@ -31,7 +32,8 @@ const query = async (userId) => {
     const params = {
         TableName: tableName,
         IndexName: "UserId2Index",
-        KeyConditionExpression: "#uid2 = :userId, #request = :request",
+        KeyConditionExpression: "#uid2 = :userId",
+        FilterExpression: "#request = :request",
         ExpressionAttributeNames: {
             "#uid2": "userId2",
             "#request": "request"

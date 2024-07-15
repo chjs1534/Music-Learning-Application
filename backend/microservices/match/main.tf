@@ -132,7 +132,7 @@ resource "aws_iam_policy" "lambda_dynamodb_policy_match" {
           "dynamodb:GetItem",
           "dynamodb:PutItem",
           "dynamodb:Query",
-          "dynamodb:Update"
+          "dynamodb:UpdateItem"
         ],
         Resource = [
           aws_dynamodb_table.match-table.arn,
@@ -183,8 +183,8 @@ resource "aws_apigatewayv2_route" "addMatch" {
 
   route_key = "POST /match/addMatch"
   target    = "integrations/${aws_apigatewayv2_integration.addMatch.id}"
-#   authorization_type = "JWT"
-#   authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+  authorization_type = "JWT"
+  authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
 }
 
 resource "aws_lambda_permission" "api_gw_addMatch" {
@@ -232,8 +232,8 @@ resource "aws_apigatewayv2_route" "getMatches" {
 
   route_key = "GET /match/getMatches/{userId}"
   target    = "integrations/${aws_apigatewayv2_integration.getMatches.id}"
-#   authorization_type = "JWT"
-#   authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+  authorization_type = "JWT"
+  authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
 }
 
 resource "aws_lambda_permission" "api_gw_getMatches" {
@@ -281,8 +281,8 @@ resource "aws_apigatewayv2_route" "addRequest" {
 
   route_key = "POST /match/addRequest"
   target    = "integrations/${aws_apigatewayv2_integration.addRequest.id}"
-#   authorization_type = "JWT"
-#   authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+  authorization_type = "JWT"
+  authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
 }
 
 resource "aws_lambda_permission" "api_gw_addRequest" {
@@ -330,8 +330,8 @@ resource "aws_apigatewayv2_route" "getRequests" {
 
   route_key = "GET /match/getRequests/{userId}"
   target    = "integrations/${aws_apigatewayv2_integration.getRequests.id}"
-#   authorization_type = "JWT"
-#   authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+  authorization_type = "JWT"
+  authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
 }
 
 resource "aws_lambda_permission" "api_gw_getRequests" {
