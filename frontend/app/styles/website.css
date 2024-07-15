@@ -400,3 +400,21 @@ body {
     margin-left: 10px;
     margin-right: 0;
 }
+
+
+/* teacher styles */
+.teacher-container {
+    width: 80vw;
+    height: 90vh;
+    border: 1px solid black;
+    padding: 15px;
+}
+.teacher-header {
+    align-self: left;
+}
+
+.myteachers{
+    border: 1px solid black;
+    height: 40%;    
+    display: flex;
+}
