@@ -8,7 +8,7 @@ export default function App() {
   
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      router.push('/Login');
+      router.push('/Home');
     }, 0);
     return () => clearTimeout(timeoutId);
   }, []);

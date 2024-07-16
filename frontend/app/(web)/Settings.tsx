@@ -10,6 +10,7 @@ export const logout = (): void => {
   const user: CognitoUser | null = UserPool.getCurrentUser();
   if (user) {
     user.signOut();
+    localStorage.clear();
   }
   window.location.href = '/login';
 };

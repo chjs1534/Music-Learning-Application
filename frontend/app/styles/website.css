@@ -12,6 +12,7 @@ body {
     justify-content: center;
     align-items: center;
     z-index: 1;
+    overflow-y: auto;
 }
 
 .dashboard {
@@ -399,4 +400,100 @@ body {
 .user-pic {
     margin-left: 10px;
     margin-right: 0;
+}
+
+
+/* teacher styles */
+.teacher-container {
+    width: 80vw;
+    max-height: 80vh;
+    padding: 15px;
+    margin-left: 100px;
+    
+}
+
+.teacher-header {
+    align-self: left;
+}
+
+.myteachers {
+    display: flex;
+    padding: 10px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.teacher-card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    width: 15vw;
+    margin-left: 15px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.teacher-ad {
+    height: 100px;
+    display: flex;
+    justify-content: center;
+}
+
+.teacher-info {}
+
+.teacher-name {
+    font-weight: bold;
+    margin-left: 10px;
+    align-self: center;
+}
+
+.teacher-rating {
+    color: #f39c12;
+    margin-top: -10px;
+}
+
+.teacher-detail {
+    display: flex;
+}
+
+.teacher-pfp {
+    border-radius: 50%;
+    max-width: 25px;
+    max-height: 25px;
+    align-self: center;
+}
+
+.teacher-card:hover {
+    transform: scale(1.05);
+}
+
+.teacher-aboutme {
+    overflow: hidden;
+    margin-top: -20px;
+}
+
+/* request styles */
+.all-requests{
+
+}
+
+.request-container{
+    border: 1px solid black;
+    width: 40vw;
+    display: flex;
+    justify-content: space-around;
+}
+
+.request-button-container {
+    display: flex;  
+    padding: 10px;
+    gap: 10px;
+}
+
+.pfp-name-container {
+    display: flex;
+}
+
+.request-button {
+
 }
