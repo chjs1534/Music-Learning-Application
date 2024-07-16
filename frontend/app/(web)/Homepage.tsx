@@ -5,18 +5,9 @@ import NavBar from './NavBar';
 import '../styles/website.css';
 import { StringLiteral } from 'typescript';
 
-interface HomepageProps {
-    id: string;
-    token2: string;
-}
-
-const Homepage: React.FC<HomepageProps> = ({ id, token2 }) => {
+const Homepage: React.FC = () => {
     // const location = useLocation();
     // const authToken = location.state?.authToken;
-
-    useEffect(()=>{
-        console.log(id);
-    }, [])
 
     const queryParams = new URLSearchParams(location.search);
     const authToken = queryParams.get('authToken') || '';
@@ -59,7 +50,7 @@ const Homepage: React.FC<HomepageProps> = ({ id, token2 }) => {
     return (
         <div className="homepage">
             <div className="dashboard">
-                <NavBar id={id} token={token2}/>
+                <NavBar />
                 Welcome to the Homepage!
                 <button onClick={clickMe}>click me!</button>
             </div>

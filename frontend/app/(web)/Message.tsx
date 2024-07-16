@@ -35,7 +35,7 @@ const friendsData: Friend[] = [
   },
 ];
 
-const MessageScreen = ({ id, token }) => {
+const MessageScreen = () => {
   const [friends, setFriends] = useState<Friend[]>(friendsData);
   const [selectedFriendId, setSelectedFriendId] = useState<number | null>(null);
   const [messageText, setMessageText] = useState<string>('');
@@ -102,7 +102,7 @@ const MessageScreen = ({ id, token }) => {
   return (
     <div className="homepage">
       <div className="messages">
-        <NavBar id={id} token={token}/>
+        <NavBar />
         <div className="message-screen">
           <div className="friend-list">
             <h2>Chats</h2>

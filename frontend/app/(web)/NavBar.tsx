@@ -7,14 +7,10 @@ import { poolData } from '../config/poolData';
 
 const UserPool = new CognitoUserPool(poolData);
 
-interface NavBarProps {
-  id: string;
-  token: string;
-}
-
-const NavBar: React.FC<NavBarProps> = ({ id, token }) => {
+const NavBar: React.FC = () => {
   const [userType, setUserType] = useState<string>();
-  const [loading, setLoading] = useState<boolean>(true);
+  const [id, setId] = useState<string>();
+  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const handleNavigation = (path: string): void => {
@@ -22,45 +18,9 @@ const NavBar: React.FC<NavBarProps> = ({ id, token }) => {
   };
 
   useEffect(() => {
-    getDetails();
+    setUserType(localStorage.getItem('userType'))
+    setId(localStorage.getItem('id'))
   }, []);
-
-  useEffect(() => {
-    console.log(userType)
-  }, [userType]);
-
-  // get user that gets user type and setUserType
-  const getDetails = async () => {
-    setLoading(true);
-    await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getUser/${id}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': token,
-        'Content-Type': 'application/json'
-      },
-    }).then(response => {
-      if (response.status === 204) {
-        console.log('Success: No content returned from the server.');
-        return;
-      }
-      if (!response.ok) {
-        return response.text().then(text => { throw new Error(text) });
-      }
-      else {
-        console.log(response);
-      }
-      return response.json();
-    })
-      .then(data => {
-        console.log('Success:', data);
-        setUserType(data.userType);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error:', error.message, error.code || error);
-      });
-  }
-
 
   return (
     <>{!loading ? <div className="navbar">

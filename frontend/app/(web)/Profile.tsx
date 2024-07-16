@@ -3,24 +3,24 @@ import { useParams } from 'react-router-dom';
 import '../styles/website.css';
 import NavBar from './NavBar';
 
-
-interface ProfileProps {
-  token: string;
-}
-
-const Profile: React.FC<ProfileProps> = ({ token }) => {
+const Profile: React.FC = () => {
   // const [userType, setUserType] = useState<string>('Techer');
   const [user, setUser] = useState<string>(null);
+  const [token, setToken] = useState<string>();
 
   const { id } = useParams();
   console.log("asd", id)
 
   useEffect(() => {
+    (async () => {
+      await setToken(localStorage.getItem('token'))
+    })();
     getDetails();
   }, []);
 
   // fetch user using id
   const getDetails = async () => {
+    console.log("asdadadsasdaddad", token)
     await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getUser/${id}`, {
       method: 'GET',
       headers: {
@@ -51,6 +51,7 @@ const Profile: React.FC<ProfileProps> = ({ token }) => {
 
   const handleRequest = async () => {
     console.log(localStorage.getItem('id'), id)
+    
     await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/match/addRequest`, {
       method: 'POST',
       body: JSON.stringify({
@@ -70,7 +71,7 @@ const Profile: React.FC<ProfileProps> = ({ token }) => {
   return (
     <div className="homepage">
       <div className="profile">
-        <NavBar id={id} token={token}/>
+        <NavBar />
         <div className="details-container">
           <div className="pfp">
             <h2 className="profileword">Profile</h2>

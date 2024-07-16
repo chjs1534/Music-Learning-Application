@@ -3,23 +3,18 @@ import NavBar from './NavBar';
 import '../styles/website.css';
 import Request from '../../components/Request';
 
-const Notifications = ({ id, token }) => {
+const Notifications = () => {
     const [requests, setRequests] = useState();
+    const [id, setId] = useState<string>();
+    const [token, setToken] = useState<string>();
 
     // fetch requests and map them /match/getRequests/{userId}
     useEffect(() => {
+      setId(localStorage.getItem('id'))
+      setToken(localStorage.getItem('token'))
       getRequests();
-      console.log("xdd", token, id)
     }, []);
-    useEffect(() => {
-      console.log("qwerty", requests)
-      if(requests && requests.requests.length > 0) {
-        console.log("shiou")
-        requests.requests.map(request => {
-        console.log("poo", request.userId)
-      })
-    }
-    }, [requests]);
+    
 
     const getRequests = async () => {
       await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/match/getRequests/${id}`, {
@@ -53,7 +48,7 @@ const Notifications = ({ id, token }) => {
     return (
         <div className="homepage">
           <div className="profile">
-            <NavBar id={id} token={token}/>
+            <NavBar />
             <div className="all-requests">
                 {requests && requests.requests.length > 0 ? (requests.requests.map(request => (
                   <Request 

@@ -42,22 +42,30 @@ import Notifications from './(web)/Notifications';
 // ]);
 
 const App: React.FC = () => {
-  const [id, setId] = useState(null);
-  const [token, setToken] = useState(null);
+  // const [id, setId] = useState(null);
+  // const [token, setToken] = useState(null);
+  // const [userType, setUserType] = useState(null);
   
-  useEffect(() => {
-    const id = localStorage.getItem('id');
-    if (id) {
-      setId(id);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const id = localStorage.getItem('id');
+  //   if (id) {
+  //     setId(id);
+  //   }
+  // }, []);
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      setToken(token);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const token = localStorage.getItem('token');
+  //   if (token) {
+  //     setToken(token);
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   const userType = localStorage.getItem('userType');
+  //   if (userType) {
+  //     setUserType(userType);
+  //   }
+  // }, []);
 
 
   return (
@@ -67,16 +75,16 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login setId={setId} />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/verification" element={<Verification />} />
-          <Route path="/homepage" element={<Homepage id={id} token2={token} />} />
-          <Route path="/profile/:id" element={<Profile token={token} />} />
-          <Route path="/settings" element={<Settings id={id} token={token}/>} />
-          <Route path="/my-accounts" element={<MyAccounts id={id} token={token} />} />
-          <Route path="/message" element={<Message id={id} token={token} />} />
-          <Route path="/students" element={<Students id={id} token={token} />} />
-          <Route path="/teachers" element={<Teachers id={id} token={token}/>} />
-          <Route path="/notifications" element={<Notifications id={id} token={token}/>} />
+          <Route path="/homepage" element={<Homepage />} />
+          <Route path="/profile/:id" element={<Profile />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/my-accounts" element={<MyAccounts />} />
+          <Route path="/message" element={<Message />} />
+          <Route path="/students" element={<Students />} />
+          <Route path="/teachers" element={<Teachers />} />
+          <Route path="/notifications" element={<Notifications />} />
         </Routes>
       </Router>
     </>

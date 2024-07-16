@@ -58,7 +58,7 @@ const Login: React.FC<LoginProps> = ({ setId }) => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
 
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -153,17 +153,19 @@ const Login: React.FC<LoginProps> = ({ setId }) => {
         .then(data => {
           console.log('Success:', data);
           localStorage.setItem('id', data.userId);
+          localStorage.setItem('userType', data.userType);
           setId(data.userId);
         })
         .catch(error => {
           console.error('Error:', error.message, error.code || error);
         });
+        
 
       const queryParams = new URLSearchParams({ authToken });
       window.location.href = `/homepage?${queryParams.toString()}`;
       console.log(authToken)
       localStorage.setItem('token', authToken);
-
+      
 
     } catch (err) {
       setErrorMessage(err);

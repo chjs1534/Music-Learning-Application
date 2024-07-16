@@ -15,12 +15,7 @@ export const logout = (): void => {
   window.location.href = '/login';
 };
 
-interface SettingsProps {
-  id: string;
-  token: string;
-}
-
-const Settings: React.FC<SettingProps> = ({ id, token }) => {
+const Settings: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
@@ -55,7 +50,7 @@ const Settings: React.FC<SettingProps> = ({ id, token }) => {
   return (
     <div className={`homepage ${isDarkMode ? 'dark-mode' : ''}`}>
       <div className="settings">
-        <NavBar id={id} token={token} />
+        <NavBar />
 
         <div className="settings-profile">
           <h2>Profile</h2>

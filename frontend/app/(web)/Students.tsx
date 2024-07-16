@@ -2,15 +2,14 @@ import React, { useState, useEffect } from 'react'
 import NavBar from './NavBar'
 import StudentCard from '../../components/StudentCard';
 
-interface StudentProps {
-  id: string;
-  token: string;
-}
-
-const Students: React.FC<StudentProps> = ({ id, token }) => {
+const Students: React.FC = () => {
   const [students, setStudents] = useState();
+  const [id, setId] = useState<string>();
+  const [token, setToken] = useState<string>();
 
   useEffect(() => {
+    setId(localStorage.getItem('id'))
+    setToken(localStorage.getItem('token'))
     getStudents();
   }, []);
 
@@ -46,7 +45,7 @@ const Students: React.FC<StudentProps> = ({ id, token }) => {
   return (
     <div className="homepage">
       <div className="profile">
-        <NavBar id={id} token={token} />
+        <NavBar />
         <div className="teacher-container">
           <h1 className="teacher-header">My Students</h1>
           <div className="myteachers">
