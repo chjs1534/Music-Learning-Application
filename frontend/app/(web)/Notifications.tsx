@@ -12,8 +12,11 @@ const Notifications = () => {
     useEffect(() => {
       setId(localStorage.getItem('id'))
       setToken(localStorage.getItem('token'))
-      getRequests();
     }, []);
+
+    useEffect(() => {
+      getRequests();
+    }, [id, token]);
     
 
     const getRequests = async () => {

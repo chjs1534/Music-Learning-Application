@@ -13,10 +13,12 @@ const Teachers = () => {
   useEffect(() => {
     setId(localStorage.getItem('id'))
     setToken(localStorage.getItem('token'))
+  }, []);
+
+  useEffect(() => {
     getMyTeachers();
     getDetails();
-    
-  }, []);
+  }, [id, token]);
 
   useEffect(() => {
     console.log(teachers)
@@ -96,7 +98,7 @@ const Teachers = () => {
                 id={teacher.userId}
                 token={token}
               />
-            ))) : <p>No teachers</p>}
+            ))) : null}
           </div>
           <h1 className="teacher-header">Recommended Teachers</h1>
           <div className="myteachers">
@@ -105,12 +107,10 @@ const Teachers = () => {
                 id={teacher.userId}
                 token={token}
               />
-            ))) : <p>No teachers</p>
+            ))) : null
             }
           </div>
         </div>
-
-
       </div>
     </div>
   )

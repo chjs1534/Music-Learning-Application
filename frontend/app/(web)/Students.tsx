@@ -10,8 +10,11 @@ const Students: React.FC = () => {
   useEffect(() => {
     setId(localStorage.getItem('id'))
     setToken(localStorage.getItem('token'))
-    getStudents();
   }, []);
+
+  useEffect(() => {
+    getStudents();
+  }, [id, token]);
 
   const getStudents = async () => {
     await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/match/getMatches/${id}`, {

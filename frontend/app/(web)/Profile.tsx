@@ -12,11 +12,13 @@ const Profile: React.FC = () => {
   console.log("asd", id)
 
   useEffect(() => {
-    (async () => {
-      await setToken(localStorage.getItem('token'))
-    })();
-    getDetails();
+    setToken(localStorage.getItem('token'))
+    
   }, []);
+
+  useEffect(() => {
+    getDetails();
+  }, [token]);
 
   // fetch user using id
   const getDetails = async () => {
