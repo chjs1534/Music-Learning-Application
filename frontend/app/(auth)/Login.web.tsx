@@ -128,8 +128,6 @@ const Login: React.FC<LoginProps> = ({ setId }) => {
           resolve(null);
         }
       });
-      // navigate('/homepage', { state: { authToken } });
-      // window.location.href = '/homepage', { state: { authToken } };
       await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getUserId/${username}`, {
         method: 'GET',
         headers: {
@@ -137,11 +135,6 @@ const Login: React.FC<LoginProps> = ({ setId }) => {
           'Content-Type': 'application/json'
         },
       }).then(response => {
-        console.log('Success IMKIDIDNG HAAHBHAAHAH stop its not funny acutally');
-        if (response.status === 204) {
-          console.log('Success: No content returned from the server.');
-          return;
-        }
         if (!response.ok) {
           return response.text().then(text => { throw new Error(text) });
         }
@@ -159,13 +152,11 @@ const Login: React.FC<LoginProps> = ({ setId }) => {
         .catch(error => {
           console.error('Error:', error.message, error.code || error);
         });
-        
 
-      const queryParams = new URLSearchParams({ authToken });
+      const queryParams = new URLSearchParams();
       window.location.href = `/homepage?${queryParams.toString()}`;
       console.log(authToken)
       localStorage.setItem('token', authToken);
-      
 
     } catch (err) {
       setErrorMessage(err);

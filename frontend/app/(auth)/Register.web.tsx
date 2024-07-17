@@ -10,6 +10,8 @@ const UserPool = new CognitoUserPool(poolData);
 const Register: React.FC = () => {
   const [userType, setUserType] = useState<string>('');
   const [email, setEmail] = useState<string>('');
+  const [firstName, setFirstName] = useState<string>('');
+  const [lastName, setLastName] = useState<string>('');
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
@@ -44,8 +46,6 @@ const Register: React.FC = () => {
     }
   };
 
-  // const navigate = useNavigate();
-
   const validateEmail = (email: string): boolean => {
     const regex = /^[a-zA-Z0-9]+@[a-zA-Z\.]+$/;
     return regex.test(email);
@@ -58,6 +58,8 @@ const Register: React.FC = () => {
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     if (id === 'email') setEmail(value);
+    if (id === 'first-name') setFirstName(value);
+    if (id === 'last-name') setLastName(value);
     if (id === 'username') setUsername(value);
     if (id === 'password') setPassword(value);
     if (id === 'confirmPassword') setConfirmPassword(value);
@@ -97,6 +99,14 @@ const Register: React.FC = () => {
       setErrorMessage("Please enter a valid email address");
       return;
     }
+    if (firstName.length < 2) {
+      setErrorMessage("First name too short");
+      return;
+    }
+    if (lastName.length < 2) {
+      setErrorMessage("Last name too short");
+      return;
+    }
     if (username.length < 3) {
       setErrorMessage("Username must be longer than 3 characters");
       return;
@@ -116,28 +126,51 @@ const Register: React.FC = () => {
       Name: 'email',
       Value: email
     };
-    const dataUsername = {
-      Name: 'username',
-      Value: username
-    };
+
     const attributeEmail = new CognitoUserAttribute(dataEmail);
-    const attributeUsername = new CognitoUserAttribute(dataUsername);
 
     attributeList.push(attributeEmail);
-    attributeList.push(attributeUsername);
+
+    const postUserDetails = async () => {
+      await fetch('https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/addUser', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email,
+          username: username,
+          userType: userType,
+          firstName: firstName,
+          lastName: lastName
+        }),
+      })
+        .then(response => {
+          if (!response.ok) {
+            return response.text().then(text => { throw new Error(text) });
+          }
+          else {
+            console.log(response);
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Success:', data);
+        })
+        .catch(error => {
+          console.error('Error:', error.message, error.code || error);
+        });
+    };
 
     UserPool.signUp(email, password, attributeList, null, (err, result) => {
       if (err) {
         console.error(err);
       } else {
-        console.log(result);
-        // navigate('/verification', { state: { email, password } });
-        window.location.href = '/verification', { state: { userType, email, password } };
-        // const queryParams = new URLSearchParams({ userType, email, password });
-        // window.location.href = `/verification?${queryParams.toString()}`;
+        const queryParams = new URLSearchParams({ userType, email, password });
+        window.location.href = `/verification?${queryParams.toString()}`;
       }
     });
-    console.log(userType, "hi")
+    postUserDetails();
   };
 
   return (
@@ -187,6 +220,32 @@ const Register: React.FC = () => {
             onBlur={handleInputBlur}
           />
           <label htmlFor="username">Username</label>
+        </div>
+        <div className="input-container">
+          <input
+            className="form-inputs"
+            placeholder=""
+            type="text"
+            id="first-name"
+            value={firstName}
+            onChange={handleInputChange}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+          />
+          <label htmlFor="first-name">First Name</label>
+        </div>
+        <div className="input-container">
+          <input
+            className="form-inputs"
+            placeholder=""
+            type="text"
+            id="last-name"
+            value={lastName}
+            onChange={handleInputChange}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+          />
+          <label htmlFor="last-name">Last Name</label>
         </div>
         <div className="input-container password-container">
           <input
@@ -250,14 +309,14 @@ const Register: React.FC = () => {
         </div>
         <span className="auth-text">Already have an account? <a className="anchor1" href="/">Log In</a></span>
         <div className="dark-mode-toggle">
-            <label htmlFor="darkModeSwitch">Dark Mode</label>
-            <input
-              type="checkbox"
-              id="darkModeSwitch"
-              checked={isDarkMode}
-              onChange={toggleDarkMode}
-            />
-          </div>
+          <label htmlFor="darkModeSwitch">Dark Mode</label>
+          <input
+            type="checkbox"
+            id="darkModeSwitch"
+            checked={isDarkMode}
+            onChange={toggleDarkMode}
+          />
+        </div>
       </div>
     </div>
   );

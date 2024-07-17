@@ -8,43 +8,17 @@ import { StringLiteral } from 'typescript';
 const Homepage: React.FC = () => {
     // const location = useLocation();
     // const authToken = location.state?.authToken;
-
-    const queryParams = new URLSearchParams(location.search);
-    const authToken = queryParams.get('authToken') || '';
-
-    const token = `Bearer ${encodeURIComponent(authToken || '')}`;
+    const [token, setToken] = useState<string | null>(null);
+    const [userId, setUserId] = useState<string | null>(null);
+    useEffect(() => {
+        setToken(localStorage.getItem('token'));
+        setUserId(localStorage.getItem('id'));
+      }, []);
     
     const clickMe = async () => {
         console.log('authToken:', token);
+        console.log('userId:', userId);
 
-        await fetch('https://x5yhk546p1.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage2/hello', {
-            method: 'POST',
-            headers: {
-                'Authorization': token,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ testId: 'Adam nib' }),
-        })
-            .then(response => {
-                console.log('Success IMKIDIDNG HAAHBHAAHAH stop its not funny acutally');
-                if (response.status === 204) {
-                    console.log('Success: No content returned from the server.');
-                    return;
-                }
-                if (!response.ok) {
-                    return response.text().then(text => { throw new Error(text) });
-                }
-                else {
-                    console.log(response);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Success:', data);
-            })
-            .catch(error => {
-                console.error('Error:', error.message, error.code || error);
-            });
     };
 
     return (

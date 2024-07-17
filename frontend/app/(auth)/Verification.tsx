@@ -97,7 +97,6 @@ const Verification: React.FC = () => {
 
       const authToken = await authenticate(email, password);
       if (authToken) {
-        // navigate('/homepage', { state: { authToken } });
         const queryParams = new URLSearchParams({ authToken, userType, email, password });
         window.location.href = `/homepage?${queryParams.toString()}`;
       }

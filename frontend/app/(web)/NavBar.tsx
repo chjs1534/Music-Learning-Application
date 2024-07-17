@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import '../styles/auth.css';
 import '../styles/fonts.css';
 import { CognitoUserPool, CognitoUser } from 'amazon-cognito-identity-js';
@@ -11,16 +11,19 @@ const NavBar: React.FC = () => {
   const [userType, setUserType] = useState<string>();
   const [id, setId] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
-  const navigate = useNavigate();
-
-  const handleNavigation = (path: string): void => {
-    navigate(path);
-  };
-
+  const [authToken, setAuthToken] = useState<string>();
+  
   useEffect(() => {
+    setAuthToken(localStorage.getItem('token'))
     setUserType(localStorage.getItem('userType'))
     setId(localStorage.getItem('id'))
   }, []);
+
+  const handleNavigation = (path: string): void => {
+    console.log(authToken, userType, id);
+    const queryParams = new URLSearchParams();
+    window.location.href = `${path}?${queryParams.toString()}`;
+  };
 
   return (
     <>{!loading ? <div className="navbar">

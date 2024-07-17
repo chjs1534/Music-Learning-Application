@@ -1,59 +1,53 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import '../styles/website.css';
 import NavBar from './NavBar';
 
 const Profile: React.FC = () => {
-  // const [userType, setUserType] = useState<string>('Techer');
-  const [user, setUser] = useState<string>(null);
-  const [token, setToken] = useState<string>();
+  const [user, setUser] = useState<any>(null);
+  const [token, setToken] = useState<string | null>(null);
 
   const { id } = useParams();
-  console.log("asd", id)
 
   useEffect(() => {
-    setToken(localStorage.getItem('token'))
-    
+    setToken(localStorage.getItem('token'));
   }, []);
 
   useEffect(() => {
-    getDetails();
+    if (token) {
+      console.log(token, id)
+      getDetails();
+    }
   }, [token]);
 
-  // fetch user using id
   const getDetails = async () => {
-    console.log("asdadadsasdaddad", token)
     await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getUser/${id}`, {
       method: 'GET',
       headers: {
-        'Authorization': token,
-        'Content-Type': 'application/json'
+        'Authorization': token!,
+        'Content-Type': 'application/json',
       },
-    }).then(response => {
-      if (response.status === 204) {
-        console.log('Success: No content returned from the server.');
-        return;
-      }
-      if (!response.ok) {
-        return response.text().then(text => { throw new Error(text) });
-      }
-      else {
-        console.log(response);
-      }
-      return response.json();
     })
+      .then(response => {
+        if (!response.ok) {
+          return response.text().then(text => { throw new Error(text); });
+        }
+        return response.json();
+      })
       .then(data => {
-        console.log('Success:', data);
         setUser(data);
       })
       .catch(error => {
-        console.error('Error:', error.message, error.code || error);
+        console.error('Error:', error.message);
       });
-  }
+  };
+
+  const goToEditProfile = () => {
+    const queryParams = new URLSearchParams();
+    window.location.href = `/edit-profile/${id}?${queryParams.toString()}`;
+  };
 
   const handleRequest = async () => {
-    console.log(localStorage.getItem('id'), id)
-    
     await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/match/addRequest`, {
       method: 'POST',
       body: JSON.stringify({
@@ -61,41 +55,46 @@ const Profile: React.FC = () => {
         'userId2': id,
       }),
       headers: {
-        'Authorization': token,
-        'Content-Type': 'application/json'
+        'Authorization': token!,
+        'Content-Type': 'application/json',
       },
     })
       .catch(error => {
-        console.error('Error:', error.message, error.code || error);
+        console.error('Error:', error.message);
       });
-  }
+  };
 
   return (
     <div className="homepage">
+      <NavBar />
       <div className="profile">
-        <NavBar />
-        <div className="details-container">
-          <div className="pfp">
-            <h2 className="profileword">Profile</h2>
-            <img src={"https://cdn-icons-png.flaticon.com/128/5653/5653986.png"} alt="Teachers" className="pfp-icon" />
-          </div>
-          {user && <div className="profiledeets">
-            <p className="profileName">{user.firstName} {user.lastName}</p>
-            <p className="profileUserName">{user.username}</p>
-            <p className="aboutme">aboutme</p>
-          </div>}
-          {id === localStorage.getItem('id') ? <div className="editprofile">
-            <img src={"https://cdn-icons-png.flaticon.com/128/860/860814.png"} alt="Teachers" className="editprofilebutton" />
-          </div>
-          : <button onClick={handleRequest}>rrquest</button>}
+        <div className="profile-header">
+          <img src="https://cdn-icons-png.flaticon.com/128/847/847969.png" alt="Profile" className="profile-icon" />
         </div>
-        <div className="details-container2">
-          <h2 className="profileword">Teacher Details</h2>
-          <p>heloolhelho</p>
+        {user && (
+          <div className="profile-content">
+            <div className="profile-details">
+              <p>{user.firstName} {user.lastName}</p>
+              <p>@{user.username}</p>
+            </div>
+            <div className="profile-actions">
+              {id === localStorage.getItem('id') ? (
+                <button className="edit-profile-button">
+                  <img onClick={goToEditProfile} src="https://cdn-icons-png.flaticon.com/128/860/860814.png" alt="Edit Profile" className="edit-profile-button" />
+                </button>
+              ) : (
+                <button className="request-button" onClick={handleRequest}>Request</button>
+              )}
+            </div>
+          </div>
+        )}
+        <div className="profile-extra">
+          <h2>Teacher Details</h2>
+          <p>heloolhelho, this is detail</p>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Profile
+export default Profile;
