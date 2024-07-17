@@ -17,7 +17,7 @@ exports.handler = async (event, context) => {
         statusCode = 400;
         body = err.message;
     } finally {
-        body = JSON.stringify({userId: body.Items[0].userId});
+        body = JSON.stringify({userId: body.Items[0].userId, userType: body.Items[0].userType});
     }
 
     return {
