@@ -1,3 +1,75 @@
+:root {
+    --background-color: #ffffff;
+    --text-color: #000000;
+    --dashboard-background: #ffffff;
+    --navbar-background: rgba(255, 255, 255);
+    --nav-button-background: #ffffff;
+    --nav-button-hover: #e5e5e5;
+    --profile-header-background: #ffffff;
+    --profile-icon-box-shadow: rgba(0, 0, 0, 0.5);
+    --profile-details-text-color: #555;
+    --request-button-background: #007bff;
+    --request-button-hover: #0056b3;
+    --modal-background: rgba(0, 0, 0, 0.4);
+    --modal-content-background: #fefefe;
+    --close-color: #aaa;
+    --close-hover-color: black;
+    --account-details-border: #ccc;
+    --message-background: #ffffff;
+    --friend-list-background: #ffffff;
+    --message-container-background: #000000;
+    --message-box-background: #dcf8c6;
+    --user-container-background: #ff0019;
+    --message-content-background: #f1f1f1;
+    --user-message-background: #dcf8c6;
+    --message-text-color: #000000;
+    --message-time-color: #888;
+    --message-sender-color: #000000;
+    --send-button-background: none;
+    --send-button-color: #000000;
+    --teacher-card-background: #ffffff;
+    --teacher-card-hover: scale(1.05);
+    --teacher-rating-color: #f39c12;
+    --request-container-border: #000000;
+    --settings-background: #ffffff;
+}
+
+body.darkmode {
+    --background-color: #181818;
+    --text-color: #ffffff;
+    --dashboard-background: rgba(30, 30, 30);
+    --navbar-background: rgba(30, 30, 30);
+    --nav-button-background: #303030;
+    --nav-button-hover: #505050;
+    --profile-header-background: #242424;
+    --profile-icon-box-shadow: rgba(255, 255, 255, 0.5);
+    --profile-details-text-color: #bbb;
+    --request-button-background: #1e90ff;
+    --request-button-hover: #104e8b;
+    --modal-background: rgba(255, 255, 255, 0.4);
+    --modal-content-background: #333333;
+    --close-color: #ddd;
+    --close-hover-color: white;
+    --account-details-border: #888;
+    --message-background: #242424;
+    --friend-list-background: #303030;
+    --message-container-background: #333333;
+    --message-box-background: #1c1c1c;
+    --user-container-background: #bb0000;
+    --message-content-background: #444444;
+    --user-message-background: #3a3a3a;
+    --message-text-color: #ffffff;
+    --message-time-color: #bbb;
+    --message-sender-color: #ffffff;
+    --send-button-background: none;
+    --send-button-color: #ffffff;
+    --teacher-card-background: #303030;
+    --teacher-card-hover: scale(1.05);
+    --teacher-rating-color: #ffd700;
+    --request-container-border: #ffffff;
+    --settings-background: rgba(30, 30, 30);
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -6,7 +78,7 @@ body {
 .homepage {
     width: 100vw;
     height: 100vh;
-    background-color: #ffffff;
+    background-color: var(--background-color);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -18,17 +90,7 @@ body {
 .dashboard {
     width: 100vw;
     height: 100vh;
-    background-color: #ffffff;
-    display: flex;
-    flex-direction: column;
-    justify-content: top;
-    align-items: center;
-}
-
-.settings {
-    width: 100vw;
-    height: 100vh;
-    background-color: #ffffff;
+    background-color: var(--dashboard-background);
     display: flex;
     flex-direction: column;
     justify-content: top;
@@ -42,10 +104,10 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: rgba(255, 255, 255);
+    background-color: var(--navbar-background);
     border-radius: 100px;
     overflow: hidden;
-    margin: 12px 12px;
+    margin: 4px;
     padding: 0px 0px;
     box-shadow: -1px 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
@@ -60,11 +122,16 @@ body {
     font-size: 25px;
     cursor: pointer;
     transition: background-color 0.75s ease-out;
-    background-color: #ffffff;
+    background-color: var(--nav-button-background);
+    color: var(--text-color);
     margin: 4px 16px 4px 16px;
     padding: 12px 12px;
     width: 75px;
     height: 40px;
+}
+
+.nav-button:hover {
+    background-color: var(--nav-button-hover);
 }
 
 .website-logo {
@@ -81,10 +148,6 @@ body {
     padding: 12px 12px;
     width: 100px;
     height: 50px;
-}
-
-.nav-button:hover {
-    background-color: #e5e5e5;
 }
 
 .nav-button-text {
@@ -219,6 +282,8 @@ body {
 .edit-profile-button {
     width: 30px;
     height: 30px;
+    margin: 0;
+    padding: 0;
 }
 
 .request-button {
@@ -503,14 +568,14 @@ body {
     margin-right: 10px;
 }
 
-.send-button,
-.emoji-button,
-.file-button,
-.image-button {
+.send-button img,
+.emoji-button img,
+.image-button img {
     background: none;
     border: none;
     font-size: 24px;
     cursor: pointer;
+    width: 50px;
 }
 
 .image-input {
@@ -628,4 +693,15 @@ body {
     padding: 12px 12px;
     width: 100px;
     height: 50px;
+}
+
+/* Settings Styles */
+.settings {
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--settings-background);
+    display: flex;
+    flex-direction: column;
+    justify-content: top;
+    align-items: center;
 }

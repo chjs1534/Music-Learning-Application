@@ -36,39 +36,48 @@ const MessageScreen = () => {
   useEffect(() => {
     setToken(localStorage.getItem('token'));
     setUserId(localStorage.getItem('id'));
-    getFriendIDs();
-    console.log(userId, token)
   }, [token, userId]);
 
   useEffect(() => {
-    ws.current = new WebSocket(`${WEBSOCKET_API}?userId=${userId}`);
-    ws.current.onopen = () => {
-      console.log("connected");
-    };
+    if (userId) {
+      getFriendIDs();
+      console.log(userId, token)
 
-    ws.current.onmessage = (evt) => {
-      try {
-        const message = JSON.parse(evt.data);
-        handleIncomingMessage(message);
-      } catch {
-        console.log('error in parsing');
-      }
-    };
+      ws.current = new WebSocket(`${WEBSOCKET_API}?userId=${userId}`);
 
-    ws.current.onclose = () => {
-      console.log("disconnected");
-      // Example reconnection logic:
-      setTimeout(() => {
-        ws.current = new WebSocket(`${WEBSOCKET_API}?userId=${userId}`);
-      }, 3000); // Reconnect after 5 seconds
-    };
+      ws.current.onopen = () => {
+        console.log("connected");
+      };
 
-    return () => {
-      if (ws.current) {
-        ws.current.close();
-      }
-    };
-  }, []);
+      ws.current.onmessage = (evt) => {
+        try {
+          const message = JSON.parse(evt.data);
+          console.log(message, "reached ws.current.onmessage")
+          handleIncomingMessage(message);
+        } catch {
+          console.log('error in parsing');
+        }
+      };
+
+      ws.current.onclose = () => {
+        console.log("disconnected");
+        // Example reconnection logic:
+        setTimeout(() => {
+          ws.current = new WebSocket(`${WEBSOCKET_API}?userId=${userId}`);
+        }, 3000); // Reconnect after 3 seconds
+      };
+
+      ws.current.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+
+      return () => {
+        if (ws.current) {
+          ws.current.close();
+        }
+      };
+    }
+  }, [userId]);
 
   const getFriendIDs = async () => {
     await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/match/getMatches/${userId}`, {
@@ -146,6 +155,7 @@ const MessageScreen = () => {
   };
 
   const handleSendMessage = () => {
+    // console.log(selectedFriend)
     if (!messageText.trim() && !imageFile) return;
 
     let newMessage: Message = {
@@ -167,9 +177,14 @@ const MessageScreen = () => {
     // if (ws.current) {
     //   ws.current.send(JSON.stringify(newMessage));
     // }
-
+    console.log('1');
     if (ws.current.readyState === WebSocket.OPEN) {
-      ws.current.send(JSON.stringify(newMessage));
+      console.log('2');
+      // ws.current.send(JSON.stringify(newMessage));
+      const sendMessage = {"action": "message", "senderId": userId , "msg": messageText}
+    
+      ws.current.send(JSON.stringify(sendMessage));
+      console.log(sendMessage);
     } else {
       console.log('WebSocket not open to send message');
     }
@@ -259,9 +274,8 @@ const MessageScreen = () => {
                     onChange={(e) => setMessageText(e.target.value)}
                     onKeyDown={handleKeyDown}
                   />
-                  <button className="send-button" onClick={handleSendMessage}>Send</button>
-                  <button className="emoji-button">😊</button>
-                  <button className="file-button">📎</button>
+                  <button className="send-button" onClick={handleSendMessage}> <img src="https://cdn-icons-png.flaticon.com/128/10322/10322482.png" alt="Profile" className="profile-pic" /></button>
+                  <button className="emoji-button"><img src="https://cdn-icons-png.flaticon.com/128/1023/1023656.png" alt="Profile" className="profile-pic" /></button>
                   <input
                     type="file"
                     className="image-input"
@@ -269,7 +283,7 @@ const MessageScreen = () => {
                     style={{ display: 'none' }}
                     id="image-input"
                   />
-                  <label htmlFor="image-input" className="image-button">🖼️</label>
+                  <label htmlFor="image-input" className="image-button"><img src="https://cdn-icons-png.flaticon.com/128/739/739249.png" alt="Profile" className="profile-pic" /></label>
                 </div>
               </>
             )}

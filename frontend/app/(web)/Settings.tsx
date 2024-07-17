@@ -17,9 +17,13 @@ export const logout = (): void => {
 
 const Settings: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
+  const [userId, setuserId] = useState<string | null>(null);
 
   useEffect(() => {
     // Initialize dark mode state from local storage
+    setToken(localStorage.getItem('token'));
+    setuserId(localStorage.getItem('id'));
     const storedDarkMode = localStorage.getItem('darkMode');
     if (storedDarkMode === 'enabled') {
       setIsDarkMode(true);
@@ -44,7 +48,8 @@ const Settings: React.FC = () => {
   };
 
   const handleEditProfile = () => {
-    window.location.href = '/edit-profile';
+    const queryParams = new URLSearchParams();
+    window.location.href = `/edit-profile/${userId}?${queryParams.toString()}`;
   };
 
   return (
@@ -55,7 +60,7 @@ const Settings: React.FC = () => {
         <div className="settings-profile">
           <h2>Profile</h2>
           <button className="edit-profile-button" onClick={handleEditProfile}>
-            <span>Edit Profile</span><img src={"https://cdn-icons-png.flaticon.com/128/1828/1828817.png"} alt="Edit Profile" className="nav-icon" />
+            <img src={"https://cdn-icons-png.flaticon.com/128/860/860814.png"} alt="Edit Profile" className="nav-icon" />
           </button>
         </div>
 
