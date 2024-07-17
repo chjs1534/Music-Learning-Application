@@ -15,9 +15,18 @@ exports.handler = async (event, context) => {
         body = await dynamo.delete(
             {
                 TableName: tableName,
-                Item: {
+                Key: {
                     userId1: requestJSON.userId1,
                     userId2: requestJSON.userId2
+                },
+            }
+        ).promise();
+        body = await dynamo.delete(
+            {
+                TableName: tableName,
+                Key: {
+                    userId1: requestJSON.userId2,
+                    userId2: requestJSON.userId1
                 },
             }
         ).promise();
