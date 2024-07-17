@@ -16,8 +16,7 @@ exports.handler = async (event, context) => {
         statusCode = 400;
         body = err.message;
     } finally {
-        const newBody = body.Items.map(item => ({ userId: event.pathParameters.userId == item.userId1 ? item.userId2 : item.userId1 }));
-        body = JSON.stringify({matches: newBody});
+        body = JSON.stringify({matches: body.Items});
     }
 
     return {

@@ -132,7 +132,8 @@ resource "aws_iam_policy" "lambda_dynamodb_policy_match" {
           "dynamodb:GetItem",
           "dynamodb:PutItem",
           "dynamodb:Query",
-          "dynamodb:UpdateItem"
+          "dynamodb:UpdateItem",
+          "dynamodb:DeleteItem"
         ],
         Resource = [
           aws_dynamodb_table.match-table.arn,
@@ -251,7 +252,7 @@ resource "aws_cloudwatch_log_group" "getMatches" {
   retention_in_days = 30
 }
 
-# Add match lambda
+# Add request lambda
 resource "aws_lambda_function" "addRequest" {
   function_name = "AddRequest"
 
@@ -345,6 +346,55 @@ resource "aws_lambda_permission" "api_gw_getRequests" {
 
 resource "aws_cloudwatch_log_group" "getRequests" {
   name = "/aws/lambda/${aws_lambda_function.getRequests.function_name}"
+
+  retention_in_days = 30
+}
+
+# Remove match lambda
+resource "aws_lambda_function" "removeMatch" {
+  function_name = "RemoveMatch"
+
+  s3_bucket = aws_s3_bucket.lambda_bucket.id
+  s3_key    = aws_s3_object.lambdas.key
+
+  runtime = "nodejs16.x"
+  handler = "removeMatch.handler"
+
+  source_code_hash = data.archive_file.lambdas.output_base64sha256
+
+  role = aws_iam_role.lambda_exec.arn
+
+  timeout = 10
+}
+
+resource "aws_apigatewayv2_integration" "removeMatch" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  integration_uri    = aws_lambda_function.removeMatch.invoke_arn
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_route" "removeMatch" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.id
+
+  route_key = "DELETE /match/removeMatch"
+  target    = "integrations/${aws_apigatewayv2_integration.removeMatch.id}"
+  authorization_type = "JWT"
+  authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+}
+
+resource "aws_lambda_permission" "api_gw_removeMatch" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.removeMatch.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"
+}
+
+resource "aws_cloudwatch_log_group" "removeMatch" {
+  name = "/aws/lambda/${aws_lambda_function.removeMatch.function_name}"
 
   retention_in_days = 30
 }
