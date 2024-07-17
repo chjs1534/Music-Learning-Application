@@ -4,10 +4,12 @@ import '../app/styles/website.css';
 interface RequestProps {
   id: string;
   token: string;
+  onAction: () => void;
 }
 
-const Request: React.FC<RequestProps> = ({ id, token }) => {
-  const [user, setUser] = useState<string>(null);
+const Request: React.FC<RequestProps> = ({ id, token, onAction }) => {
+  const [user, setUser] = useState(null);
+
   useEffect(() => {
     getDetails();
   }, []);
@@ -68,18 +70,50 @@ const Request: React.FC<RequestProps> = ({ id, token }) => {
       return response.json();
     })
       .then(data => {
-        console.log('Success:', data);
+        onAction();
+        console.log('Success123:', data);
         setUser(data);
       })
       .catch(error => {
         console.error('Error:', error.message, error.code || error);
       });
   }
+  
+
 
   const denyRequest = async () => {
-    
+    await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/match/removeMatch`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        userId1: id,
+        userId2: localStorage.getItem('id')
+      }),
+    }).then(response => {
+      if (response.status === 204) {
+        console.log('Success: No content returned from the server.');
+        return;
+      }
+      if (!response.ok) {
+        return response.text().then(text => { throw new Error(text) });
+      }
+      else {
+        console.log(response);
+      }
+      return response.json();
+    })
+      .then(data => {
+        onAction();
+        console.log('Success098:', data);
+        setUser(data);
+      })
+      .catch(error => {
+        console.error('Error:', error.message, error.code || error);
+      });
   }
-
 
   return (
     <div className='request-container'>

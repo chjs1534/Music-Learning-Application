@@ -17,7 +17,7 @@ const StudentCard: React.FC<StudentCardProps> = ({ id, token }) => {
 
     useEffect(() => {
         getDetails();
-        console.log("kokokok")
+        console.log(id, token)
     }, []);
 
     useEffect(() => {
@@ -43,15 +43,14 @@ const StudentCard: React.FC<StudentCardProps> = ({ id, token }) => {
                 console.log(response);
             }
             return response.json();
+        }).then(data => {
+            console.log('Success:', data);
+            setUser(data);
         })
-            .then(data => {
-                console.log('Success:', data);
-                setUser(data);
-            })
-            .catch(error => {
-                console.error('Error:', error.message, error.code || error);
-            });
-    }
+        .catch(error => {
+            console.error('Error:', error.message, error.code || error);
+        });
+}
 
     return (
         <div className="teacher-card" onClick={handleClick}>

@@ -37,7 +37,7 @@ const Students: React.FC = () => {
       return response.json();
     })
       .then(data => {
-        console.log('Success:', data);
+        console.log('Success456:', data);
         setStudents(data);
       })
       .catch(error => {
@@ -54,7 +54,7 @@ const Students: React.FC = () => {
           <div className="myteachers">
             {students && students.matches.length > 0 ? (students.matches.map(student => (
               <StudentCard
-                id={id}
+                id={student.userId}
                 token={token}
               />
             ))) : <p>No sdtudents</p>
