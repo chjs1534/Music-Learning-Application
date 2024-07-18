@@ -10,36 +10,33 @@ exports.handler = async (event) => {
         'Access-Control-Allow-Origin': '*',
     };
 
-    const {
-      eventBody,
-      requestContext: { routeKey, connectionId, domainName, stage },
-      queryStringParameters = {},
-    } = event;
-    const { userId } = queryStringParameters;
+    const connectionId = event.requestContext.connectionId;
+    const domainName = event.requestContext.domainName;
+    const stage = event.requestContext.stage;
     const callbackUrl = `https://${domainName}/${stage}`;
-
+    let eventBody = event.body;
+    if (typeof eventBody != Object) {
+        eventBody = JSON.parse(eventBody);
+    }
+    const userId = eventBody.userId;
+    const msg = eventBody.msg;
+    
     try {
-        if (typeof eventBody != Object) {
-            eventBody = JSON.parse(eventBody);
-        }
-        const { senderId, msg } = eventBody;
-
-        const res = dynamo.scan({
+        const res = await dynamo.scan({
             TableName: tableName,
-        });
+        }).promise();
         if (res && res.Items && res.Items.length) {
             await Promise.all(
                 res.Items.map(async (obj) => {
                     try {
-                        const clientApi = new ApiGatewayManagementApiClient({
+                        const clientApi = new aws.ApiGatewayManagementApi({
                             endpoint: callbackUrl,
                         });
                         const requestParams = {
-                            ConnectionId: obj.Id.S,
-                            Data: `{"sender_id":"${senderId}","msg":"${msg}"}`,
+                            ConnectionId: obj.connectionId,
+                            Data: `{"userId":"${userId}","msg":"${msg}"}`,
                         };
-                        const command = new PostToConnectionCommand(requestParams);
-                        await clientApi.send(command);
+                        await clientApi.postToConnection(requestParams).promise()
                     } catch (e) {
                         console.log(e);
                     }

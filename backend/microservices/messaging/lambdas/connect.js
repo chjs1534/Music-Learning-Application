@@ -10,20 +10,14 @@ exports.handler = async (event) => {
         'Access-Control-Allow-Origin': '*',
     };
 
-    const {
-      eventBody,
-      requestContext: { routeKey, connectionId, domainName, stage },
-      queryStringParameters = {},
-    } = event;
-    const { userId } = queryStringParameters;
+    const connectionId = event.requestContext.connectionId;
 
     try {
         await dynamo.put(
             {
                 TableName: tableName,
                 Item: {
-                    connectionId: connectionId,
-                    userId: userId
+                    connectionId: connectionId
                 }
             }
         ).promise();
@@ -31,7 +25,7 @@ exports.handler = async (event) => {
         statusCode = 400;
         body = err.message;
     } finally {
-        body = {connectionId: connectionId, userId: userId};
+        body = {connectionId: connectionId};
         body = JSON.stringify(body);
     }
 
