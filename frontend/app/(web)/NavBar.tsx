@@ -14,7 +14,12 @@ const NavBar: React.FC = () => {
   const navigate = useNavigate();
 
   const handleNavigation = (path: string): void => {
-    navigate(path);
+    const currentPath = window.location.pathname;
+    if (currentPath === path) {
+      window.location.reload();
+    } else {
+      navigate(path);
+    }
   };
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import '../styles/website.css';
 import NavBar from './NavBar';
 
@@ -7,10 +7,12 @@ const Profile: React.FC = () => {
   const [userType, setUserType] = useState<string>();
   const [user, setUser] = useState(null);
   const [token, setToken] = useState<string>();
-  const [matched, setMatched] = useState<boolean>(true);
+  const [matched, setMatched] = useState<boolean>(false);
   const [subAccounts, setSubAccounts] = useState();
 
   const { id } = useParams();
+
+  const navigate = useNavigate();
 
   // use effect that calls when id is changed
   useEffect(() => {
@@ -28,6 +30,41 @@ const Profile: React.FC = () => {
       getMyTeachers();
     }
   }, [user]);
+
+  const viewMatch = () => {
+    navigate(`/viewmatch/${id}`);
+  }
+
+  const unmatch = async () => {
+    await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/match/removeMatch`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        userId1: id,
+        userId2: localStorage.getItem('id')
+      }),
+    }).then(response => {
+      if (response.status === 204) {
+        console.log('Success: No content returned from the server.');
+        return;
+      }
+      if (!response.ok) {
+        return response.text().then(text => { throw new Error(text) });
+      }
+      else {
+        console.log(response);
+      }
+      return response.json();
+    }).then(() => {
+      alert("unmacthed")
+      window.location.reload();
+    }).catch(error => {
+      console.error('Error:', error.message, error.code || error);
+    });
+  }
 
   // fetch user using id
   const getDetails = async () => {
@@ -74,6 +111,8 @@ const Profile: React.FC = () => {
         'Authorization': token,
         'Content-Type': 'application/json'
       },
+    }).then(()=>{
+      alert("request sent")
     })
       .catch(error => {
         console.error('Error:', error.message, error.code || error);
@@ -102,8 +141,12 @@ const Profile: React.FC = () => {
     })
       .then(data => {
         // check if the teachers id is in the kids teachers list
-        if (user.userId in data) {
-          setMatched(true);
+
+        for (let i = 0; i < data.matches.length; i++) {
+          if (data.matches[i].userId === localStorage.getItem('id')) {
+            setMatched(true);
+            console.log("matched")
+          }
         }
       })
       .catch(error => {
@@ -113,16 +156,16 @@ const Profile: React.FC = () => {
 
 
   // cases
-  // 1 own profile where id == id (should have edit button)
-  // 2 teacher profile where teacher && id != id && teacher not in mymatches (should have request button)
-  // 3 teacher profile where they are in my matches (should have nothing)
-  // 4 student profiles (should have nothing)
-  // 5 my account profiles (should have nothing)
 
-  // child cases
+  // teacher view own, student
+
+  // parent views own, child, teacher
+  // child will have button to view their matches 
+  // teacher willl have button to request a match
+  // student views own, teacher
+  // teacher will have requst match button
 
   // change request button to also ask which kid it is requesting for
-  // change to unmatch button if they are already matched
 
   const renderContent = () => {
     if (id === localStorage.getItem('id')) {
@@ -130,15 +173,21 @@ const Profile: React.FC = () => {
         <img src={"https://cdn-icons-png.flaticon.com/128/860/860814.png"} alt="edit profile" className="editprofilebutton" />
       );
     } else if (user !== null) {
-      if (userType === "Student" && user.userType === "Teacher" && matched === false) {
-        return (<button onClick={handleRequest}>request</button>);
-      } else if (userType === "Parent" && user.userType === "Teacher" && matched === false) {
+      if (userType === "Student" && user.userType === "Teacher") {
+        if (matched === false) {
+          return (<button onClick={handleRequest}>request</button>);
+        } else {
+          // unmatch student and teacher if already matched
+          return (<button onClick={unmatch}>unmatch</button>);
+        }
+      } else if (userType === "Parent" && user.userType === "Teacher") {
+        // request match have modal for kids
         return (<p>hihi</p>);
       } else if (user.userType === "Child") {
+        // navigate view matches/ id
+        return (<button onClick={viewMatch}>view matches</button>);
+      } else if (user.userType === "Student") {
         return;
-      }
-      else {
-        return (<button onClick={handleRequest}>request</button>);
       }
     }
   }
