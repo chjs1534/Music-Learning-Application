@@ -80,19 +80,22 @@ exports.handler = async (event, context) => {
         'Access-Control-Allow-Origin': '*',
     };
     let res = {};
+    let user;
 
     try {
         if (!event.pathParameters.username.includes("@")) {
             body = await queryUsersByUsername(event.pathParameters.username);
+            user = body.Items[0]
         } else {
             body = await queryUsersByEmail(event.pathParameters.username);
+            if (body.Items.length > 1) user = body.Items.find(item => item.userType === "Parent");
+            else user = body.Items[0]
         }
 
-        if (!body.Items || body.Items.length === 0) {
-            throw new Error("No user found with the given username or email.");
-        }
+        // if (!body.Items || body.Items.length === 0) {
+        //     throw new Error("No user found with the given username or email.");
+        // }
 
-        const user = body.Items[0];
         res = {
             userId: user.userId,
             userType: user.userType
