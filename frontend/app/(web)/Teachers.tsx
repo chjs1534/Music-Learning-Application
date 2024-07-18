@@ -5,7 +5,7 @@ import '../styles/website.css';
 
 const Teachers = () => {
   const [teachers, setTeachers] = useState();
-  const [myTeachers, setMyTeachers] = useState<[string]>();
+  const [myTeachers, setMyTeachers] = useState();
   const [id, setId] = useState<string>();
   const [token, setToken] = useState<string>();
 

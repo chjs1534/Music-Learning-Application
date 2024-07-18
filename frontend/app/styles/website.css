@@ -497,3 +497,8 @@ body {
 .request-button {
 
 }
+
+.modal-accounts-div {
+    display: flex;
+    margin: 20px;
+}

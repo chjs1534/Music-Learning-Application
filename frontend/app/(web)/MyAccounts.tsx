@@ -4,6 +4,7 @@ import '../styles/website.css';
 import NavBar from './NavBar';
 import { mobilePoolData } from '../config/poolData';
 import StudentCard from '../../components/StudentCard';
+import { useNavigate } from 'react-router-dom';
 
 const UserPool = new CognitoUserPool(mobilePoolData);
 
@@ -28,6 +29,7 @@ const MyAccounts: React.FC = () => {
     const [id, setId] = useState<string>();
 
     const modalRef = useRef<HTMLDivElement>(null);
+    const navigate = useNavigate();
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
@@ -129,12 +131,7 @@ const MyAccounts: React.FC = () => {
 
     const handleCloseModal = (e: React.MouseEvent<HTMLDivElement>) => {
         if (modalRef.current === e.target) {
-            // setShowModal(false);
-            // setUsername('');
-            // setPassword('');
-            // setConfirmPassword('');
-            // setErrorMessage('');
-            console.log("handleCloseModal if click outside to close")
+            setShowModal(false);
         }
     };
 
@@ -189,6 +186,10 @@ const MyAccounts: React.FC = () => {
         .catch(error => {
             console.error('Error:', error.message, error.code || error);
         });
+    }
+
+    const handleClick = (accountId) => {
+        navigate(`/profile/${accountId}`);
     }
 
     return (
@@ -300,6 +301,7 @@ const MyAccounts: React.FC = () => {
               <StudentCard
                 id={acc.userId}
                 token={token}
+                handleClick={handleClick}
               />
             ))) : null}
           </div>

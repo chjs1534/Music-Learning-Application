@@ -1,19 +1,14 @@
 import React, { useState, useEffect } from "react";
 import '../app/styles/website.css';
-import { useNavigate } from "react-router-dom";
 
 interface StudentCardProps {
     id: string;
     token: string;
+    handleClick: (id: string) => void;
 }
 
-const StudentCard: React.FC<StudentCardProps> = ({ id, token }) => {
+const StudentCard: React.FC<StudentCardProps> = ({ id, token, handleClick }) => {
     const [user, setUser] = useState<string>(null);
-
-    const navigate = useNavigate();
-    const handleClick = () => {
-        navigate(`/profile/${id}`);
-    }
 
     useEffect(() => {
         getDetails();
@@ -53,7 +48,7 @@ const StudentCard: React.FC<StudentCardProps> = ({ id, token }) => {
 }
 
     return (
-        <div className="teacher-card" onClick={handleClick}>
+        <div className="teacher-card" onClick={() => handleClick(id)}>
             <div className="teacher-ad">
             </div>
             {user && <div className="teacher-detail">

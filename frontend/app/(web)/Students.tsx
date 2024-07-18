@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import NavBar from './NavBar'
 import StudentCard from '../../components/StudentCard';
+import { useNavigate } from 'react-router-dom';
 
 const Students: React.FC = () => {
   const [students, setStudents] = useState();
   const [id, setId] = useState<string>();
   const [token, setToken] = useState<string>();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     setId(localStorage.getItem('id'))
@@ -45,6 +48,10 @@ const Students: React.FC = () => {
       });
   }
 
+  const handleClick = (studentId) => {
+      navigate(`/profile/${studentId}`);
+  }
+
   return (
     <div className="homepage">
       <div className="profile">
@@ -56,8 +63,9 @@ const Students: React.FC = () => {
               <StudentCard
                 id={student.userId}
                 token={token}
+                handleClick={handleClick}
               />
-            ))) : <p>No sdtudents</p>
+            ))) : <p>No students</p>
             }
           </div>
         </div>
