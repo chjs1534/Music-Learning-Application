@@ -1,6 +1,307 @@
-import React, { useState, useRef, useEffect } from 'react';
+// import React, { useState, useRef, useEffect } from 'react';
+// import NavBar from './NavBar';
+// import '../styles/website.css';
+
+// interface Friend {
+//   id: string;
+//   name: string;
+//   profilePic: string;
+//   messages: Message[];
+// }
+
+// interface Message {
+//   sender: string;
+//   content: string;
+//   type: 'text' | 'image';
+//   time: string;
+// }
+
+// const friendsData: Friend[] = [
+//   {
+//     id: "123",
+//     name: "freind lol",
+//     profilePic: 'https://via.placeholder.com/50',
+//     messages: [
+//       { sender: 'Friend 4', content: 'Hey! New friend added!', type: 'text', time: '2:00 PM' },
+//     ],
+//   },
+// ];
+
+// const MessageScreen = () => {
+//   const WEBSOCKET_API = 'wss://xeoe7fp8z0.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage_websocket/'
+
+//   const [friends, setFriends] = useState<Friend[]>(friendsData);
+//   const [selectedFriendId, setSelectedFriendId] = useState<string | null>(null);
+//   const [messageText, setMessageText] = useState<string>('');
+//   const [imageFile, setImageFile] = useState<File | null>(null);
+//   const messageEndRef = useRef<HTMLDivElement | null>(null);
+//   const ws = useRef<WebSocket | null>(null);
+
+//   const [token, setToken] = useState<string | null>(null);
+//   const [userId, setUserId] = useState<string | null>(null);
+
+//   const selectedFriend = friends.find(friend => friend.id === selectedFriendId);
+
+//   useEffect(() => {
+//     setToken(localStorage.getItem('token'));
+//     setUserId(localStorage.getItem('id'));
+//     if (userId) {
+//       getFriendIDs();
+
+//       ws.current = new WebSocket(`${WEBSOCKET_API}?userId=${userId}`);
+
+//       ws.current.onopen = () => {
+//         console.log("connected");
+//       };
+
+//       ws.current.onmessage = (evt) => {
+//         try {
+//           const message = JSON.parse(evt.data);
+//           console.log(message, selectedFriendId)
+//           handleIncomingMessage(message);
+//         } catch {
+//           console.log('error in parsing');
+//         }
+//       };
+
+//       ws.current.onclose = () => {
+//         console.log("disconnected");
+//         // Example reconnection logic:
+//         // setTimeout(() => {
+//         //   ws.current = new WebSocket(`${WEBSOCKET_API}?userId=${userId}`);
+//         // }, 3000); // Reconnect after 3 seconds
+//       };
+
+//       ws.current.onerror = (error) => {
+//         console.error('WebSocket error:', error);
+//       };
+
+//       return () => {
+//         if (ws.current) {
+//           ws.current.close();
+//         }
+//       };
+//     }
+//   }, [token, userId]);
+
+//   const getFriendIDs = async () => {
+//     await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/match/getMatches/${userId}`, {
+//       method: 'GET',
+//       headers: {
+//         'Authorization': token,
+//         'Content-Type': 'application/json',
+//       },
+//     })
+//       .then(response => {
+//         if (!response.ok) {
+//           return response.text().then(text => { throw new Error(text); });
+//         }
+//         return response.json();
+
+//       })
+//       .then(data => {
+//         for (let i = 0; i < data.matches.length; i++) {
+//           getFriendDetails(data.matches[i].userId)
+//         }
+//       })
+//       .catch(error => {
+//         console.error('Error:', error.message);
+//       });
+//   };
+
+//   const getFriendDetails = async (userId) => {
+//     await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getUser/${userId}`, {
+//       method: 'GET',
+//       headers: {
+//         'Authorization': token,
+//         'Content-Type': 'application/json',
+//       },
+//     })
+//       .then(response => {
+//         if (!response.ok) {
+//           return response.text().then(text => { throw new Error(text); });
+//         }
+//         return response.json();
+
+//       })
+//       .then(data => {
+//           setFriends(prevFriends => [
+//             ...prevFriends,
+//             {
+//               id: data.userId,
+//               name: data.firstName + ' ' + data.lastName,
+//               profilePic: 'https://via.placeholder.com/50',
+//               messages: [],
+//             },
+//           ]);
+//       })
+//       .catch(error => {
+//         console.error('Error:', error.message);
+//       });
+//   };
+
+//   const handleIncomingMessage = (message) => {
+//     const friendId = message.userId === userId ? selectedFriendId : message.userId;
+//     console.log(selectedFriendId, message.userId, friendId)
+//     const updatedFriends = friends.map(friend =>
+//       friend.id === friendId
+//         ? { ...friend, messages: [...friend.messages, message] }
+//         : friend
+//     );
+//     console.log(updatedFriends)
+//     setFriends(updatedFriends);
+//     setTimeout(scrollToBottom, 0);
+//   };
+
+//   const handleFriendClick = (id: string) => {
+//     setSelectedFriendId((prevId) => {
+//       console.log(id, prevId, selectedFriendId);
+//       return id;
+//     });
+//     setTimeout(scrollToBottom, 0);
+//   };
+
+//   const handleSendMessage = () => {
+//     console.log(selectedFriendId)
+//     if (!messageText.trim() && !imageFile) return;
+
+//     let newMessage: Message = {
+//       sender: userId,
+//       content: messageText,
+//       type: 'text',
+//       time: new Date().toLocaleTimeString(),
+//     };
+
+//     if (imageFile) {
+//       newMessage = {
+//         sender: userId,
+//         content: URL.createObjectURL(imageFile),
+//         type: 'image',
+//         time: new Date().toLocaleTimeString(),
+//       };
+//     }
+
+//     if (ws.current.readyState === WebSocket.OPEN) {
+
+//       const sendMessage = { "action": "sendMessage", "userId": userId, "msg": messageText }
+
+//       ws.current.send(JSON.stringify(sendMessage));
+//       console.log(sendMessage);
+//     } else {
+//       console.log('WebSocket not open to send message');
+//     }
+
+//     const updatedFriends = friends.map(friend =>
+//       friend.id === selectedFriendId
+//         ? { ...friend, messages: [...friend.messages, newMessage] }
+//         : friend
+//     );
+
+//     setFriends(updatedFriends);
+//     setMessageText('');
+//     setImageFile(null);
+//     setTimeout(scrollToBottom, 0); // Allow for re-render before scrolling
+//   };
+
+//   const handleKeyDown = (event: React.KeyboardEvent) => {
+//     if (event.key === 'Enter') {
+//       handleSendMessage();
+//     }
+//   };
+
+//   const handleSendImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+//     const file = event.target.files?.[0];
+//     if (file) {
+//       setImageFile(file);
+//     }
+//   };
+
+//   const scrollToBottom = () => {
+//     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+//   };
+
+//   return (
+//     <div className="homepage">
+//       <div className="messages">
+//         <NavBar />
+//         <div className="message-screen">
+//           <div className="friend-list">
+//             <h2>Chats</h2>
+//             {friends.map(friend => (
+//               <div key={friend.id} className="friend" onClick={() => handleFriendClick(friend.id)}>
+//                 <img src={friend.profilePic} alt="Profile" className="profile-pic" />
+//                 <span className="friend-name">{friend.name}</span>
+//               </div>
+//             ))}
+//           </div>
+//           <div className="message-box">
+//             {selectedFriend && (
+//               <>
+//                 <div className="user-container">
+//                   <img src={selectedFriend.profilePic} alt="Profile" className="profile-pic" />
+//                   <span className="username">{selectedFriend.name}</span>
+//                 </div>
+//                 <div className="message-container">
+//                   {selectedFriend.messages.map((message, index) => (
+//                     <div
+//                       key={index}
+//                       className={`message ${message.sender === 'You' ? 'user-message' : ''}`}
+//                       style={{ textAlign: message.sender === 'You' ? 'right' : 'left' }}
+//                     >
+//                       {message.sender !== 'You' && (
+//                         <img src={selectedFriend.profilePic} alt="Profile" className="profile-pic" />
+//                       )}
+//                       <div className="message-content">
+//                         <span className="message-sender">{message.sender}</span>
+//                         {message.type === 'text' ? (
+//                           <p className="message-text">{message.content}</p>
+//                         ) : (
+//                           <img src={message.content} alt="Sent" className="message-image" />
+//                         )}
+//                         <span className="message-time">{message.time}</span>
+//                       </div>
+//                       {message.sender === 'You' && (
+//                         <img src="https://via.placeholder.com/50/0000FF/808080?text=User" alt="Profile" className="profile-pic user-pic" />
+//                       )}
+//                     </div>
+//                   ))}
+//                   <div ref={messageEndRef} />
+//                 </div>
+//                 <div className="chat-container">
+//                   <input
+//                     type="text"
+//                     placeholder="Type a message..."
+//                     className="message-input"
+//                     value={messageText}
+//                     onChange={(e) => setMessageText(e.target.value)}
+//                     onKeyDown={handleKeyDown}
+//                   />
+//                   <button className="send-button" onClick={handleSendMessage}> <img src="https://cdn-icons-png.flaticon.com/128/10322/10322482.png" alt="Profile" className="profile-pic" /></button>
+//                   <button className="emoji-button"><img src="https://cdn-icons-png.flaticon.com/128/1023/1023656.png" alt="Profile" className="profile-pic" /></button>
+//                   <input
+//                     type="file"
+//                     className="image-input"
+//                     onChange={handleSendImage}
+//                     style={{ display: 'none' }}
+//                     id="image-input"
+//                   />
+//                   <label htmlFor="image-input" className="image-button"><img src="https://cdn-icons-png.flaticon.com/128/739/739249.png" alt="Profile" className="profile-pic" /></label>
+//                 </div>
+//               </>
+//             )}
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default MessageScreen;
+
+import React, { useEffect, useRef, useState } from 'react';
 import NavBar from './NavBar';
-import '../styles/website.css';
+
+const WEBSOCKET_API = 'wss://xeoe7fp8z0.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage_websocket/';
 
 interface Friend {
   id: string;
@@ -10,40 +311,30 @@ interface Friend {
 }
 
 interface Message {
-  sender: string;
+  senderId: string;
   content: string;
-  type: 'text' | 'image' | 'file';
+  type: 'text';
   time: string;
 }
 
-const friendsData: Friend[] = [];
-
-const MessageScreen = () => {
-  const WEBSOCKET_API = 'wss://xeoe7fp8z0.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage_websocket/'
-
-  const [friends, setFriends] = useState<Friend[]>(friendsData);
+const MessageComponent: React.FC = () => {
+  const [userId, setUserId] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [friends, setFriends] = useState<Friend[]>([]);
   const [selectedFriendId, setSelectedFriendId] = useState<string | null>(null);
   const [messageText, setMessageText] = useState<string>('');
-  const [imageFile, setImageFile] = useState<File | null>(null);
   const messageEndRef = useRef<HTMLDivElement | null>(null);
+
   const ws = useRef<WebSocket | null>(null);
-
-  const [token, setToken] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
-
-  const selectedFriend = friends.find(friend => friend.id === selectedFriendId);
 
   useEffect(() => {
     setToken(localStorage.getItem('token'));
     setUserId(localStorage.getItem('id'));
-  }, [token, userId]);
 
-  useEffect(() => {
     if (userId) {
       getFriendIDs();
-      console.log(userId, token)
 
-      ws.current = new WebSocket(`${WEBSOCKET_API}?userId=${userId}`);
+      ws.current = new WebSocket(`${WEBSOCKET_API}`);
 
       ws.current.onopen = () => {
         console.log("connected");
@@ -52,7 +343,7 @@ const MessageScreen = () => {
       ws.current.onmessage = (evt) => {
         try {
           const message = JSON.parse(evt.data);
-          console.log(message, "reached ws.current.onmessage")
+          console.log(message);
           handleIncomingMessage(message);
         } catch {
           console.log('error in parsing');
@@ -61,10 +352,6 @@ const MessageScreen = () => {
 
       ws.current.onclose = () => {
         console.log("disconnected");
-        // Example reconnection logic:
-        setTimeout(() => {
-          ws.current = new WebSocket(`${WEBSOCKET_API}?userId=${userId}`);
-        }, 3000); // Reconnect after 3 seconds
       };
 
       ws.current.onerror = (error) => {
@@ -77,13 +364,40 @@ const MessageScreen = () => {
         }
       };
     }
-  }, [userId]);
+  }, [token, userId]);
+
+  const handleIncomingMessage = (message) => {
+    const newMessage: Message = {
+      senderId: message.senderId,
+      content: message.msg,
+      type: 'text',
+      time: new Date().toISOString(),
+    };
+    console.log(selectedFriendId, message.receiverId, message)
+    setFriends(prevFriends =>
+      prevFriends.map(friend =>
+        (friend.id === message.senderId && userId === message.receiverId) || (friend.id === message.receiverId && userId === message.senderId)
+          ? {
+            ...friend,
+            messages: [...friend.messages, newMessage]
+          }
+          : friend
+      )
+    );
+    setMessageText('');
+    setTimeout(scrollToBottom, 0);
+  };
+
+  useEffect(() => {
+    console.log(friends);
+  }, [friends]);
 
   const getFriendIDs = async () => {
+    if (!userId) return;
     await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/match/getMatches/${userId}`, {
       method: 'GET',
       headers: {
-        'Authorization': token,
+        'Authorization': token!,
         'Content-Type': 'application/json',
       },
     })
@@ -92,7 +406,6 @@ const MessageScreen = () => {
           return response.text().then(text => { throw new Error(text); });
         }
         return response.json();
-
       })
       .then(data => {
         for (let i = 0; i < data.matches.length; i++) {
@@ -104,11 +417,11 @@ const MessageScreen = () => {
       });
   };
 
-  const getFriendDetails = async (userId) => {
-    await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getUser/${userId}`, {
+  const getFriendDetails = async (friendId: string) => {
+    await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getUser/${friendId}`, {
       method: 'GET',
       headers: {
-        'Authorization': token,
+        'Authorization': token!,
         'Content-Type': 'application/json',
       },
     })
@@ -117,19 +430,15 @@ const MessageScreen = () => {
           return response.text().then(text => { throw new Error(text); });
         }
         return response.json();
-
       })
       .then(data => {
-        console.log(data)
         setFriends(prevFriends => [
           ...prevFriends,
           {
             id: data.userId,
-            name: data.firstName + data.lastName,
+            name: data.firstName + ' ' + data.lastName,
             profilePic: 'https://via.placeholder.com/50',
-            messages: [
-              { sender: 'Friend 4', content: 'Hey! New friend added!', type: 'text', time: '2:00 PM' },
-            ],
+            messages: [],
           },
         ]);
       })
@@ -138,79 +447,18 @@ const MessageScreen = () => {
       });
   };
 
-  const handleIncomingMessage = (message: Message) => {
-    const friendId = message.sender === 'You' ? selectedFriendId : parseInt(message.sender);
-    const updatedFriends = friends.map(friend =>
-      friend.id === friendId
-        ? { ...friend, messages: [...friend.messages, message] }
-        : friend
-    );
-    setFriends(updatedFriends);
-    setTimeout(scrollToBottom, 0);
-  };
-
-  const handleFriendClick = (id: string) => {
-    setSelectedFriendId(id);
-    setTimeout(scrollToBottom, 0);
-  };
-
-  const handleSendMessage = () => {
-    // console.log(selectedFriend)
-    if (!messageText.trim() && !imageFile) return;
-
-    let newMessage: Message = {
-      sender: 'You',
-      content: messageText,
-      type: 'text',
-      time: new Date().toLocaleTimeString(),
-    };
-
-    if (imageFile) {
-      newMessage = {
-        sender: 'You',
-        content: URL.createObjectURL(imageFile),
-        type: 'image',
-        time: new Date().toLocaleTimeString(),
+  const sendMessage = () => {
+    if (ws.current && ws.current.readyState === WebSocket.OPEN && selectedFriendId) {
+      const message = {
+        action: 'sendMessage',
+        senderId: userId,
+        msg: messageText,
+        receiverId: selectedFriendId
       };
-    }
 
-    // if (ws.current) {
-    //   ws.current.send(JSON.stringify(newMessage));
-    // }
-    console.log('1');
-    if (ws.current.readyState === WebSocket.OPEN) {
-      console.log('2');
-      // ws.current.send(JSON.stringify(newMessage));
-      const sendMessage = {"action": "message", "senderId": userId , "msg": messageText}
-    
-      ws.current.send(JSON.stringify(sendMessage));
-      console.log(sendMessage);
+      ws.current.send(JSON.stringify(message));
     } else {
-      console.log('WebSocket not open to send message');
-    }
-
-    const updatedFriends = friends.map(friend =>
-      friend.id === selectedFriendId
-        ? { ...friend, messages: [...friend.messages, newMessage] }
-        : friend
-    );
-
-    setFriends(updatedFriends);
-    setMessageText('');
-    setImageFile(null);
-    setTimeout(scrollToBottom, 0); // Allow for re-render before scrolling
-  };
-
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter') {
-      handleSendMessage();
-    }
-  };
-
-  const handleSendImage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setImageFile(file);
+      console.log('WebSocket not open or no friend selected to send message');
     }
   };
 
@@ -224,43 +472,25 @@ const MessageScreen = () => {
         <NavBar />
         <div className="message-screen">
           <div className="friend-list">
-            <h2>Chats</h2>
             {friends.map(friend => (
-              <div key={friend.id} className="friend" onClick={() => handleFriendClick(friend.id)}>
-                <img src={friend.profilePic} alt="Profile" className="profile-pic" />
-                <span className="friend-name">{friend.name}</span>
+              <div key={friend.id} onClick={() => setSelectedFriendId(friend.id)}>
+                <img src={friend.profilePic} alt={""} />
+                <div>{friend.name}</div>
+                <div>{friend.id}</div>
               </div>
             ))}
           </div>
           <div className="message-box">
-            {selectedFriend && (
+            {selectedFriendId && (
               <>
                 <div className="user-container">
-                  <img src={selectedFriend.profilePic} alt="Profile" className="profile-pic" />
-                  <span className="username">{selectedFriend.name}</span>
+                  {friends.find(friend => friend.id === selectedFriendId)?.name}
                 </div>
                 <div className="message-container">
-                  {selectedFriend.messages.map((message, index) => (
-                    <div
-                      key={index}
-                      className={`message ${message.sender === 'You' ? 'user-message' : ''}`}
-                      style={{ textAlign: message.sender === 'You' ? 'right' : 'left' }}
-                    >
-                      {message.sender !== 'You' && (
-                        <img src={selectedFriend.profilePic} alt="Profile" className="profile-pic" />
-                      )}
-                      <div className="message-content">
-                        <span className="message-sender">{message.sender}</span>
-                        {message.type === 'text' ? (
-                          <p className="message-text">{message.content}</p>
-                        ) : (
-                          <img src={message.content} alt="Sent" className="message-image" />
-                        )}
-                        <span className="message-time">{message.time}</span>
-                      </div>
-                      {message.sender === 'You' && (
-                        <img src="https://via.placeholder.com/50/0000FF/808080?text=User" alt="Profile" className="profile-pic user-pic" />
-                      )}
+                  {friends.find(friend => friend.id === selectedFriendId)?.messages.map((message, index) => (
+                    <div key={index} className={message.senderId === userId ? 'my-message' : 'their-message'}>
+                      <div>{message.content}</div>
+                      <div>{message.time}</div>
                     </div>
                   ))}
                   <div ref={messageEndRef} />
@@ -268,22 +498,11 @@ const MessageScreen = () => {
                 <div className="chat-container">
                   <input
                     type="text"
-                    placeholder="Type a message..."
-                    className="message-input"
                     value={messageText}
                     onChange={(e) => setMessageText(e.target.value)}
-                    onKeyDown={handleKeyDown}
+                    onKeyDown={(e) => { if (e.key === 'Enter') sendMessage(); }}
                   />
-                  <button className="send-button" onClick={handleSendMessage}> <img src="https://cdn-icons-png.flaticon.com/128/10322/10322482.png" alt="Profile" className="profile-pic" /></button>
-                  <button className="emoji-button"><img src="https://cdn-icons-png.flaticon.com/128/1023/1023656.png" alt="Profile" className="profile-pic" /></button>
-                  <input
-                    type="file"
-                    className="image-input"
-                    onChange={handleSendImage}
-                    style={{ display: 'none' }}
-                    id="image-input"
-                  />
-                  <label htmlFor="image-input" className="image-button"><img src="https://cdn-icons-png.flaticon.com/128/739/739249.png" alt="Profile" className="profile-pic" /></label>
+                  <button onClick={sendMessage}>Send</button>
                 </div>
               </>
             )}
@@ -294,4 +513,4 @@ const MessageScreen = () => {
   );
 };
 
-export default MessageScreen;
+export default MessageComponent;
