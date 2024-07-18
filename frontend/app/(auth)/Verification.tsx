@@ -8,6 +8,7 @@ import {
   CognitoUserAttribute,
 } from 'amazon-cognito-identity-js';
 import { poolData } from '../config/poolData';
+import { mobilePoolData } from '../config/poolData';
 
 interface LocationState {
   email: string;
@@ -15,6 +16,7 @@ interface LocationState {
 }
 
 const UserPool = new CognitoUserPool(poolData);
+const mobileUserPool = new CognitoUserPool(mobilePoolData);
 
 export const verifyUser = (
   email: string,
@@ -64,18 +66,18 @@ export const authenticate = (Email: string, Password: string): Promise<string | 
 
 const Verification: React.FC = () => {
   const [verificationCode, setVerificationCode] = useState<string>('');
-  // const navigate = useNavigate();
-  // const location = useLocation();
-  // const userType = location.state?.userType || 'no';
-  // const email = location.state?.email || 'no2';
-  // const password = location.state?.password || '3';
 
   const queryParams = new URLSearchParams(location.search);
   const userType = queryParams.get('userType') || '';
+  const username = queryParams.get('username') || '';
+  const firstName = queryParams.get('firstName') || '';
+  const lastName = queryParams.get('lastName') || '';
   const email = queryParams.get('email') || '';
   const password = queryParams.get('password') || '';
 
-  console.log(userType, email, password)
+  const [userId, setUserId] = useState<string | null>(null);
+
+  console.log(userType, email, username, password, userId)
 
   useEffect(() => {
     if (!userType || !email || !password) {
@@ -96,9 +98,65 @@ const Verification: React.FC = () => {
       });
 
       const authToken = await authenticate(email, password);
+
       if (authToken) {
-        const queryParams = new URLSearchParams({ authToken, userType, email, password });
+        console.log(authToken)
+        await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getUserId/${email}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': authToken,
+            'Content-Type': 'application/json'
+          },
+        }).then(response => {
+          if (!response.ok) {
+            return response.text().then(text => { throw new Error(text) });
+          }
+          else {
+            console.log(response);
+          }
+          return response.json();
+        })
+          .then(data => {
+            console.log('Successlelelele:', data);
+            localStorage.setItem('id', data.userId);
+            localStorage.setItem('userType', data.userType);
+            setUserId(data.userId);
+            console.log(data);
+
+            if (data.userType == "Student") {
+              console.log("registering student");
+              const registerMobile = async () => {
+
+                const attributeList: CognitoUserAttribute[] = [];
+                const dataUsername = { Name: 'username', Value: username };
+                const attributeUsername = new CognitoUserAttribute(dataUsername);
+
+                attributeList.push(attributeUsername);
+
+                mobileUserPool.signUp(username, password, attributeList, null, (err, result) => {
+                  if (err) {
+                    console.log(err.message || JSON.stringify(err));
+                  } else {
+                    // setAccounts(prevAccounts => [...prevAccounts, { username }]);
+                    // setUsername('');
+                    // setPassword('');
+                    // setConfirmPassword('');
+                    // setShowModal(false);
+                    // setErrorMessage('');
+                    console.log("ye sye yes");
+                  }
+                });
+              };
+              registerMobile();
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error.message, error.code || error);
+          });
+
+        const queryParams = new URLSearchParams();
         window.location.href = `/homepage?${queryParams.toString()}`;
+        localStorage.setItem('token', authToken);
       }
     } catch (err) {
       console.log(err);
@@ -111,7 +169,10 @@ const Verification: React.FC = () => {
 
   return (
     <div className="auth-screen">
-      <h1>Mewsic 🎵</h1>
+      <div className="auth-banner">
+        <h1 className="header-logo">Mewsic</h1>
+        <img className="gif" src="https://media0.giphy.com/media/CPWmNCzfMFgC8QUAbp/giphy.gif?cid=6c09b952s5rjd6w005v10j0yd1movcoho6iaixxs3pdguhig&ep=v1_internal_gif_by_id&rid=giphy.gif&ct=s" />
+      </div>
       <div className="auth-container">
         <h2>Please Enter Your Verification Code</h2>
         <input

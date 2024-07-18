@@ -156,6 +156,7 @@ const Register: React.FC = () => {
         })
         .then(data => {
           console.log('Success:', data);
+          localStorage.setItem('id', data.userId);
         })
         .catch(error => {
           console.error('Error:', error.message, error.code || error);
@@ -166,11 +167,11 @@ const Register: React.FC = () => {
       if (err) {
         console.error(err);
       } else {
-        const queryParams = new URLSearchParams({ userType, email, password });
+        const queryParams = new URLSearchParams({ firstName, lastName, userType, email, password, username });
+        postUserDetails();
         window.location.href = `/verification?${queryParams.toString()}`;
       }
     });
-    postUserDetails();
   };
 
   return (

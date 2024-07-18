@@ -36,6 +36,7 @@ const Profile: React.FC = () => {
       })
       .then(data => {
         setUser(data);
+        console.log(data)
       })
       .catch(error => {
         console.error('Error:', error.message);
@@ -69,7 +70,7 @@ const Profile: React.FC = () => {
       <NavBar />
       <div className="profile">
         <div className="profile-header">
-          <img src="https://cdn-icons-png.flaticon.com/128/847/847969.png" alt="Profile" className="profile-icon" />
+          {user && <img src={user.profilePictureUrl} alt="Profile" className="profile-icon" />}
         </div>
         {user && (
           <div className="profile-content">

@@ -45,11 +45,7 @@ export const authenticate = (Email: string, Password: string): Promise<CognitoUs
   });
 };
 
-interface LoginProps {
-  setId: (id: string) => void;
-}
-
-const Login: React.FC<LoginProps> = ({ setId }) => {
+const Login: React.FC = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [dragging, setDragging] = useState<boolean>(false);
@@ -58,7 +54,7 @@ const Login: React.FC<LoginProps> = ({ setId }) => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -97,7 +93,6 @@ const Login: React.FC<LoginProps> = ({ setId }) => {
       login();
     }
   }
-
 
   const login = async () => {
     if (username.length < 3) {
@@ -147,7 +142,6 @@ const Login: React.FC<LoginProps> = ({ setId }) => {
           console.log('Success:', data);
           localStorage.setItem('id', data.userId);
           localStorage.setItem('userType', data.userType);
-          setId(data.userId);
         })
         .catch(error => {
           console.error('Error:', error.message, error.code || error);
