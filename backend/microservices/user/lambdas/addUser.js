@@ -1,8 +1,10 @@
 const aws = require('aws-sdk');
 const dynamo = new aws.DynamoDB.DocumentClient();
 const crypto = require("crypto");
+const s3 = new aws.S3();
 
 const tableName = "UserTable";
+const bucketName = "PfpBucket";
 
 exports.handler = async (event, context) => {
     let body;
@@ -15,6 +17,22 @@ exports.handler = async (event, context) => {
 
     try {
         let requestJSON = JSON.parse(event.body);
+        // pfp
+        const profilePictureData = Buffer.from(requestJSON.profilePicture, 'base64');
+        const key = `${uuid}/profile-picture.jpg`;
+
+        await s3.putObject({
+            Bucket: bucketName,
+            Key: key,
+            Body: profilePictureData,
+            ContentEncoding: 'base64',
+            ContentType: 'image/jpeg' // Adjust based on the actual content type
+        }).promise();
+
+        s3Url = `https://${bucketName}.s3.amazonaws.com/${key}`;
+
+
+        // add user
         if (requestJSON.userType == "Child") {
             let parentUser = await dynamo.get(
                 {

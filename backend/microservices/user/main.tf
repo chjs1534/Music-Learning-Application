@@ -170,13 +170,63 @@ resource "aws_iam_policy" "lambda_dynamodb_policy_user" {
   })
 }
 
+# Policy for s3
+resource "aws_iam_policy" "lambda_s3_policy" {
+  name = "lambda_s3_policy"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:*",
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:ListBucket",
+        ],
+        Resource = [
+          "arn:aws:s3:::*",
+          "arn:aws:s3:::${aws_s3_bucket.pfp_storage.id}",
+          "arn:aws:s3:::${aws_s3_bucket.pfp_storage.id}/*",
+        ],
+      },
+    ],
+  })
+}
+
 resource "aws_iam_role_policy_attachment" "lambda_policy" {
   for_each = {
     "AWSLambdaBasicExecutionRole": "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-    "AWSDynamodbRole": aws_iam_policy.lambda_dynamodb_policy_user.arn
+    "AWSDynamodbRole": aws_iam_policy.lambda_dynamodb_policy_user.arn,
+    "AWSS3Role": aws_iam_policy.lambda_s3_policy.arn
   }
   role       = aws_iam_role.lambda_exec.name
   policy_arn = each.value
+}
+
+# S3 bucket for pfp storage
+resource "aws_s3_bucket" "pfp_storage" {
+  bucket = "PfpBucket"
+}
+
+resource "aws_s3_bucket_ownership_controls" "pfp_storage" {
+  bucket = aws_s3_bucket.pfp_storage.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_acl" "pfp_storage" {
+  depends_on = [aws_s3_bucket_ownership_controls.pfp_storage]
+
+  bucket = aws_s3_bucket.pfp_storage.id
+  acl    = "private"
+}
+
+output "pfp_storage_name" {
+  description = "Name of the S3 bucket used to store function code."
+
+  value = aws_s3_bucket.pfp_storage.id
 }
 
 # Lambda functions

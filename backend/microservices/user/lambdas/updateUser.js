@@ -12,22 +12,60 @@ exports.handler = async (event, context) => {
 
     try {
         let requestJSON = JSON.parse(event.body);
-        body = await dynamo.update(
-            {
-                TableName: tableName,
-                Key: {
-                    userId: requestJSON.userId
-                },
-                UpdateExpression: "set #aboutMe = :aboutMe",
-                ExpressionAttributeNames: {
-                    "#aboutMe": "aboutMe"
-                },
-                ExpressionAttributeValues: {
-                    ":aboutMe": requestJSON.aboutMe
+        if (requestJSON.hasOwnProperty(aboutMe) && requestJSON.aboutMe != "") {
+            body = await dynamo.update(
+                {
+                    TableName: tableName,
+                    Key: {
+                        userId: requestJSON.userId
+                    },
+                    UpdateExpression: "set #aboutMe = :aboutMe",
+                    ExpressionAttributeNames: {
+                        "#aboutMe": "aboutMe"
+                    },
+                    ExpressionAttributeValues: {
+                        ":aboutMe": requestJSON.aboutMe
+                    }
                 }
-            }
-        ).promise();
-        body = {newAboutMe: requestJSON.aboutMe};
+            ).promise();
+            // body = {aboutMe: requestJSON.aboutMe};
+        }
+        if (requestJSON.hasOwnProperty(firstName) && requestJSON.firstName != "") {
+            body = await dynamo.update(
+                {
+                    TableName: tableName,
+                    Key: {
+                        userId: requestJSON.userId
+                    },
+                    UpdateExpression: "set #firstName = :firstName",
+                    ExpressionAttributeNames: {
+                        "#firstName": "firstName"
+                    },
+                    ExpressionAttributeValues: {
+                        ":firstName": requestJSON.firstName
+                    }
+                }
+            ).promise();
+            // body = {firstName: requestJSON.firstName};
+        }
+        if (requestJSON.hasOwnProperty(lastName) && requestJSON.lastName != "") {
+            body = await dynamo.update(
+                {
+                    TableName: tableName,
+                    Key: {
+                        userId: requestJSON.userId
+                    },
+                    UpdateExpression: "set #lastName = :lastName",
+                    ExpressionAttributeNames: {
+                        "#lastName": "lastName"
+                    },
+                    ExpressionAttributeValues: {
+                        ":lastName": requestJSON.lastName
+                    }
+                }
+            ).promise();
+            // body = {lastName: requestJSON.lastName};
+        }
     } catch (err) {
         statusCode = 400;
         body = err.message;
