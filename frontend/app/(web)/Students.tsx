@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import NavBar from './NavBar'
 import StudentCard from '../../components/StudentCard';
+import { useNavigate } from 'react-router-dom';
 
 const Students: React.FC = () => {
   const [students, setStudents] = useState();
   const [id, setId] = useState<string>();
   const [token, setToken] = useState<string>();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     setId(localStorage.getItem('id'))
@@ -37,12 +40,16 @@ const Students: React.FC = () => {
       return response.json();
     })
       .then(data => {
-        console.log('Success:', data);
+        console.log('Success456:', data);
         setStudents(data);
       })
       .catch(error => {
         console.error('Error:', error.message, error.code || error);
       });
+  }
+
+  const handleClick = (studentId) => {
+      navigate(`/profile/${studentId}`);
   }
 
   return (
@@ -54,10 +61,11 @@ const Students: React.FC = () => {
           <div className="myteachers">
             {students && students.matches.length > 0 ? (students.matches.map(student => (
               <StudentCard
-                id={id}
+                id={student.userId}
                 token={token}
+                handleClick={handleClick}
               />
-            ))) : <p>No sdtudents</p>
+            ))) : <p>No students</p>
             }
           </div>
         </div>

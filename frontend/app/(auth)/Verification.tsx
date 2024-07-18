@@ -155,7 +155,7 @@ const Verification: React.FC = () => {
           });
 
         const queryParams = new URLSearchParams();
-        window.location.href = `/homepage?${queryParams.toString()}`;
+        // window.location.href = `/homepage?${queryParams.toString()}`;
         localStorage.setItem('token', authToken);
       }
     } catch (err) {

@@ -215,7 +215,7 @@ body {
 }
 
 .modal-content {
-    background-color: var(--modal-background);
+    background-color: var(--modal-content-background);
     margin: auto;
     padding: 20px;
     border: 1px solid #888;
@@ -766,4 +766,9 @@ body {
     flex-direction: column;
     justify-content: top;
     align-items: center;
+}
+
+.modal-accounts-div {
+    display: flex;
+    margin: 20px;
 }

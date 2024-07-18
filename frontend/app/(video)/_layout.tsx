@@ -2,12 +2,12 @@ import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { Stack } from 'expo-router'
 
-const AuthLayout = () => {
+const VideoLayout = () => {
   return (
     <>
       <Stack>
         <Stack.Screen 
-          name="Login"
+          name="Video"
           options={{
             headerShown: false
           }}
@@ -17,4 +17,4 @@ const AuthLayout = () => {
   )
 }
 
-export default AuthLayout
+export default VideoLayout

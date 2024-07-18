@@ -10,9 +10,19 @@ const UserPool = new CognitoUserPool(poolData);
 const NavBar: React.FC = () => {
   const [userType, setUserType] = useState<string>();
   const [id, setId] = useState<string>();
-  const [loading, setLoading] = useState<boolean>(false);
   const [authToken, setAuthToken] = useState<string>();
   
+  // const navigate = useNavigate();
+
+  // const handleNavigation = (path: string): void => {
+  //   const currentPath = window.location.pathname;
+  //   if (currentPath === path) {
+  //     window.location.reload();
+  //   } else {
+  //     navigate(path);
+  //   }
+  // };
+
   useEffect(() => {
     setAuthToken(localStorage.getItem('token'))
     setUserType(localStorage.getItem('userType'))
@@ -24,44 +34,42 @@ const NavBar: React.FC = () => {
     const queryParams = new URLSearchParams();
     window.location.href = `${path}?${queryParams.toString()}`;
   };
+  useEffect(() => {
+    console.log(userType)
+  }, [userType]);
+
+  const renderContent = () => {
+    if (userType === "Teacher") {
+      return (<button className="nav-button" onClick={() => handleNavigation('/students')}>
+        <img src={"https://cdn-icons-png.flaticon.com/128/9316/9316744.png"} alt="Students" className="nav-icon" />
+        <span className="nav-button-text">Students</span>
+      </button>);
+    } else if (userType === "Student") {
+      return (<button className="nav-button" onClick={() => handleNavigation('/teachers')}>
+        <img src={"https://cdn-icons-png.flaticon.com/128/10455/10455354.png"} alt="Teachers" className="nav-icon" />
+        <span className="nav-button-text">Teachers</span>
+      </button>);
+    } else if (userType === "Parent") {
+      return (<>
+        <button className="nav-button" onClick={() => handleNavigation('/teachers')}>
+          <img src={"https://cdn-icons-png.flaticon.com/128/10455/10455354.png"} alt="Teachers" className="nav-icon" />
+          <span className="nav-button-text">Teachers</span>
+        </button>
+        <button className="nav-button" onClick={() => handleNavigation('/my-accounts')}>
+          <img src={"https://cdn-icons-png.flaticon.com/128/646/646395.png"} alt="Accounts" className="nav-icon" />
+          <span className="nav-button-text">Accounts</span>
+        </button>
+      </>);
+    }
+  }
 
   return (
-    <>{!loading ? <div className="navbar">
+    <div className="navbar">
       <button className="nav-button website-logo" onClick={() => handleNavigation('/homepage')}>
         Mewsic
       </button>
       <div className="nav-options">
-        {userType === "Teacher" ?
-          <button className="nav-button" onClick={() => handleNavigation('/students')}>
-            <img src={"https://cdn-icons-png.flaticon.com/128/9316/9316744.png"} alt="Students" className="nav-icon" />
-            <span className="nav-button-text">Students</span>
-          </button>
-          : null
-        }
-        {userType === "Student" ? <>
-          <button className="nav-button" onClick={() => handleNavigation('/teachers')}>
-            <img src={"https://cdn-icons-png.flaticon.com/128/10455/10455354.png"} alt="Teachers" className="nav-icon" />
-            <span className="nav-button-text">Teachers</span>
-          </button>
-          <button className="nav-button" onClick={() => handleNavigation('/my-accounts')}>
-            <img src={"https://cdn-icons-png.flaticon.com/128/646/646395.png"} alt="Accounts" className="nav-icon" />
-            <span className="nav-button-text">Accounts</span>
-          </button>
-        </>
-          : null}
-          {userType === "Parent" ? <>
-          <button className="nav-button" onClick={() => handleNavigation('/teachers')}>
-            <img src={"https://cdn-icons-png.flaticon.com/128/10455/10455354.png"} alt="Teachers" className="nav-icon" />
-            <span className="nav-button-text">Teachers</span>
-          </button>
-          <button className="nav-button" onClick={() => handleNavigation('/my-accounts')}>
-            <img src={"https://cdn-icons-png.flaticon.com/128/646/646395.png"} alt="Accounts" className="nav-icon" />
-            <span className="nav-button-text">Accounts</span>
-          </button>
-        </>
-          : null}
-
-
+        {renderContent()}
         <button className="nav-button" onClick={() => handleNavigation('/message')}>
           <img src={"https://cdn-icons-png.flaticon.com/128/542/542638.png"} alt="Message" className="nav-icon" />
           <span className="nav-button-text">Message</span>
@@ -82,8 +90,7 @@ const NavBar: React.FC = () => {
           <span className="nav-button-text">Settings</span>
         </button>
       </div>
-    </div>: null}</>
-    
+    </div>
   );
 };
 

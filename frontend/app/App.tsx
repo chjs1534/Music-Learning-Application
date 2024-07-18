@@ -14,6 +14,7 @@ import MessageScreen from './(web)/Message'
 import Students from './(web)/Students'
 import Teachers from './(web)/Teachers'
 import Notifications from './(web)/Notifications';
+import ViewMatches from './(web)/ViewMatches';
 
 // const router = createBrowserRouter([
 //   {
@@ -87,6 +88,7 @@ const App: React.FC = () => {
           <Route path="/students" element={<Students />} />
           <Route path="/teachers" element={<Teachers />} />
           <Route path="/notifications" element={<Notifications />} />
+          <Route path="/viewmatches/:id" element={<ViewMatches />} />
         </Routes>
       </Router>
     </>

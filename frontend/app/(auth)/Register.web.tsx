@@ -169,7 +169,7 @@ const Register: React.FC = () => {
       } else {
         const queryParams = new URLSearchParams({ firstName, lastName, userType, email, password, username });
         postUserDetails();
-        window.location.href = `/verification?${queryParams.toString()}`;
+        // window.location.href = `/verification?${queryParams.toString()}`;
       }
     });
   };
