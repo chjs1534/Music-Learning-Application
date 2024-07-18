@@ -171,8 +171,8 @@ resource "aws_iam_policy" "lambda_dynamodb_policy_user" {
 }
 
 # Policy for s3
-resource "aws_iam_policy" "lambda_s3_policy" {
-  name = "lambda_s3_policy"
+resource "aws_iam_policy" "lambda_s3_policy_pfp" {
+  name = "lambda_s3_policy_pfp"
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -198,15 +198,21 @@ resource "aws_iam_role_policy_attachment" "lambda_policy" {
   for_each = {
     "AWSLambdaBasicExecutionRole": "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
     "AWSDynamodbRole": aws_iam_policy.lambda_dynamodb_policy_user.arn,
-    "AWSS3Role": aws_iam_policy.lambda_s3_policy.arn
+    "AWSS3Role": aws_iam_policy.lambda_s3_policy_pfp.arn
   }
   role       = aws_iam_role.lambda_exec.name
   policy_arn = each.value
 }
 
 # S3 bucket for pfp storage
+# Generate s3 bucket name
+resource "random_pet" "pfp_bucket_name" {
+  length = 4
+}
+
+# Generate s3 bucket
 resource "aws_s3_bucket" "pfp_storage" {
-  bucket = "PfpBucket"
+  bucket = random_pet.pfp_bucket_name.id
 }
 
 resource "aws_s3_bucket_ownership_controls" "pfp_storage" {
@@ -245,6 +251,12 @@ resource "aws_lambda_function" "addUser" {
   role = aws_iam_role.lambda_exec.arn
 
   timeout = 10
+
+  environment {
+    variables = {
+      PFP_STORAGE_BUCKET = aws_s3_bucket.pfp_storage.bucket
+    }
+  }
 }
 
 resource "aws_apigatewayv2_integration" "addUser" {

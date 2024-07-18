@@ -1,10 +1,11 @@
 const aws = require('aws-sdk');
 const dynamo = new aws.DynamoDB.DocumentClient();
 const crypto = require("crypto");
+const axios = require('axios');
 const s3 = new aws.S3();
 
 const tableName = "UserTable";
-const bucketName = "PfpBucket";
+const bucketName = process.env.PFP_STORAGE_BUCKET;
 
 exports.handler = async (event, context) => {
     let body;
@@ -17,8 +18,13 @@ exports.handler = async (event, context) => {
 
     try {
         let requestJSON = JSON.parse(event.body);
+
         // pfp
-        const profilePictureData = Buffer.from(requestJSON.profilePicture, 'base64');
+        const profilePictureUrl = "https://cdn-icons-png.flaticon.com/128/847/847969.png";
+        const response = await axios.get(profilePictureUrl, {
+            responseType: 'arraybuffer'
+        });
+        const profilePictureData = Buffer.from(response.data, 'binary');
         const key = `${uuid}/profile-picture.jpg`;
 
         await s3.putObject({
@@ -26,11 +32,10 @@ exports.handler = async (event, context) => {
             Key: key,
             Body: profilePictureData,
             ContentEncoding: 'base64',
-            ContentType: 'image/jpeg' // Adjust based on the actual content type
+            ContentType: response.headers['content-type']
         }).promise();
 
         s3Url = `https://${bucketName}.s3.amazonaws.com/${key}`;
-
 
         // add user
         if (requestJSON.userType == "Child") {
@@ -50,7 +55,8 @@ exports.handler = async (event, context) => {
                 userType: requestJSON.userType,
                 firstName: requestJSON.firstName,
                 lastName: requestJSON.lastName,
-                aboutMe: ""
+                aboutMe: "",
+                profilePictureUrl: s3Url || ''
             };
         
             await dynamo.put(
@@ -67,7 +73,8 @@ exports.handler = async (event, context) => {
                 userType: requestJSON.userType,
                 firstName: requestJSON.firstName,
                 lastName: requestJSON.lastName,
-                aboutMe: ""
+                aboutMe: "",
+                profilePictureUrl: s3Url || ''
             };
         
             await dynamo.put(
