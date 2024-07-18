@@ -18,7 +18,8 @@ exports.handler = async (event) => {
     if (typeof eventBody != Object) {
         eventBody = JSON.parse(eventBody);
     }
-    const userId = eventBody.userId;
+    const senderId = eventBody.senderId;
+    const receiverId = eventBody.receiverId;
     const msg = eventBody.msg;
     
     try {
@@ -34,7 +35,7 @@ exports.handler = async (event) => {
                         });
                         const requestParams = {
                             ConnectionId: obj.connectionId,
-                            Data: `{"userId":"${userId}","msg":"${msg}"}`,
+                            Data: `{"senderId":"${senderId}", "receiverId":"${receiverId}", "msg":"${msg}"}`,
                         };
                         await clientApi.postToConnection(requestParams).promise()
                     } catch (e) {
@@ -47,7 +48,7 @@ exports.handler = async (event) => {
         statusCode = 400;
         body = err.message;
     } finally {
-        body = {connectionId: connectionId, userId: userId};
+        body = {connectionId: connectionId, senderId: senderId, receiverId: receiverId};
         body = JSON.stringify(body);
     }
 
