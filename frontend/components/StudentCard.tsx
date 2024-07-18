@@ -1,23 +1,18 @@
 import React, { useState, useEffect } from "react";
 import '../app/styles/website.css';
-import { useNavigate } from "react-router-dom";
 
 interface StudentCardProps {
     id: string;
     token: string;
+    handleClick: (id: string) => void;
 }
 
-const StudentCard: React.FC<StudentCardProps> = ({ id, token }) => {
+const StudentCard: React.FC<StudentCardProps> = ({ id, token, handleClick }) => {
     const [user, setUser] = useState<string>(null);
-
-    const navigate = useNavigate();
-    const handleClick = () => {
-        navigate(`/profile/${id}`);
-    }
 
     useEffect(() => {
         getDetails();
-        console.log("kokokok")
+        console.log(id, token)
     }, []);
 
     useEffect(() => {
@@ -43,18 +38,17 @@ const StudentCard: React.FC<StudentCardProps> = ({ id, token }) => {
                 console.log(response);
             }
             return response.json();
+        }).then(data => {
+            console.log('Success:', data);
+            setUser(data);
         })
-            .then(data => {
-                console.log('Success:', data);
-                setUser(data);
-            })
-            .catch(error => {
-                console.error('Error:', error.message, error.code || error);
-            });
-    }
+        .catch(error => {
+            console.error('Error:', error.message, error.code || error);
+        });
+}
 
     return (
-        <div className="teacher-card" onClick={handleClick}>
+        <div className="teacher-card" onClick={() => handleClick(id)}>
             <div className="teacher-ad">
             </div>
             {user && <div className="teacher-detail">

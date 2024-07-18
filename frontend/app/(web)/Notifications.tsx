@@ -17,6 +17,12 @@ const Notifications = () => {
     useEffect(() => {
       getRequests();
     }, [id, token]);
+
+    const onAction = async () => {
+      console.log("onaction clicked")
+      getRequests();
+      
+    }
     
 
     const getRequests = async () => {
@@ -57,12 +63,11 @@ const Notifications = () => {
                   <Request 
                     id={request.userId}
                     token={token}
+                    onAction={onAction}
                   />
                 ))) : <p>No requests</p>
               }
             </div>
-            
-            
           </div>
         </div>
       )

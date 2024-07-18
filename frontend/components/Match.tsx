@@ -1,21 +1,25 @@
 import React, { useState, useEffect } from 'react'
 import '../app/styles/website.css';
+import { useNavigate } from 'react-router-dom';
 
-interface RequestProps {
-  id: string;
+interface MatchProps {
+  childId: string;
+  teacherId: string;
   token: string;
   onAction: () => void;
 }
 
-const Request: React.FC<RequestProps> = ({ id, token, onAction }) => {
+const Match: React.FC<MatchProps> = ({ childId, teacherId, token, onAction }) => {
   const [user, setUser] = useState(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     getDetails();
   }, []);
 
   const getDetails = async () => {
-    await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getUser/${id}`, {
+    await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getUser/${teacherId}`, {
       method: 'GET',
       headers: {
         'Authorization': token,
@@ -43,44 +47,10 @@ const Request: React.FC<RequestProps> = ({ id, token, onAction }) => {
       });
   }
 
-
-  // have to add logic for when the buttons are pressed
-  const acceptRequest = async () => {
-    await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/match/addMatch`, {
-      method: 'POST',
-      body: JSON.stringify({
-        'userId1': id,
-        'userId2': localStorage.getItem('id'),
-      }),
-      headers: {
-        'Authorization': token,
-        'Content-Type': 'application/json'
-      },
-    }).then(response => {
-      if (response.status === 204) {
-        console.log('Success: No content returned from the server.');
-        return;
-      }
-      if (!response.ok) {
-        return response.text().then(text => { throw new Error(text) });
-      }
-      else {
-        console.log(response);
-      }
-      return response.json();
-    })
-      .then(data => {
-        onAction();
-        console.log('Success123:', data);
-        setUser(data);
-      })
-      .catch(error => {
-        console.error('Error:', error.message, error.code || error);
-      });
+  const viewProfile = () => {
+    navigate(`/profile/${teacherId}`);
   }
   
-
-
   const denyRequest = async () => {
     await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/match/removeMatch`, {
       method: 'DELETE',
@@ -89,8 +59,8 @@ const Request: React.FC<RequestProps> = ({ id, token, onAction }) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        userId1: id,
-        userId2: localStorage.getItem('id')
+        userId1: childId,
+        userId2: teacherId
       }),
     }).then(response => {
       if (response.status === 204) {
@@ -118,19 +88,19 @@ const Request: React.FC<RequestProps> = ({ id, token, onAction }) => {
   return (
     <div className='request-container'>
       <div className="pfp-name-container">
-        <img src="https://cdn-icons-png.flaticon.com/128/5653/5653986.png" alt={"teacher ad"}  className="teacher-pfp"/>
-        {user && <p>{user.firstName + " " + user.lastName}</p>}
+      <img src="https://cdn-icons-png.flaticon.com/128/5653/5653986.png" alt={"teacher ad"}  className="teacher-pfp"/>
+      {user && <p>{user.firstName + " " + user.lastName}</p>}
       </div>
       <div className="request-button-container">
-        <button className="request-button" onClick={acceptRequest}>
-            accept request
+        <button className="request-button" onClick={viewProfile}>
+            view profile
         </button>
         <button className="request-button" onClick={denyRequest}>
-            deny request
+            unmatch
         </button>
       </div>
     </div>
   )
 }
 
-export default Request
+export default Match;
