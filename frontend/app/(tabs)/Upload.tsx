@@ -107,13 +107,13 @@ const Upload = () => {
   const uploadToS3 = async (uri) => {
     const res = await fetch(uri);
     const content = await res.blob();
-    fetch("https://ywi1k1tgpg.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/upload", {
+    fetch("https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/upload", {
       method: 'POST',
       headers: {
           Authorization: authToken as string,
       },
       body: JSON.stringify({
-        userId: USERPOOL_ID
+        userId: "123"
       }),
     })
     .then(response => response.json())
@@ -121,6 +121,19 @@ const Upload = () => {
     .then(url => {
       fetch(url, { method: 'PUT', body: content });
     });
+  };
+
+  const generateReview = async () => {
+    fetch("https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/upload", {
+      method: 'POST',
+      headers: {
+          Authorization: authToken as string,
+      },
+      body: JSON.stringify({
+        userId: "123",
+        
+      }),
+    })
   };
 
   const pickVideo = async () => {

@@ -11,7 +11,7 @@ exports.handler = async (event, context, callback) => {
   const downloadUrl = await getSignedUrl(
     s3Client,
     new GetObjectCommand({
-      Bucket: "lately-hideously-humane-colt",
+      Bucket: "truly-entirely-hip-raccoon",
       Key: `${userId}/${filename}`,
     }),
     { expiresIn: 600 },
