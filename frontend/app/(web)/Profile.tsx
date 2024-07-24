@@ -11,6 +11,7 @@ const Profile: React.FC = () => {
   const [matched, setMatched] = useState<boolean>(false);
   const [subAccounts, setSubAccounts] = useState();
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const { id } = useParams();
 
@@ -21,6 +22,15 @@ const Profile: React.FC = () => {
   useEffect(() => {
     setToken(localStorage.getItem('token'));
     setUserType(localStorage.getItem('userType'));
+    const storedDarkMode = localStorage.getItem('darkMode');
+    if (storedDarkMode === 'enabled') {
+      setIsDarkMode(true);
+      document.body.classList.add('dark-mode');
+    } else {
+      setIsDarkMode(false);
+      document.body.classList.remove('dark-mode');
+    }
+    console.log("Mode:" + storedDarkMode)
   }, []);
 
   useEffect(() => {

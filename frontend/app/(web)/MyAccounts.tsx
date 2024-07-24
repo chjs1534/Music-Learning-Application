@@ -27,6 +27,7 @@ const MyAccounts: React.FC = () => {
     const [subAccounts, setSubAccounts] = useState();
     const [token, setToken] = useState<string>();
     const [id, setId] = useState<string>();
+    const [isDarkMode, setIsDarkMode] = useState(false);
 
     const modalRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
@@ -150,6 +151,14 @@ const MyAccounts: React.FC = () => {
     useEffect(() => {
         setToken(localStorage.getItem('token'));
         setId(localStorage.getItem('id'));
+        const storedDarkMode = localStorage.getItem('darkMode');
+        if (storedDarkMode === 'enabled') {
+          setIsDarkMode(true);
+          document.body.classList.add('dark-mode');
+        } else {
+          setIsDarkMode(false);
+          document.body.classList.remove('dark-mode');
+        }
     }, []);
 
     useEffect(() => {

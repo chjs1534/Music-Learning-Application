@@ -10,7 +10,17 @@ const Homepage: React.FC = () => {
     // const authToken = location.state?.authToken;
     const [token, setToken] = useState<string | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
+    const [isDarkMode, setIsDarkMode] = useState(false);
+    
     useEffect(() => {
+        const storedDarkMode = localStorage.getItem('darkMode');
+        if (storedDarkMode === 'enabled') {
+          setIsDarkMode(true);
+          document.body.classList.add('dark-mode');
+        } else {
+          setIsDarkMode(false);
+          document.body.classList.remove('dark-mode');
+        }
         setToken(localStorage.getItem('token'));
         setUserId(localStorage.getItem('id'));
       }, []);

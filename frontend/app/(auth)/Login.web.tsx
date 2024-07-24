@@ -54,6 +54,18 @@ const Login: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
 
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  useEffect(() => {
+      const storedDarkMode = localStorage.getItem('darkMode');
+      if (storedDarkMode === 'enabled') {
+        setIsDarkMode(true);
+        document.body.classList.add('dark-mode');
+      } else {
+        setIsDarkMode(false);
+        document.body.classList.remove('dark-mode');
+      }
+  }, []);
+
   // const navigate = useNavigate();
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {

@@ -11,10 +11,18 @@ const EditProfile: React.FC = () => {
     const [username, setUsername] = useState<string>('');
     const [profileImage, setProfileImage] = useState<File | null>(null);
     const [profileImageURL, setProfileImageURL] = useState<string>('https://cdn-icons-png.flaticon.com/128/847/847969.png');
-
+    const [isDarkMode, setIsDarkMode] = useState(false);
     const { id } = useParams();
 
     useEffect(() => {
+        const storedDarkMode = localStorage.getItem('darkMode');
+        if (storedDarkMode === 'enabled') {
+          setIsDarkMode(true);
+          document.body.classList.add('dark-mode');
+        } else {
+          setIsDarkMode(false);
+          document.body.classList.remove('dark-mode');
+        }
         setToken(localStorage.getItem('token'));
     }, []);
 

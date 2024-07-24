@@ -324,12 +324,22 @@ const MessageComponent: React.FC = () => {
   const [selectedFriendId, setSelectedFriendId] = useState<string | null>(null);
   const [messageText, setMessageText] = useState<string>('');
   const messageEndRef = useRef<HTMLDivElement | null>(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
     setToken(localStorage.getItem('token'));
     setUserId(localStorage.getItem('id'));
+
+    const storedDarkMode = localStorage.getItem('darkMode');
+    if (storedDarkMode === 'enabled') {
+      setIsDarkMode(true);
+      document.body.classList.add('dark-mode');
+    } else {
+      setIsDarkMode(false);
+      document.body.classList.remove('dark-mode');
+    }
 
     if (userId) {
       getFriendIDs();

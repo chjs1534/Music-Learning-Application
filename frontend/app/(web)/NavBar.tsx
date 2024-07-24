@@ -11,6 +11,7 @@ const NavBar: React.FC = () => {
   const [userType, setUserType] = useState<string>();
   const [id, setId] = useState<string>();
   const [authToken, setAuthToken] = useState<string>();
+  const [isDarkMode, setIsDarkMode] = useState(false);
   
   // const navigate = useNavigate();
 
@@ -27,6 +28,14 @@ const NavBar: React.FC = () => {
     setAuthToken(localStorage.getItem('token'))
     setUserType(localStorage.getItem('userType'))
     setId(localStorage.getItem('id'))
+    const storedDarkMode = localStorage.getItem('darkMode');
+    if (storedDarkMode === 'enabled') {
+      setIsDarkMode(true);
+      document.body.classList.add('dark-mode');
+    } else {
+      setIsDarkMode(false);
+      document.body.classList.remove('dark-mode');
+    }
   }, []);
 
   const handleNavigation = (path: string): void => {

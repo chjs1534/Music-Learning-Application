@@ -14,8 +14,12 @@
     --profile-details-text-color: #555;
     --request-button-background: #007bff;
     --request-button-hover: #0056b3;
+    --cancel-button: #ccc;
+    --cancel-button-hover: #aaa;
+    --save-button-hover: #0056b3;
+    --save-button: #007bff; 
     /* MyAccounts */
-    --accounts-background:#ffffff;
+    --accounts-background: #ffffff;
     --modal-background: rgba(0, 0, 0, 0.4);
     --modal-content-background: #fefefe;
     --close-color: #aaa;
@@ -42,7 +46,7 @@
     --settings-background: #ffffff;
 }
 
-body.darkmode {
+body.dark-mode {
     /* General */
     --background-color: #181818;
     --text-color: #ffffff;
@@ -52,6 +56,7 @@ body.darkmode {
     --nav-button-background: #303030;
     --nav-button-hover: #505050;
     /* Profile */
+    --profile-background: #181818;
     --profile-header-background: #242424;
     --profile-icon-box-shadow: rgba(255, 255, 255, 0.5);
     --profile-details-text-color: #bbb;
@@ -86,6 +91,7 @@ body.darkmode {
 body {
     margin: 0;
     padding: 0;
+    background-color: var(--background-color);
 }
 
 .homepage {
@@ -322,6 +328,7 @@ body {
     padding-top: 20px;
     margin-top: 20px;
 }
+
 /* edit profile styles */
 .edit-profile {
     width: 100vw;
@@ -388,7 +395,8 @@ body {
     justify-content: space-between;
 }
 
-.cancel-button, .save-button {
+.cancel-button,
+.save-button {
     padding: 10px 20px;
     font-size: 16px;
     border: none;
@@ -398,20 +406,20 @@ body {
 }
 
 .cancel-button {
-    background-color: #ccc;
+    background-color: var(--cancel-button)
 }
 
 .save-button {
-    background-color: #007bff;
-    color: #fff;
+    background-color: var(--save-button);
+    color: var(--text-color);
 }
 
 .cancel-button:hover {
-    background-color: #aaa;
+    background-color: var(--cancel-button-hover);
 }
 
 .save-button:hover {
-    background-color: #0056b3;
+    background-color: var(--save-button-hover);
 }
 
 /* message styles */
@@ -429,61 +437,61 @@ body {
     display: flex;
     width: 100vw;
     height: 90vh;
-    background-color: #dcf8c6;
+    background-color: var(--message-box-background);
 }
 
 .message-screen {
     display: flex;
-  }
-  
-  .friend-list {
+}
+
+.friend-list {
     width: 20%;
     border-right: 1px solid #ccc;
-  }
-  
-  .friend-list div {
+}
+
+.friend-list div {
     padding: 10px;
     cursor: pointer;
-  }
-  
-  .message-box {
+}
+
+.message-box {
     width: 80%;
     padding: 10px;
-  }
-  
-  .user-container {
+}
+
+.user-container {
     font-weight: bold;
-  }
-  
-  .message-container {
+}
+
+.message-container {
     height: 300px;
     overflow-y: auto;
     border: 1px solid #ccc;
     padding: 10px;
     margin-bottom: 10px;
-  }
-  
-  .chat-container {
+}
+
+.chat-container {
     display: flex;
-  }
-  
-  .chat-container input {
+}
+
+.chat-container input {
     flex: 1;
     padding: 10px;
     margin-right: 10px;
-  }
-  
-  .chat-container button {
+}
+
+.chat-container button {
     padding: 10px;
-  }
-  
-  .my-message {
+}
+
+.my-message {
     text-align: right;
-  }
-  
-  .their-message {
+}
+
+.their-message {
     text-align: left;
-  }
+}
 
 /* .friend-list {
     width: 20%;
