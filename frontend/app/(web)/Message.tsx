@@ -1,6 +1,8 @@
-// import React, { useState, useRef, useEffect } from 'react';
+// import React, { useEffect, useRef, useState } from 'react';
 // import NavBar from './NavBar';
 // import '../styles/website.css';
+
+// const WEBSOCKET_API = 'wss://xeoe7fp8z0.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage_websocket/';
 
 // interface Friend {
 //   id: string;
@@ -10,45 +12,60 @@
 // }
 
 // interface Message {
-//   sender: string;
+//   senderId: string;
 //   content: string;
-//   type: 'text' | 'image';
+//   type: 'text';
 //   time: string;
 // }
 
-// const friendsData: Friend[] = [
-//   {
-//     id: "123",
-//     name: "freind lol",
-//     profilePic: 'https://via.placeholder.com/50',
-//     messages: [
-//       { sender: 'Friend 4', content: 'Hey! New friend added!', type: 'text', time: '2:00 PM' },
-//     ],
-//   },
-// ];
-
-// const MessageScreen = () => {
-//   const WEBSOCKET_API = 'wss://xeoe7fp8z0.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage_websocket/'
-
-//   const [friends, setFriends] = useState<Friend[]>(friendsData);
-//   const [selectedFriendId, setSelectedFriendId] = useState<string | null>(null);
-//   const [messageText, setMessageText] = useState<string>('');
-//   const [imageFile, setImageFile] = useState<File | null>(null);
-//   const messageEndRef = useRef<HTMLDivElement | null>(null);
-//   const ws = useRef<WebSocket | null>(null);
-
-//   const [token, setToken] = useState<string | null>(null);
+// const MessageComponent: React.FC = () => {
 //   const [userId, setUserId] = useState<string | null>(null);
+//   const [token, setToken] = useState<string | null>(null);
+//   const [friends, setFriends] = useState<Friend[]>([
+//     {
+//       id: 'default_friend_id',
+//       name: 'John Doe',
+//       profilePic: 'https://via.placeholder.com/50',
+//       messages: [
+//         {
+//           senderId: 'default_friend_id',
+//           content: 'Hello! How are you?',
+//           type: 'text',
+//           time: new Date().toISOString(),
+//         },
+//         {
+//           senderId: 'your_user_id',
+//           content: 'I am good, thank you!',
+//           type: 'text',
+//           time: new Date().toISOString(),
+//         },
+//       ],
+//     },
+//   ]);
+//   const [selectedFriendId, setSelectedFriendId] = useState<string | null>('default_friend_id');
+//   const [messageText, setMessageText] = useState<string>('');
+//   const messageEndRef = useRef<HTMLDivElement | null>(null);
+//   const [isDarkMode, setIsDarkMode] = useState(false);
 
-//   const selectedFriend = friends.find(friend => friend.id === selectedFriendId);
+//   const ws = useRef<WebSocket | null>(null);
 
 //   useEffect(() => {
 //     setToken(localStorage.getItem('token'));
 //     setUserId(localStorage.getItem('id'));
+
+//     const storedDarkMode = localStorage.getItem('darkMode');
+//     if (storedDarkMode === 'enabled') {
+//       setIsDarkMode(true);
+//       document.body.classList.add('dark-mode');
+//     } else {
+//       setIsDarkMode(false);
+//       document.body.classList.remove('dark-mode');
+//     }
+
 //     if (userId) {
 //       getFriendIDs();
 
-//       ws.current = new WebSocket(`${WEBSOCKET_API}?userId=${userId}`);
+//       ws.current = new WebSocket(`${WEBSOCKET_API}`);
 
 //       ws.current.onopen = () => {
 //         console.log("connected");
@@ -57,7 +74,7 @@
 //       ws.current.onmessage = (evt) => {
 //         try {
 //           const message = JSON.parse(evt.data);
-//           console.log(message, selectedFriendId)
+//           console.log(message);
 //           handleIncomingMessage(message);
 //         } catch {
 //           console.log('error in parsing');
@@ -66,10 +83,6 @@
 
 //       ws.current.onclose = () => {
 //         console.log("disconnected");
-//         // Example reconnection logic:
-//         // setTimeout(() => {
-//         //   ws.current = new WebSocket(`${WEBSOCKET_API}?userId=${userId}`);
-//         // }, 3000); // Reconnect after 3 seconds
 //       };
 
 //       ws.current.onerror = (error) => {
@@ -84,11 +97,38 @@
 //     }
 //   }, [token, userId]);
 
+//   const handleIncomingMessage = (message) => {
+//     const newMessage: Message = {
+//       senderId: message.senderId,
+//       content: message.msg,
+//       type: 'text',
+//       time: new Date().toISOString(),
+//     };
+//     console.log(selectedFriendId, message.receiverId, message)
+//     setFriends(prevFriends =>
+//       prevFriends.map(friend =>
+//         (friend.id === message.senderId && userId === message.receiverId) || (friend.id === message.receiverId && userId === message.senderId)
+//           ? {
+//             ...friend,
+//             messages: [...friend.messages, newMessage]
+//           }
+//           : friend
+//       )
+//     );
+//     setMessageText('');
+//     setTimeout(scrollToBottom, 0);
+//   };
+
+//   useEffect(() => {
+//     console.log(friends);
+//   }, [friends]);
+
 //   const getFriendIDs = async () => {
+//     if (!userId) return;
 //     await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/match/getMatches/${userId}`, {
 //       method: 'GET',
 //       headers: {
-//         'Authorization': token,
+//         'Authorization': token!,
 //         'Content-Type': 'application/json',
 //       },
 //     })
@@ -97,7 +137,6 @@
 //           return response.text().then(text => { throw new Error(text); });
 //         }
 //         return response.json();
-
 //       })
 //       .then(data => {
 //         for (let i = 0; i < data.matches.length; i++) {
@@ -109,11 +148,11 @@
 //       });
 //   };
 
-//   const getFriendDetails = async (userId) => {
-//     await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getUser/${userId}`, {
+//   const getFriendDetails = async (friendId: string) => {
+//     await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getUser/${friendId}`, {
 //       method: 'GET',
 //       headers: {
-//         'Authorization': token,
+//         'Authorization': token!,
 //         'Content-Type': 'application/json',
 //       },
 //     })
@@ -122,97 +161,35 @@
 //           return response.text().then(text => { throw new Error(text); });
 //         }
 //         return response.json();
-
 //       })
 //       .then(data => {
-//           setFriends(prevFriends => [
-//             ...prevFriends,
-//             {
-//               id: data.userId,
-//               name: data.firstName + ' ' + data.lastName,
-//               profilePic: 'https://via.placeholder.com/50',
-//               messages: [],
-//             },
-//           ]);
+//         setFriends(prevFriends => [
+//           ...prevFriends,
+//           {
+//             id: data.userId,
+//             name: data.firstName + ' ' + data.lastName,
+//             profilePic: 'https://via.placeholder.com/50',
+//             messages: [],
+//           },
+//         ]);
 //       })
 //       .catch(error => {
 //         console.error('Error:', error.message);
 //       });
 //   };
 
-//   const handleIncomingMessage = (message) => {
-//     const friendId = message.userId === userId ? selectedFriendId : message.userId;
-//     console.log(selectedFriendId, message.userId, friendId)
-//     const updatedFriends = friends.map(friend =>
-//       friend.id === friendId
-//         ? { ...friend, messages: [...friend.messages, message] }
-//         : friend
-//     );
-//     console.log(updatedFriends)
-//     setFriends(updatedFriends);
-//     setTimeout(scrollToBottom, 0);
-//   };
-
-//   const handleFriendClick = (id: string) => {
-//     setSelectedFriendId((prevId) => {
-//       console.log(id, prevId, selectedFriendId);
-//       return id;
-//     });
-//     setTimeout(scrollToBottom, 0);
-//   };
-
-//   const handleSendMessage = () => {
-//     console.log(selectedFriendId)
-//     if (!messageText.trim() && !imageFile) return;
-
-//     let newMessage: Message = {
-//       sender: userId,
-//       content: messageText,
-//       type: 'text',
-//       time: new Date().toLocaleTimeString(),
-//     };
-
-//     if (imageFile) {
-//       newMessage = {
-//         sender: userId,
-//         content: URL.createObjectURL(imageFile),
-//         type: 'image',
-//         time: new Date().toLocaleTimeString(),
+//   const sendMessage = () => {
+//     if (ws.current && ws.current.readyState === WebSocket.OPEN && selectedFriendId) {
+//       const message = {
+//         action: 'sendMessage',
+//         senderId: userId,
+//         msg: messageText,
+//         receiverId: selectedFriendId
 //       };
-//     }
 
-//     if (ws.current.readyState === WebSocket.OPEN) {
-
-//       const sendMessage = { "action": "sendMessage", "userId": userId, "msg": messageText }
-
-//       ws.current.send(JSON.stringify(sendMessage));
-//       console.log(sendMessage);
+//       ws.current.send(JSON.stringify(message));
 //     } else {
-//       console.log('WebSocket not open to send message');
-//     }
-
-//     const updatedFriends = friends.map(friend =>
-//       friend.id === selectedFriendId
-//         ? { ...friend, messages: [...friend.messages, newMessage] }
-//         : friend
-//     );
-
-//     setFriends(updatedFriends);
-//     setMessageText('');
-//     setImageFile(null);
-//     setTimeout(scrollToBottom, 0); // Allow for re-render before scrolling
-//   };
-
-//   const handleKeyDown = (event: React.KeyboardEvent) => {
-//     if (event.key === 'Enter') {
-//       handleSendMessage();
-//     }
-//   };
-
-//   const handleSendImage = (event: React.ChangeEvent<HTMLInputElement>) => {
-//     const file = event.target.files?.[0];
-//     if (file) {
-//       setImageFile(file);
+//       console.log('WebSocket not open or no friend selected to send message');
 //     }
 //   };
 
@@ -226,43 +203,36 @@
 //         <NavBar />
 //         <div className="message-screen">
 //           <div className="friend-list">
-//             <h2>Chats</h2>
+//             <h2>Friends</h2>
 //             {friends.map(friend => (
-//               <div key={friend.id} className="friend" onClick={() => handleFriendClick(friend.id)}>
+//               <div key={friend.id} className="friend" onClick={() => setSelectedFriendId(friend.id)}>
 //                 <img src={friend.profilePic} alt="Profile" className="profile-pic" />
-//                 <span className="friend-name">{friend.name}</span>
+//                 <div className="friend-info">
+//                   <span className="friend-name">{friend.name}</span>
+//                   <span className="friend-id">{friend.id}</span>
+//                 </div>
 //               </div>
 //             ))}
 //           </div>
 //           <div className="message-box">
-//             {selectedFriend && (
+//             {selectedFriendId && (
 //               <>
 //                 <div className="user-container">
-//                   <img src={selectedFriend.profilePic} alt="Profile" className="profile-pic" />
-//                   <span className="username">{selectedFriend.name}</span>
+//                   <img src={friends.find(friend => friend.id === selectedFriendId)?.profilePic} alt="Profile" className="profile-pic-large" />
+//                   <div className="user-info">
+//                     <span className="user-name">{friends.find(friend => friend.id === selectedFriendId)?.name}</span>
+//                     <span className="user-id">{selectedFriendId}</span>
+//                   </div>
 //                 </div>
 //                 <div className="message-container">
-//                   {selectedFriend.messages.map((message, index) => (
-//                     <div
-//                       key={index}
-//                       className={`message ${message.sender === 'You' ? 'user-message' : ''}`}
-//                       style={{ textAlign: message.sender === 'You' ? 'right' : 'left' }}
-//                     >
-//                       {message.sender !== 'You' && (
-//                         <img src={selectedFriend.profilePic} alt="Profile" className="profile-pic" />
-//                       )}
+//                   {friends.find(friend => friend.id === selectedFriendId)?.messages.map((message, index) => (
+//                     <div key={index} className={`message ${message.senderId === userId ? 'my-message' : 'their-message'}`}>
+//                       <img src={friends.find(friend => friend.id === (message.senderId === userId ? selectedFriendId : message.senderId))?.profilePic} alt="Profile" className="profile-pic" />
 //                       <div className="message-content">
-//                         <span className="message-sender">{message.sender}</span>
-//                         {message.type === 'text' ? (
-//                           <p className="message-text">{message.content}</p>
-//                         ) : (
-//                           <img src={message.content} alt="Sent" className="message-image" />
-//                         )}
-//                         <span className="message-time">{message.time}</span>
+//                         <span className="message-sender">{message.senderId === userId ? 'You' : friends.find(friend => friend.id === message.senderId)?.name}</span>
+//                         <p className="message-text">{message.content}</p>
+//                         <span className="message-time">{new Date(message.time).toLocaleTimeString()}</span>
 //                       </div>
-//                       {message.sender === 'You' && (
-//                         <img src="https://via.placeholder.com/50/0000FF/808080?text=User" alt="Profile" className="profile-pic user-pic" />
-//                       )}
 //                     </div>
 //                   ))}
 //                   <div ref={messageEndRef} />
@@ -274,18 +244,9 @@
 //                     className="message-input"
 //                     value={messageText}
 //                     onChange={(e) => setMessageText(e.target.value)}
-//                     onKeyDown={handleKeyDown}
+//                     onKeyDown={(e) => { if (e.key === 'Enter') sendMessage(); }}
 //                   />
-//                   <button className="send-button" onClick={handleSendMessage}> <img src="https://cdn-icons-png.flaticon.com/128/10322/10322482.png" alt="Profile" className="profile-pic" /></button>
-//                   <button className="emoji-button"><img src="https://cdn-icons-png.flaticon.com/128/1023/1023656.png" alt="Profile" className="profile-pic" /></button>
-//                   <input
-//                     type="file"
-//                     className="image-input"
-//                     onChange={handleSendImage}
-//                     style={{ display: 'none' }}
-//                     id="image-input"
-//                   />
-//                   <label htmlFor="image-input" className="image-button"><img src="https://cdn-icons-png.flaticon.com/128/739/739249.png" alt="Profile" className="profile-pic" /></label>
+//                   <button className="send-button" onClick={sendMessage}>Send</button>
 //                 </div>
 //               </>
 //             )}
@@ -296,7 +257,8 @@
 //   );
 // };
 
-// export default MessageScreen;
+// export default MessageComponent;
+
 
 import React, { useEffect, useRef, useState } from 'react';
 import NavBar from './NavBar';
@@ -482,6 +444,7 @@ const MessageComponent: React.FC = () => {
         <NavBar />
         <div className="message-screen">
           <div className="friend-list">
+            <p>Friends</p>
             {friends.map(friend => (
               <div key={friend.id} onClick={() => setSelectedFriendId(friend.id)}>
                 <img src={friend.profilePic} alt={""} />

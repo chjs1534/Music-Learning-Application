@@ -17,7 +17,7 @@
     --cancel-button: #ccc;
     --cancel-button-hover: #aaa;
     --save-button-hover: #0056b3;
-    --save-button: #007bff; 
+    --save-button: #007bff;
     /* MyAccounts */
     --accounts-background: #ffffff;
     --modal-background: rgba(0, 0, 0, 0.4);
@@ -26,10 +26,10 @@
     --close-hover-color: black;
     --account-details-border: #ccc;
     /* Message */
-    --message-background: #ffffff;
+    --message-background: #f5f5f5;
     --friend-list-background: #ffffff;
     --message-container-background: #000000;
-    --message-box-background: #dcf8c6;
+    --message-box-background: #ffffff;
     --user-container-background: #ff0019;
     --message-content-background: #f1f1f1;
     --user-message-background: #dcf8c6;
@@ -68,10 +68,10 @@ body.dark-mode {
     --close-hover-color: white;
     --account-details-border: #888;
     /* Message */
-    --message-background: #242424;
+    --message-background: #2c2f33;
     --friend-list-background: #303030;
     --message-container-background: #333333;
-    --message-box-background: #1c1c1c;
+    --message-box-background: #23272a;
     --user-container-background: #bb0000;
     --message-content-background: #444444;
     --user-message-background: #3a3a3a;
@@ -118,17 +118,18 @@ body {
 
 /* Nav Bar */
 .navbar {
-    width: 75%;
-    position: relative;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: var(--navbar-background);
-    border-radius: 100px;
-    overflow: hidden;
-    margin: 4px;
-    padding: 0px 0px;
-    box-shadow: -1px 1px 1px 2px rgba(0, 0, 0, 0.2);
+    padding: 10px 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
 }
 
 .nav-button {
@@ -137,62 +138,88 @@ body {
     justify-content: center;
     flex-direction: column;
     border: none;
-    border-radius: 100px;
-    font-size: 25px;
+    border-radius: 8px;
+    font-size: 16px;
     cursor: pointer;
-    transition: background-color 0.75s ease-out;
+    transition: background-color 0.3s ease;
     background-color: var(--nav-button-background);
     color: var(--text-color);
-    margin: 4px 16px 4px 16px;
-    padding: 12px 12px;
-    width: 75px;
-    height: 40px;
+    margin: 0 10px;
+    padding: 10px;
 }
 
 .nav-button:hover {
     background-color: var(--nav-button-hover);
-    color: var(--text-color);
 }
 
 .website-logo {
-    border: none;
-    border-radius: 100000;
-    text-align: center;
-    text-decoration: none;
-    display: flex;
     font-family: 'Music';
-    font-size: 36px;
+    font-size: 24px;
+    color: var(--text-color);
     cursor: pointer;
-    transition: background-color 0.5s ease-out;
-    margin: 4px 16px 4px 16px;
-    padding: 12px 12px;
-    width: 100px;
-    height: 50px;
+    padding: 0;
+    border: none;
+    background: none;
 }
 
 .nav-button-text {
-    font-size: 10px;
-    margin: 2px;
+    font-size: 12px;
     color: var(--text-color);
 }
 
 .nav-options {
     display: flex;
     align-items: center;
-    justify-content: center;
-    margin: 0 0;
-    padding: 0 0;
-    height: 50px;
+    transition: max-height 0.3s ease;
 }
 
 .nav-icon {
-    display: flex;
-    align-items: center;
+    width: 24px;
+    height: 24px;
+}
+
+.hamburger {
+    display: none;
+    flex-direction: column;
     justify-content: center;
-    width: 27px;
-    height: 27px;
-    margin: 0 0;
-    padding: 0 0;
+    cursor: pointer;
+}
+
+.hamburger .line {
+    width: 25px;
+    height: 3px;
+    background-color: var(--text-color);
+    margin: 4px 0;
+}
+
+/* Responsive Styles */
+@media (max-width: 600px) {
+    .nav-options {
+        position: absolute;
+        top: 50px;
+        left: 0;
+        right: 0;
+        background-color: var(--navbar-background);
+        flex-direction: column;
+        align-items: center;
+        max-height: 0;
+        overflow: hidden;
+    }
+
+    .nav-options.open {
+        max-height: 300px;
+        border-bottom: 1px solid var(--nav-button-background);
+    }
+
+    .nav-button {
+        width: 100%;
+        text-align: left;
+        padding: 10px 20px;
+    }
+
+    .hamburger {
+        display: flex;
+    }
 }
 
 /* My Accounts */
@@ -440,13 +467,16 @@ body {
     background-color: var(--message-box-background);
 }
 
-.message-screen {
-    display: flex;
-}
-
 .friend-list {
     width: 20%;
     border-right: 1px solid #ccc;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.friend-list h2 {
+    text-align: center;
+    margin-bottom: 10px;
 }
 
 .friend-list div {
@@ -454,13 +484,54 @@ body {
     cursor: pointer;
 }
 
+.friend {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.friend:hover {
+    background-color: var(--message-box-background);
+}
+
+.friend .profile-pic {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.friend-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.friend-name {
+    font-weight: bold;
+}
+
+.friend-id {
+    font-size: 0.9em;
+    color: #888;
+}
+
 .message-box {
     width: 80%;
     padding: 10px;
+
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .user-container {
     font-weight: bold;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
 }
 
 .message-container {
@@ -469,6 +540,29 @@ body {
     border: 1px solid #ccc;
     padding: 10px;
     margin-bottom: 10px;
+    background-color: var(--message-box-background);
+}
+
+.profile-pic-large {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.user-id {
+    font-size: 0.9em;
+    color: #888;
 }
 
 .chat-container {
@@ -485,12 +579,101 @@ body {
     padding: 10px;
 }
 
+.message {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
 .my-message {
-    text-align: right;
+    justify-content: flex-end;
 }
 
 .their-message {
-    text-align: left;
+    justify-content: flex-start;
+}
+
+.message .profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.message-content {
+    max-width: 60%;
+    background-color: var(--message-background);
+    padding: 10px;
+    border-radius: 5px;
+    color: var(--text-color);
+}
+
+.message-sender {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.message-text {
+    margin: 0;
+}
+
+.message-time {
+    font-size: 0.8em;
+    color: #888;
+    text-align: right;
+    margin-top: 5px;
+}
+
+.chat-container {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    background-color: var(--message-box-background);
+}
+
+.message-input {
+    flex-grow: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    margin-right: 10px;
+    background-color: var(--message-background);
+    color: var(--text-color);
+}
+
+.message-input:focus {
+    outline: none;
+}
+
+.send-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #7289da;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.send-button:hover {
+    background-color: #5b6eae;
+}
+
+@media (max-width: 768px) {
+    .message-screen {
+        flex-direction: column;
+    }
+
+    .friend-list {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #ccc;
+    }
+
+    .message-box {
+        width: 100%;
+        flex-grow: 1;
+    }
 }
 
 /* .friend-list {
