@@ -157,7 +157,8 @@ resource "aws_iam_policy" "lambda_dynamodb_policy_user" {
           "dynamodb:GetItem",
           "dynamodb:PutItem",
           "dynamodb:Query",
-          "dynamodb:UpdateItem"
+          "dynamodb:UpdateItem",
+          "dynamodb:DeleteItem"
         ],
         Resource = [
           aws_dynamodb_table.user-table.arn,
@@ -532,4 +533,12 @@ resource "aws_cloudwatch_log_group" "updateUser" {
   name = "/aws/lambda/${aws_lambda_function.updateUser.function_name}"
 
   retention_in_days = 30
+}
+
+output "addUser" {
+  value = aws_lambda_function.addUser
+}
+
+output "lambda_dynamodb_policy_user" {
+  value = aws_iam_policy.lambda_dynamodb_policy_user
 }

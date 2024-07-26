@@ -1,176 +1,54 @@
-// const aws = require('aws-sdk');
-// const dynamo = new aws.DynamoDB.DocumentClient();
-// const crypto = require("crypto");
-// const axios = require('axios');
-// const s3 = new aws.S3();
-
-// const tableName = "UserTable";
-// const bucketName = process.env.PFP_STORAGE_BUCKET;
-
-// exports.handler = async (event, context) => {
-//     let body;
-//     let statusCode = 200;
-//     const headers = {
-//         'Access-Control-Allow-Origin': '*',
-//     };
-//     let uuid = crypto.randomUUID();
-//     let item;
-
-//     try {
-//         let requestJSON = JSON.parse(event.body);
-
-//         pfp
-//         const profilePictureUrl = "https://cdn-icons-png.flaticon.com/128/847/847969.png";
-//         const response = await axios.get(profilePictureUrl, {
-//             responseType: 'arraybuffer'
-//         });
-//         const profilePictureData = Buffer.from(response.data, 'binary');
-//         const key = `${uuid}/profile-picture.jpg`;
-
-//         await s3.putObject({
-//             Bucket: bucketName,
-//             Key: key,
-//             Body: profilePictureData,
-//             ContentEncoding: 'base64',
-//             ContentType: response.headers['content-type']
-//         }).promise();
-
-//         s3Url = `https://${bucketName}.s3.amazonaws.com/${key}`;
-
-//         // add user
-//         if (requestJSON.userType == "Child") {
-//             let parentUser = await dynamo.get(
-//                 {
-//                   TableName: tableName,
-//                   Key: {
-//                     userId: requestJSON.userId
-//                   },
-//                 }
-//             ).promise();
-//             let email = parentUser.Item.email
-//             item = {
-//                 userId: uuid,
-//                 email: email,
-//                 username: requestJSON.username,
-//                 userType: requestJSON.userType,
-//                 firstName: requestJSON.firstName,
-//                 lastName: requestJSON.lastName,
-//                 aboutMe: "",
-//                 // profilePictureUrl: s3Url || ''
-//             };
-        
-//             await dynamo.put(
-//                 {
-//                     TableName: tableName,
-//                     Item: item,
-//                 }
-//             ).promise();
-//         } else {
-//             item = {
-//                 userId: uuid,
-//                 email: requestJSON.email,
-//                 username: requestJSON.username,
-//                 userType: requestJSON.userType,
-//                 firstName: requestJSON.firstName,
-//                 lastName: requestJSON.lastName,
-//                 aboutMe: "",
-//                 // profilePictureUrl: s3Url || ''
-//             };
-        
-//             await dynamo.put(
-//                 {
-//                     TableName: tableName,
-//                     Item: item,
-//                 }
-//             ).promise();
-//         }
-//     } catch (err) {
-//         statusCode = 400;
-//         body = err.message;
-//     } finally {
-//         body = {userId: item.userId, userType: item.userType, email: item.email};
-//         body = JSON.stringify(body);
-//     }
-
-//     return {
-//         statusCode,
-//         body,
-//         headers,
-//     };
-// };
-
 const aws = require('aws-sdk');
-const dynamo = new aws.DynamoDB.DocumentClient();
-const crypto = require("crypto");
 
+const dynamo = new aws.DynamoDB.DocumentClient();
 const tableName = "UserTable";
 
-exports.handler = async (event, context) => {
+exports.handler = async (event) => {
     let body;
     let statusCode = 200;
     const headers = {
         'Access-Control-Allow-Origin': '*',
     };
-    let uuid = crypto.randomUUID();
     let item;
 
     try {
-        let requestJSON = JSON.parse(event.body);
-        if (requestJSON.userType == "Child") {
-            let parentUser = await dynamo.get(
-                {
-                  TableName: tableName,
-                  Key: {
-                    userId: requestJSON.userId
-                  },
-                }
-            ).promise();
-            let email = parentUser.Item.email
-            item = {
-                userId: uuid,
-                email: email,
-                username: requestJSON.username,
-                userType: requestJSON.userType,
-                firstName: requestJSON.firstName,
-                lastName: requestJSON.lastName,
-                aboutMe: ""
-            };
-        
-            await dynamo.put(
-                {
-                    TableName: tableName,
-                    Item: item,
-                }
-            ).promise();
-        } else {
-            item = {
-                userId: uuid,
-                email: requestJSON.email,
-                username: requestJSON.username,
-                userType: requestJSON.userType,
-                firstName: requestJSON.firstName,
-                lastName: requestJSON.lastName,
-                aboutMe: ""
-            };
-        
-            await dynamo.put(
-                {
-                    TableName: tableName,
-                    Item: item,
-                }
-            ).promise();
+        if (!event.request || !event.request.userAttributes) {
+            const error = new Error('Invalid input data');
+            error.statusCode = 400;
+            throw error;
         }
+        const userAttributes = event.request.userAttributes;
+        if (!userAttributes.sub || !userAttributes.email || !userAttributes.preferred_username || !userAttributes['custom:userType'] 
+            || !userAttributes['custom:firstName'] || !userAttributes['custom:lastName']) {
+            const error = new Error('Missing required fields');
+            error.statusCode = 400;
+            throw error;
+        }
+
+        item = {
+            userId: userAttributes.sub,
+            email: userAttributes.email,
+            username: userAttributes.preferred_username,
+            userType: userAttributes['custom:userType'],
+            firstName: userAttributes['custom:firstName'],
+            lastName: userAttributes['custom:lastName'],
+            aboutMe: ""
+        };
+    
+        await dynamo.put(
+            {
+                TableName: tableName,
+                Item: item,
+            }
+        ).promise();
+        console.log("test")
     } catch (err) {
-        statusCode = 400;
+        console.log(err.message)
+        statusCode = err.statusCode || 500;
         body = err.message;
     } finally {
-        body = {userId: item.userId, userType: item.userType, email: item.email};
-        body = JSON.stringify(body);
+        body = JSON.stringify(item);
     }
 
-    return {
-        statusCode,
-        body,
-        headers,
-    };
+    return event;
 };

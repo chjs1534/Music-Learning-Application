@@ -8,3 +8,5 @@ microservices/terraform/node_modules
 microservices/upload/node_modules
 microservices/.terraform
 microservices/user/lambdas/node_modules
+auth/.terraform
+tests/.env
