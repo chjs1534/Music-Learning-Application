@@ -17,14 +17,24 @@ exports.handler = async (event, context, callback) => {
   const time = Date.now();
   if (isRef) time = fileId;
 
-  const filename = isRef ? 'reference.mp4' : 'upload.mp4';
+  const filename = isRef ? 'reference' : 'upload';
 
-  // get AWS S3 presigned url for permission to upload
-  const uploadUrl = await getSignedUrl(
+  // get AWS S3 presigned url for permission to upload video
+  const uploadVideoUrl = await getSignedUrl(
     s3Client,
     new PutObjectCommand({
       Bucket: BUCKET_NAME,
-      Key: `${userId}/${time}/${filename}`,
+      Key: `${userId}/${time}/${filename}.mp4`,
+    }),
+    { expiresIn: 600 },
+  );
+
+  // get AWS S3 presigned url for permission to upload thumnail
+  const uploadThumbnailUrl = await getSignedUrl(
+    s3Client,
+    new PutObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: `${userId}/${time}/${filename}.png`,
     }),
     { expiresIn: 600 },
   );
@@ -42,7 +52,8 @@ exports.handler = async (event, context, callback) => {
   callback(null, {
     statusCode: 200,
     body: JSON.stringify({
-        uploadURL: uploadUrl,
+        uploadVideoUrl: uploadVideoUrl,
+        uploadThumbnailUrl: uploadThumbnailUrl,
         fileId: time,
     }),
     headers: {
