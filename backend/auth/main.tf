@@ -40,7 +40,7 @@ data "terraform_remote_state" "Mewsic-workspace-apigateway" {
 resource "aws_cognito_user_pool" "mewsic_user_pool" {
     name = "mewsicUserPool"
 
-    username_attributes = ["email"]
+    # username_attributes = ["username"]
     auto_verified_attributes   = ["email"]
 
     password_policy {
@@ -73,7 +73,7 @@ resource "aws_cognito_user_pool" "mewsic_user_pool" {
         }
     }
     schema {
-        name                     = "preferred_username"
+        name                     = "username"
         attribute_data_type      = "String"
         developer_only_attribute = false
         mutable                  = true
@@ -142,109 +142,6 @@ output "userPool" {
 
 output "userPoolClient" {
     value = aws_cognito_user_pool_client.mewsic_user_pool_client
-    sensitive = true
-}
-
-# Cognito user pool for mobile
-resource "aws_cognito_user_pool" "mewsic_user_pool_mobile" {
-    name = "mewsicUserPoolMobile"
-
-    alias_attributes = ["preferred_username"]
-
-    password_policy {
-        minimum_length    = 8
-        require_lowercase = false
-        require_numbers   = false
-        require_symbols   = false
-        require_uppercase = false
-    }
-
-    username_configuration {
-        case_sensitive = true
-    }
-
-    schema {
-        name                     = "email"
-        attribute_data_type      = "String"
-        developer_only_attribute = false
-        mutable                  = true
-        required                 = false
-
-        string_attribute_constraints {
-            min_length = 3
-            max_length = 256
-        }
-    }
-    schema {
-        name                     = "preferred_username"
-        attribute_data_type      = "String"
-        developer_only_attribute = false
-        mutable                  = true
-        required                 = false
-
-        string_attribute_constraints {
-            min_length = 3
-            max_length = 256
-        }
-    }
-
-    schema {
-        name                     = "userType"
-        attribute_data_type      = "String"
-        developer_only_attribute = false
-        mutable                  = true
-        required                 = false
-
-        string_attribute_constraints {
-            min_length = 3
-            max_length = 256
-        }
-    }
-
-    schema {
-        name                     = "firstName"
-        attribute_data_type      = "String"
-        developer_only_attribute = false
-        mutable                  = true
-        required                 = false
-
-        string_attribute_constraints {
-            min_length = 3
-            max_length = 256
-        }
-    }
-
-    schema {
-        name                     = "lastName"
-        attribute_data_type      = "String"
-        developer_only_attribute = false
-        mutable                  = true
-        required                 = false
-
-        string_attribute_constraints {
-            min_length = 3
-            max_length = 256
-        }
-    }
-
-    lambda_config {
-        pre_sign_up = aws_lambda_function.verify.arn
-        post_confirmation = data.terraform_remote_state.Mewsic-workspace-user.outputs.addUser.arn
-    }
-}
-
-resource "aws_cognito_user_pool_client" "mewsic_user_pool_client_mobile" {
-    name                         = "mewsicUserPoolClientMobile"
-    user_pool_id = aws_cognito_user_pool.mewsic_user_pool_mobile.id
-    explicit_auth_flows          = ["ALLOW_USER_PASSWORD_AUTH", "ALLOW_REFRESH_TOKEN_AUTH", "ALLOW_USER_SRP_AUTH"]
-}
-
-output "userPoolMobile" {
-    value = aws_cognito_user_pool.mewsic_user_pool_mobile
-}
-
-output "userPoolClientMobile" {
-    value = aws_cognito_user_pool_client.mewsic_user_pool_client_mobile
     sensitive = true
 }
 
@@ -325,26 +222,10 @@ resource "aws_iam_policy" "lambda_cognito_policy" {
   })
 }
 
-// For delete (Cognito mobile)
-resource "aws_iam_policy" "lambda_cognito_policy_mobile" {
-  name   = "lambda_cognito_policy_mobile"
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Action = "cognito-idp:AdminDeleteUser",
-        Resource = aws_cognito_user_pool.mewsic_user_pool_mobile.arn
-      }
-    ]
-  })
-}
-
 resource "aws_iam_role_policy_attachment" "lambda_policy" {
   for_each = {
     "AWSLambdaBasicExecutionRole": "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
     "AWSLambdaCognitoRole": aws_iam_policy.lambda_cognito_policy.arn,
-    "AWSLambdaCognitoMobileRole": aws_iam_policy.lambda_cognito_policy_mobile.arn,
     "AWSDynamoDBPolicyUser": data.terraform_remote_state.Mewsic-workspace-user.outputs.lambda_dynamodb_policy_user.arn // delete from DynamoDB database
   }
   role       = aws_iam_role.lambda_exec.name
@@ -375,15 +256,6 @@ resource "aws_lambda_permission" "allow_execution_from_user_pool" {
   function_name = aws_lambda_function.verify.function_name
   principal = "cognito-idp.amazonaws.com"
   source_arn = aws_cognito_user_pool.mewsic_user_pool.arn
-}
-
-# Permission for AWS cognito to invoke verify lambda
-resource "aws_lambda_permission" "allow_execution_from_user_pool_mobile" {
-  statement_id = "AllowExecutionFromUserPoolMobile"
-  action = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.verify.function_name
-  principal = "cognito-idp.amazonaws.com"
-  source_arn = aws_cognito_user_pool.mewsic_user_pool_mobile.arn
 }
 
 resource "aws_cloudwatch_log_group" "verify" {

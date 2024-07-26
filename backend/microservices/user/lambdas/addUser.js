@@ -18,7 +18,7 @@ exports.handler = async (event) => {
             throw error;
         }
         const userAttributes = event.request.userAttributes;
-        if (!userAttributes.sub || !userAttributes.email || !userAttributes.preferred_username || !userAttributes['custom:userType'] 
+        if (!userAttributes.sub || !userAttributes.email || !userAttributes['custom:username'] || !userAttributes['custom:userType'] 
             || !userAttributes['custom:firstName'] || !userAttributes['custom:lastName']) {
             const error = new Error('Missing required fields');
             error.statusCode = 400;
@@ -28,7 +28,7 @@ exports.handler = async (event) => {
         item = {
             userId: userAttributes.sub,
             email: userAttributes.email,
-            username: userAttributes.preferred_username,
+            username: userAttributes['custom:username'],
             userType: userAttributes['custom:userType'],
             firstName: userAttributes['custom:firstName'],
             lastName: userAttributes['custom:lastName'],

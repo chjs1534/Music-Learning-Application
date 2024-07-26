@@ -21,7 +21,7 @@ describe('Auth', () => {
 
     it('delete', async () => {
         // Clean up by deleting user
-        const payload = JSON.stringify({ pathParameters: { userId: '99beb408-90f1-70a1-ed15-c57bb9032c7b' } });
+        const payload = JSON.stringify({ pathParameters: { userId: '499e8478-2051-7077-4e6e-6571768d55c7' } });
         const deleteParams = {
                 FunctionName: 'DeleteUser',
                 Payload: payload
