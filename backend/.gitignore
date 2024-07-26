@@ -11,3 +11,4 @@ microservices/user/lambdas/node_modules
 auth/.terraform
 tests/.env
 auth/lambdas/node_modules
+microservices/messaging/.terraform
