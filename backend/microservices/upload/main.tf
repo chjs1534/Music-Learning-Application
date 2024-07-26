@@ -252,8 +252,6 @@ resource "aws_lambda_function" "videos" {
   timeout = 5
 }
 
-
-
 resource "aws_cloudwatch_log_group" "upload" {
   name = "/aws/lambda/${aws_lambda_function.upload.function_name}"
 
@@ -276,7 +274,7 @@ resource "aws_apigatewayv2_route" "upload" {
   route_key = "POST /upload"
   target    = "integrations/${aws_apigatewayv2_integration.upload.id}"
   authorization_type = "JWT"
-  authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_mobile_id
+  authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
 }
 
 # Integration of download lambda
@@ -297,15 +295,6 @@ resource "aws_apigatewayv2_route" "download" {
   authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
 }
 
-resource "aws_apigatewayv2_route" "download_mobile" {
-  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
-
-  route_key = "POST /download_mobile"
-  target    = "integrations/${aws_apigatewayv2_integration.download.id}"
-  authorization_type = "JWT"
-  authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_mobile_id
-}
-
 # Integration of videos lambda
 resource "aws_apigatewayv2_integration" "videos" {
   api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
@@ -322,15 +311,6 @@ resource "aws_apigatewayv2_route" "videos" {
   target    = "integrations/${aws_apigatewayv2_integration.videos.id}"
   # authorization_type = "JWT"
   # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
-}
-
-resource "aws_apigatewayv2_route" "videos_mobile" {
-  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
-
-  route_key = "GET /videos_mobile"
-  target    = "integrations/${aws_apigatewayv2_integration.videos.id}"
-  # authorization_type = "JWT"
-  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_mobile_id
 }
 
 # Permission for upload lambda

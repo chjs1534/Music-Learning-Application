@@ -5,6 +5,7 @@ BUCKET_NAME = "truly-entirely-hip-raccoon"
 
 def handler(event, context):
     userId = event['queryStringParameters']['userId']
+    
     client = boto3.client('s3')
     response = client.list_objects_v2(Bucket=BUCKET_NAME, Prefix=f'{userId}/')
 
