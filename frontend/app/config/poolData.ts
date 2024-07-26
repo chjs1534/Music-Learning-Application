@@ -1,12 +1,12 @@
-// import { , REACT_APP_CLIENT_ID } from '@env';
+import { AuthenticationDetails, CognitoUser, CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
 
 export const poolData = {
-    UserPoolId: process.env.REACT_APP_USERPOOL_ID,
-    ClientId: process.env.REACT_APP_CLIENT_ID,
+    UserPoolId: process.env.USERPOOL_ID,
+    ClientId: process.env.CLIENT_ID,
 };
-
-export const mobilePoolData = {
-    UserPoolId: process.env.REACT_APP_USERPOOL_ID_MOBILE,
-    ClientId: process.env.REACT_APP_CLIENT_ID_MOBILE,
-};
-
+try {
+    const UserPool = new CognitoUserPool(poolData);
+    console.log(poolData.UserPoolId, poolData.ClientId)
+} catch (e) {
+    console.error(e)
+}

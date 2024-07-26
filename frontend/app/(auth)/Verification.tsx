@@ -8,7 +8,7 @@ import {
   CognitoUserAttribute,
 } from 'amazon-cognito-identity-js';
 import { poolData } from '../config/poolData';
-import { mobilePoolData } from '../config/poolData';
+// import { mobilePoolData } from '../config/poolData';
 
 interface LocationState {
   email: string;

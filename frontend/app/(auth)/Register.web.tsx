@@ -22,6 +22,7 @@ const Register: React.FC = () => {
 
   const [isDarkMode, setIsDarkMode] = useState(false);
   useEffect(() => {
+    console.log(poolData)
     // Initialize dark mode state from local storage
     const storedDarkMode = localStorage.getItem('darkMode');
     if (storedDarkMode === 'enabled') {
@@ -120,58 +121,129 @@ const Register: React.FC = () => {
       return;
     }
 
-    const attributeList: CognitoUserAttribute[] = [];
+    // const attributeList: CognitoUserAttribute[] = [];
 
-    const dataEmail = {
+    // const dataEmail = {
+    //   Name: 'email',
+    //   Value: email
+    // };
+
+    // const attributeEmail = new CognitoUserAttribute(dataEmail);
+
+    // attributeList.push(attributeEmail);
+
+    // const postUserDetails = async () => {
+    //   await fetch('https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/addUser', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json'
+    //     },
+    //     body: JSON.stringify({
+    //       email: email,
+    //       username: username,
+    //       userType: userType,
+    //       firstName: firstName,
+    //       lastName: lastName
+    //     }),
+    //   })
+    //     .then(response => {
+    //       if (!response.ok) {
+    //         return response.text().then(text => { throw new Error(text) });
+    //       }
+    //       else {
+    //         console.log(response);
+    //       }
+    //       return response.json();
+    //     })
+    //     .then(data => {
+    //       console.log('Success:', data);
+    //       localStorage.setItem('id', data.userId);
+    //     })
+    //     .catch(error => {
+    //       console.error('Error:', error.message, error.code || error);
+    //     });
+    // };
+
+    const attributeList = [];
+    const attributeEmail = new CognitoUserAttribute({
       Name: 'email',
       Value: email
-    };
-
-    const attributeEmail = new CognitoUserAttribute(dataEmail);
+    });
+    const attributeUsername = new CognitoUserAttribute({
+      Name: 'custom:username',
+      Value: username
+    });
+    const attributeUserType = new CognitoUserAttribute({
+      Name: 'custom:userType',
+      Value: userType
+    });
+    const attributeFirstName = new CognitoUserAttribute({
+      Name: 'custom:firstName',
+      Value: firstName
+    });
+    const attributeLastName = new CognitoUserAttribute({
+      Name: 'custom:lastName',
+      Value: lastName
+    });
 
     attributeList.push(attributeEmail);
+    attributeList.push(attributeUsername);
+    attributeList.push(attributeUserType);
+    attributeList.push(attributeFirstName);
+    attributeList.push(attributeLastName);
 
-    const postUserDetails = async () => {
-      await fetch('https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/addUser', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          email: email,
-          username: username,
-          userType: userType,
-          firstName: firstName,
-          lastName: lastName
-        }),
-      })
-        .then(response => {
-          if (!response.ok) {
-            return response.text().then(text => { throw new Error(text) });
-          }
-          else {
-            console.log(response);
-          }
-          return response.json();
-        })
-        .then(data => {
-          console.log('Success:', data);
-          localStorage.setItem('id', data.userId);
-        })
-        .catch(error => {
-          console.error('Error:', error.message, error.code || error);
-        });
-    };
-
-    UserPool.signUp(email, password, attributeList, null, (err, result) => {
-      if (err) {
-        console.error(err);
-      } else {
-        const queryParams = new URLSearchParams({ firstName, lastName, userType, email, password, username });
-        postUserDetails();
-        // window.location.href = `/verification?${queryParams.toString()}`;
-      }
+    // Sign up user
+    const result = await new Promise((resolve, reject) => {
+      UserPool.signUp(username, password, attributeList, null, (err, result) => {
+        if (err) {
+          console.error(err);
+        }
+        else {
+          authenticate();
+        }
+        resolve(result);
+      });
     });
+
+    const authenticate = async () => {
+      let jwtToken;
+      let userId;
+      const authenticationDetails = new AuthenticationDetails({
+        Username: username,
+        Password: password,
+      });
+      const userData = {
+        Username: username,
+        Pool: UserPool
+      };
+      const cognitoUser = new CognitoUser(userData);
+      await new Promise((resolve, reject) => {
+        cognitoUser.authenticateUser(authenticationDetails, {
+          onSuccess: function (result) {
+            jwtToken = result.idToken.jwtToken;
+            const jwtPayload = JSON.parse(atob(jwtToken.split('.')[1]));
+            userId = jwtPayload.sub;
+            resolve();
+          },
+          onFailure: function (err) {
+            reject(err);
+          },
+        });
+      });
+
+      const queryParams = new URLSearchParams({ jwtToken, userId });
+      console.log(jwtToken, userId)
+      window.location.href = `/homepage?${queryParams.toString()}`;
+    }
+
+    // UserPool.signUp(email, password, attributeList, null, (err, result) => {
+    //   if (err) {
+    //     console.error(err);
+    //   } else {
+    //     const queryParams = new URLSearchParams({ firstName, lastName, userType, email, password, username });
+    //     // window.location.href = `/verification?${queryParams.toString()}`;
+    //   }
+    // });
   };
 
   return (
