@@ -1,5 +1,5 @@
 import React, { useEffect, useState, MouseEvent, ChangeEvent } from 'react';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   AuthenticationDetails,
   CognitoUser,
@@ -8,6 +8,8 @@ import {
   CognitoUserSession,
   ISignUpResult
 } from 'amazon-cognito-identity-js';
+import '../styles/auth.css';
+import '../styles/mobile_auth.css';
 import { poolData } from '../config/poolData';
 
 interface Position {
@@ -32,6 +34,7 @@ export const authenticate = (Email: string, Password: string): Promise<CognitoUs
     user.authenticateUser(authDetails, {
       onSuccess: (result: CognitoUserSession) => {
         console.log("login successful");
+
         resolve(result);
       },
       onFailure: (err: Error) => {
@@ -42,7 +45,11 @@ export const authenticate = (Email: string, Password: string): Promise<CognitoUs
   });
 };
 
-const Login: React.FC = () => {
+interface LoginProps {
+  setId: (id: string) => void;
+}
+
+const Login: React.FC<LoginProps> = ({ setId }) => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [dragging, setDragging] = useState<boolean>(false);
@@ -51,7 +58,7 @@ const Login: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
 
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -74,7 +81,7 @@ const Login: React.FC = () => {
       label.classList.remove('active');
     }
   };
-  
+
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
@@ -84,6 +91,13 @@ const Login: React.FC = () => {
     const randomY = Math.random() * (window.innerHeight - 128);
     setPosition({ x: randomX, y: randomY });
   }, []);
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      login();
+    }
+  }
+
 
   const login = async () => {
     if (username.length < 3) {
@@ -113,11 +127,49 @@ const Login: React.FC = () => {
         } else {
           resolve(null);
         }
-        // navigate('/homepage', { state: { authToken } });
-        window.location.href = '/homepage', { state: { authToken } };
       });
+      // navigate('/homepage', { state: { authToken } });
+      // window.location.href = '/homepage', { state: { authToken } };
+      await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getUserId/${username}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': authToken,
+          'Content-Type': 'application/json'
+        },
+      }).then(response => {
+        console.log('Success IMKIDIDNG HAAHBHAAHAH stop its not funny acutally');
+        if (response.status === 204) {
+          console.log('Success: No content returned from the server.');
+          return;
+        }
+        if (!response.ok) {
+          return response.text().then(text => { throw new Error(text) });
+        }
+        else {
+          console.log(response);
+        }
+        return response.json();
+      })
+        .then(data => {
+          console.log('Success:', data);
+          localStorage.setItem('id', data.userId);
+          localStorage.setItem('userType', data.userType);
+          setId(data.userId);
+        })
+        .catch(error => {
+          console.error('Error:', error.message, error.code || error);
+        });
+        
+
+      const queryParams = new URLSearchParams({ authToken });
+      window.location.href = `/homepage?${queryParams.toString()}`;
+      console.log(authToken)
+      localStorage.setItem('token', authToken);
+      
+
     } catch (err) {
-      console.log(err);
+      setErrorMessage(err);
+      setPassword("");
     }
   };
 
@@ -133,7 +185,7 @@ const Login: React.FC = () => {
     setDragging(false);
   };
 
-  const handleMouseMove = (e: MouseEvent<Document>) => {
+  const handleMouseMove = (e) => {
     if (dragging) {
       setPosition({
         x: e.clientX - offset.x,
@@ -177,6 +229,7 @@ const Login: React.FC = () => {
             onChange={handleInputChange}
             onFocus={handleInputFocus}
             onBlur={handleInputBlur}
+            onKeyDown={handleKeyDown}
           />
           <label htmlFor="email">Email / Username</label>
         </div>
@@ -190,6 +243,7 @@ const Login: React.FC = () => {
             onChange={handleInputChange}
             onFocus={handleInputFocus}
             onBlur={handleInputBlur}
+            onKeyDown={handleKeyDown}
           />
           <label htmlFor="password">Password</label>
           <img
@@ -200,26 +254,27 @@ const Login: React.FC = () => {
           />
         </div>
         <div className="error-message-container">
-          {errorMessage && <span className="error-message">{'*' + errorMessage}</span>}
+          {errorMessage && <span className="error-message">{'*' + errorMessage}</span>}<a className="forgot-password-anchor" href="/">Forgot Password?</a>
+
         </div>
         <button className="button1" type="submit" onClick={login}>Login</button>
         <p className="auth-text">──────────   Or Continue With   ──────────</p>
         <div className="alternate-auth-options">
           <img
-              src="https://cdn-icons-png.flaticon.com/128/300/300221.png"
-              alt="Google"
-              className="company-button"
-            />
-            <img
-              src="https://cdn-icons-png.flaticon.com/128/731/731985.png"
-              alt="Apple"
-              className="company-button"
-            />
-            <img
-              src="https://cdn-icons-png.flaticon.com/128/5968/5968764.png"
-              alt="Facebook"
-              className="company-button"
-            />
+            src="https://cdn-icons-png.flaticon.com/128/300/300221.png"
+            alt="Google"
+            className="company-button"
+          />
+          <img
+            src="https://cdn-icons-png.flaticon.com/128/731/731985.png"
+            alt="Apple"
+            className="company-button"
+          />
+          <img
+            src="https://cdn-icons-png.flaticon.com/128/5968/5968764.png"
+            alt="Facebook"
+            className="company-button"
+          />
         </div>
         <span className="auth-text">Don't have an account? <a className="anchor1" href="/register">Register Now</a></span>
       </div>

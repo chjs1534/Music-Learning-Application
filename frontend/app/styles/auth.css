@@ -1,3 +1,55 @@
+/* Light mode variables */
+:root {
+    --text-color: #555;
+    --background-color: rgb(255, 255, 255);
+    --header-logo-color: black;
+    --auth-header-color: black;
+    --border-color: #8a8a8a;
+    --box-shadow-color: rgb(106, 106, 106);
+    --input-border-color: #ccc;
+    --input-focus-border-color: #0004ff;
+    --label-color: #8a8a8a;
+    --label-focus-color: #555;
+    --button1-bg-color: rgb(150, 153, 255);
+    --button1-hover-bg-color: #cdceff;
+    --button2-bg-color: rgb(255, 255, 255);
+    --button2-border-color: rgb(78, 84, 255);
+    --button2-selected-bg-color: rgb(150, 153, 255);
+    --button2-hover-bg-color: #cdceff;
+    --company-button-hover-bg-color: #dbdbdb;
+    --anchor1-color: #000dff;
+    --anchor1-hover-color: #cdceff;
+    --error-message-color: red;
+    --forgot-password-anchor-color: #000dff;
+    --auth-text-color: #555;
+}
+
+/* Dark mode variables */
+body.dark-mode {
+    --text-color: #eeeeee;
+    --background-color: rgb(45, 45, 45);
+    --header-logo-color: #eeeeee;
+    --auth-header-color: #eeeeee;
+    --border-color: #8a8a8a;
+    --box-shadow-color: rgb(255, 255, 255);
+    --input-border-color: #ccc;
+    --input-focus-border-color: #cdceff;
+    --label-color: #8a8a8a;
+    --label-focus-color: #eeeeee;
+    --button1-bg-color: rgb(150, 153, 255);
+    --button1-hover-bg-color: #cdceff;
+    --button2-bg-color: rgb(255, 255, 255);
+    --button2-border-color: rgb(78, 84, 255);
+    --button2-selected-bg-color: rgb(150, 153, 255);
+    --button2-hover-bg-color: #cdceff;
+    --company-button-hover-bg-color: #555;
+    --anchor1-color: #000dff;
+    --anchor1-hover-color: #cdceff;
+    --error-message-color: red;
+    --forgot-password-anchor-color: #000dff;
+    --auth-text-color: #eeeeee;
+}
+
 .header-logo {
     font-family: 'Music';
     margin-top: 12px;
@@ -5,14 +57,16 @@
     padding: 0 0;
     font-size: 72px;
     font-weight: 700;
+    color: var(--header-logo-color);
 }
 
 .auth-header {
-    font-size: 36px;
+    font-size: 32px;
     margin: 0px 0px 0px 0px;
     padding: 0 0;
     font-weight: 400;
     align-self: flex-start;
+    color: var(--auth-header-color);
 }
 
 .auth-screen {
@@ -20,13 +74,11 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-evenly;
+    background-color: var(--background-color);
     width: 100vw;
     height: 100vh;
     margin: 0 0;
     overflow-y: auto;
-    /* background-image: url("https://t4.ftcdn.net/jpg/02/57/33/93/360_F_257339302_LWVM6ZkukZUoVVo8CY0UHx5y283PG9RR.jpg"); */
-    background-repeat: no-repeat;
-    background-size: cover;
 }
 
 .auth-container {
@@ -38,10 +90,10 @@
     justify-content: center;
     padding: 0 0 0 0;
     margin: 0 0 0 0;
-    /* border: 2px solid #8a8a8a;
+    /* border: 2px solid var(--border-color);
     border-radius: 4px;
     padding: 24px 64px 24px 64px;
-    box-shadow: 2px 2px 4px 0px rgb(106, 106, 106); */
+    box-shadow: 2px 2px 4px 0px var(--box-shadow-color); */
 }
 
 .auth-banner {
@@ -53,10 +105,9 @@
     justify-content: center;
     padding: 0 0 0 0;
     margin: 0 0 0 0;
-    border: 1px solid #8a8a8a;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 24px 64px 24px 64px;
-    /* box-shadow: 2px 2px 4px 0px rgb(106, 106, 106); */
 }
 
 .gif {
@@ -73,20 +124,20 @@
     justify-content: center;
     width: 100%;
     position: relative;
-    margin-top: 20px;
+    margin-top: 16px;
 }
 
 .form-inputs {
     width: 100%;
     padding: 12px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--input-border-color);
     border-radius: 8px;
     box-sizing: border-box;
     transition: border-color 1s;
 }
 
 .form-inputs:focus {
-    border-color: #0004ff;
+    border-color: var(--input-focus-border-color);
     outline: none;
 }
 
@@ -96,17 +147,17 @@
     left: 8px;
     top: 50%;
     transform: translateY(-50%);
-    color: #8a8a8a;
+    color: var(--label-color);
     transition: top 0.5s, font-size 0.5s, color 0.5s;
     pointer-events: none;
     z-index: 1;
 }
 
-.form-inputs:focus + label,
-.form-inputs:not(:placeholder-shown) + label {
+.form-inputs:focus+label,
+.form-inputs:not(:placeholder-shown)+label {
     top: -20%;
     font-size: 12px;
-    color: #555;
+    color: var(--label-focus-color);
 }
 
 .password-container {
@@ -125,18 +176,48 @@
 
 .button1 {
     width: 100%;
-    margin: 8px;
+    margin-bottom: 8px;
     padding: 12px 24px;
     font-size: 18px;
-    color: white;
-    background-color: rgb(150, 153, 255);
+    color: var(--text-color);
+    background-color: var(--button1-bg-color);
     border: none;
     border-radius: 8px;
     cursor: pointer;
 }
 
 .button1:hover {
-    background-color: #cdceff;
+    background-color: var(--button1-hover-bg-color);
+}
+
+.button2 {
+    width: 100%;
+    margin: 8px;
+    padding: 12px 24px;
+    font-size: 18px;
+    color: var(--text-color);
+    background-color: var(--button2-bg-color);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid var(--button2-border-color);
+}
+
+.button2.selected {
+    width: 100%;
+    margin: 8px;
+    padding: 12px 24px;
+    font-size: 18px;
+    color: var(--text-color);
+    background-color: var(--button2-selected-bg-color);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.button2.hovered:not(.selected) {
+    background-color: var(--button2-hover-bg-color);
+    color: var(--text-color);
 }
 
 .alternate-auth-options {
@@ -145,36 +226,63 @@
     align-items: center;
     justify-content: space-around;
     width: 75%;
-    margin: 12px;
+    margin: 0px;
 }
 
 .company-button {
+    padding: 12px;
     width: 36px;
     height: 36px;
+    border: 1px transparent;
+    border-radius: 10000px;
+    transition: background-color 0.3s ease-out;
+}
+
+.company-button:hover {
+    background-color: var(--company-button-hover-bg-color);
+    color: var(--text-color);
 }
 
 .anchor1 {
-    color: #000dff;
+    color: var(--anchor1-color);
+    font-size: 12px;
 }
 
 .anchor1:hover {
-    color: #cdceff;
+    color: var(--anchor1-hover-color);
     text-decoration-line: none;
 }
 
 .error-message-container {
-    align-self: flex-start;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: right;
+    width: 100%;
     height: 24px;
+    margin-top: 8px;
+}
+
+.forgot-password-anchor {
+    color: var(--forgot-password-anchor-color);
+    font-size: 12px;
+    display: flex;
+    width: 50%;
+    height: 24px;
+    justify-content: right;
 }
 
 .error-message {
-    color: red;
+    display: flex;
+    width: 100%;
+    height: 24px;
+    color: var(--error-message-color);
     font-size: 12px;
-    align-self: flex-start;
+    justify-content: left;
 }
 
 .auth-text {
     font-size: 12px;
-    margin: 24px;
-    color: #555;
+    margin: 12px;
+    color: var(--auth-text-color);
 }

@@ -7,7 +7,6 @@ import App from "./App";
 const rootElement = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
 if (rootElement) {
-    console.log('hddddi');
     rootElement.render(
         <React.StrictMode>
             <App />

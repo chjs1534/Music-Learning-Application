@@ -2,11 +2,13 @@ import React, { useEffect, useState, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthenticationDetails, CognitoUser, CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
 import '../styles/auth.css';
+import '../styles/mobile_auth.css';
 import { poolData } from '../config/poolData';
 
 const UserPool = new CognitoUserPool(poolData);
 
 const Register: React.FC = () => {
+  const [userType, setUserType] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -15,11 +17,42 @@ const Register: React.FC = () => {
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState<boolean>(false);
 
+
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  useEffect(() => {
+    // Initialize dark mode state from local storage
+    const storedDarkMode = localStorage.getItem('darkMode');
+    if (storedDarkMode === 'enabled') {
+      setIsDarkMode(true);
+      document.body.classList.add('dark-mode');
+    } else {
+      setIsDarkMode(false);
+      document.body.classList.remove('dark-mode');
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(prevMode => !prevMode);
+    if (!isDarkMode) {
+      localStorage.setItem('darkMode', 'enabled');
+      document.body.classList.add('dark-mode');
+      console.log("black time");
+    } else {
+      localStorage.setItem('darkMode', 'disabled');
+      document.body.classList.remove('dark-mode');
+      console.log("white time");
+    }
+  };
+
   // const navigate = useNavigate();
 
   const validateEmail = (email: string): boolean => {
     const regex = /^[a-zA-Z0-9]+@[a-zA-Z\.]+$/;
     return regex.test(email);
+  };
+
+  const handleUserTypeClick = (type: string) => {
+    setUserType(type);
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -56,6 +89,10 @@ const Register: React.FC = () => {
 
   const register = async () => {
     console.log(poolData)
+    if (!userType) {
+      setErrorMessage("Please select a user type");
+      return;
+    }
     if (!validateEmail(email)) {
       setErrorMessage("Please enter a valid email address");
       return;
@@ -95,19 +132,36 @@ const Register: React.FC = () => {
       } else {
         console.log(result);
         // navigate('/verification', { state: { email, password } });
-        window.location.href = '/verification', { state: { email, password } };
+        window.location.href = '/verification', { state: { userType, email, password } };
+        // const queryParams = new URLSearchParams({ userType, email, password });
+        // window.location.href = `/verification?${queryParams.toString()}`;
       }
     });
+    console.log(userType, "hi")
   };
 
   return (
     <div className="auth-screen">
       <div className="auth-banner">
         <h1 className="header-logo">Mewsic</h1>
-        <img className="gif" src="https://media0.giphy.com/media/CPWmNCzfMFgC8QUAbp/giphy.gif?cid=6c09b952s5rjd6w005v10j0yd1movcoho6iaixxs3pdguhig&ep=v1_internal_gif_by_id&rid=giphy.gif&ct=s"/>
+        <img className="gif" src="https://media0.giphy.com/media/CPWmNCzfMFgC8QUAbp/giphy.gif?cid=6c09b952s5rjd6w005v10j0yd1movcoho6iaixxs3pdguhig&ep=v1_internal_gif_by_id&rid=giphy.gif&ct=s" />
       </div>
       <div className="auth-container">
         <h2 className="auth-header">Register</h2>
+        <div className="input-container user-type">
+          {['Student', 'Parent', 'Teacher'].map((type) => (
+            <button
+              key={type}
+              className={`button2 ${userType === type ? 'selected' : ''}`}
+              type="button"
+              onClick={() => handleUserTypeClick(type)}
+              onMouseEnter={(e) => e.currentTarget.classList.add('hovered')}
+              onMouseLeave={(e) => e.currentTarget.classList.remove('hovered')}
+            >
+              {type}
+            </button>
+          ))}
+        </div>
         <div className="input-container">
           <input
             className="form-inputs"
@@ -179,22 +233,31 @@ const Register: React.FC = () => {
         <p className="auth-text">────────── Or Continue With ──────────</p>
         <div className="alternate-auth-options">
           <img
-              src="https://cdn-icons-png.flaticon.com/128/300/300221.png"
-              alt="Google"
-              className="company-button"
-            />
-            <img
-              src="https://cdn-icons-png.flaticon.com/128/731/731985.png"
-              alt="Apple"
-              className="company-button"
-            />
-            <img
-              src="https://cdn-icons-png.flaticon.com/128/5968/5968764.png"
-              alt="Facebook"
-              className="company-button"
-            />
+            src="https://cdn-icons-png.flaticon.com/128/300/300221.png"
+            alt="Google"
+            className="company-button"
+          />
+          <img
+            src="https://cdn-icons-png.flaticon.com/128/731/731985.png"
+            alt="Apple"
+            className="company-button"
+          />
+          <img
+            src="https://cdn-icons-png.flaticon.com/128/5968/5968764.png"
+            alt="Facebook"
+            className="company-button"
+          />
         </div>
         <span className="auth-text">Already have an account? <a className="anchor1" href="/">Log In</a></span>
+        <div className="dark-mode-toggle">
+            <label htmlFor="darkModeSwitch">Dark Mode</label>
+            <input
+              type="checkbox"
+              id="darkModeSwitch"
+              checked={isDarkMode}
+              onChange={toggleDarkMode}
+            />
+          </div>
       </div>
     </div>
   );

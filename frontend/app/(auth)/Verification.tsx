@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useEffect, useState, ChangeEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../styles/auth.css';
 import {
@@ -29,8 +29,10 @@ export const verifyUser = (
   user.confirmRegistration(verifyCode, true, (err: Error | null, result: 'SUCCESS' | 'CONFIRMATION_REQUIRED') => {
     if (err) {
       callback(err);
+      console.log("V11", err);
     } else {
       callback(null, result);
+      console.log("V12");
     }
   });
 };
@@ -63,24 +65,41 @@ export const authenticate = (Email: string, Password: string): Promise<string | 
 const Verification: React.FC = () => {
   const [verificationCode, setVerificationCode] = useState<string>('');
   // const navigate = useNavigate();
-  const location = useLocation();
-  const username = location.state?.email || '';
-  const password = location.state?.password || '';
+  // const location = useLocation();
+  // const userType = location.state?.userType || 'no';
+  // const email = location.state?.email || 'no2';
+  // const password = location.state?.password || '3';
+
+  const queryParams = new URLSearchParams(location.search);
+  const userType = queryParams.get('userType') || '';
+  const email = queryParams.get('email') || '';
+  const password = queryParams.get('password') || '';
+
+  console.log(userType, email, password)
+
+  useEffect(() => {
+    if (!userType || !email || !password) {
+      const queryParams = new URLSearchParams({ email, password });
+      window.location.href = `/register?${queryParams.toString()}`;
+    }
+  }, [userType, email, password]);
 
   const verify = async () => {
     try {
-      await verifyUser(username, verificationCode, (err, result) => {
+      await verifyUser(email, verificationCode, (err, result) => {
         if (err) {
           console.error(err);
+          console.log("Verification not successful");
         } else {
           console.log("Verification successful");
         }
       });
 
-      const authToken = await authenticate(username, password);
+      const authToken = await authenticate(email, password);
       if (authToken) {
         // navigate('/homepage', { state: { authToken } });
-        window.location.href = '/homepage', { state: { authToken } };
+        const queryParams = new URLSearchParams({ authToken, userType, email, password });
+        window.location.href = `/homepage?${queryParams.toString()}`;
       }
     } catch (err) {
       console.log(err);

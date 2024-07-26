@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/website.css';
 import NavBar from './NavBar';
 import { CognitoUserPool, CognitoUser } from 'amazon-cognito-identity-js';
@@ -10,6 +10,7 @@ export const logout = (): void => {
   const user: CognitoUser | null = UserPool.getCurrentUser();
   if (user) {
     user.signOut();
+    localStorage.clear();
   }
   window.location.href = '/login';
 };
@@ -17,12 +18,28 @@ export const logout = (): void => {
 const Settings: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
+  useEffect(() => {
+    // Initialize dark mode state from local storage
+    const storedDarkMode = localStorage.getItem('darkMode');
+    if (storedDarkMode === 'enabled') {
+      setIsDarkMode(true);
+      document.body.classList.add('dark-mode');
+    } else {
+      setIsDarkMode(false);
+      document.body.classList.remove('dark-mode');
+    }
+  }, []);
+
   const toggleDarkMode = () => {
     setIsDarkMode(prevMode => !prevMode);
-    if (isDarkMode) {
-      document.body.classList.remove('dark-mode');
-    } else {
+    if (!isDarkMode) {
+      localStorage.setItem('darkMode', 'enabled');
       document.body.classList.add('dark-mode');
+      console.log("black time");
+    } else {
+      localStorage.setItem('darkMode', 'disabled');
+      document.body.classList.remove('dark-mode');
+      console.log("white time");
     }
   };
 

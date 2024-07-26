@@ -5,9 +5,9 @@ import FormField from '../../components/FormField'
 import Button from '../../components/Button'
 import { router } from 'expo-router'
 import { AuthenticationDetails, CognitoUser, CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
-import { poolData } from '../config/poolData';
+import { mobilePoolData } from '../config/poolData';
 
-const UserPool = new CognitoUserPool(poolData);
+const UserPool = new CognitoUserPool(mobilePoolData);
 
 export const authenticate = (Email, Password) => {
   return new Promise((resolve, reject) => {
@@ -54,8 +54,7 @@ const Login = () => {
       alert("Password must be longer than 8 characters");
       return;
     }
-
-    // const authResult = await authenticate(username, password);
+    const authResult = await authenticate(username, password);
 
     authenticate(username, password)
     .then((data) => {
@@ -77,13 +76,14 @@ const Login = () => {
       })
       .then((authToken: string) => 
         {console.log(authToken); 
-          router.replace({ pathname: '/Home', params: { authToken } })
+        router.replace({ pathname: '/Home', params: { authToken } })
       })
     })
     .catch((err) => {
       console.log(err);
       // wrong account details
     });
+
     setIsSubmitting(false);
   }
 
