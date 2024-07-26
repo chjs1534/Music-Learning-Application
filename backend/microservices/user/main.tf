@@ -171,125 +171,16 @@ resource "aws_iam_policy" "lambda_dynamodb_policy_user" {
   })
 }
 
-# Policy for s3
-resource "aws_iam_policy" "lambda_s3_policy_pfp" {
-  name = "lambda_s3_policy_pfp"
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Action = [
-          "s3:*",
-          "s3:PutObject",
-          "s3:GetObject",
-          "s3:ListBucket",
-        ],
-        Resource = [
-          "arn:aws:s3:::*",
-          "arn:aws:s3:::${aws_s3_bucket.pfp_storage.id}",
-          "arn:aws:s3:::${aws_s3_bucket.pfp_storage.id}/*",
-        ],
-      },
-    ],
-  })
-}
-
 resource "aws_iam_role_policy_attachment" "lambda_policy" {
   for_each = {
     "AWSLambdaBasicExecutionRole": "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-    "AWSDynamodbRole": aws_iam_policy.lambda_dynamodb_policy_user.arn,
-    "AWSS3Role": aws_iam_policy.lambda_s3_policy_pfp.arn
+    "AWSDynamodbRole": aws_iam_policy.lambda_dynamodb_policy_user.arn
   }
   role       = aws_iam_role.lambda_exec.name
   policy_arn = each.value
 }
 
-# S3 bucket for pfp storage
-# Generate s3 bucket name
-resource "random_pet" "pfp_bucket_name" {
-  length = 4
-}
-
-# Generate s3 bucket
-resource "aws_s3_bucket" "pfp_storage" {
-  bucket = random_pet.pfp_bucket_name.id
-}
-
-resource "aws_s3_bucket_ownership_controls" "pfp_storage" {
-  bucket = aws_s3_bucket.pfp_storage.id
-  rule {
-    object_ownership = "BucketOwnerPreferred"
-  }
-}
-
-resource "aws_s3_bucket_acl" "pfp_storage" {
-  depends_on = [aws_s3_bucket_ownership_controls.pfp_storage]
-
-  bucket = aws_s3_bucket.pfp_storage.id
-  acl    = "private"
-}
-
-output "pfp_storage_name" {
-  description = "Name of the S3 bucket used to store function code."
-
-  value = aws_s3_bucket.pfp_storage.id
-}
-
 # Lambda functions
-# Add user lambda
-resource "aws_lambda_function" "addUser" {
-  function_name = "AddUser"
-
-  s3_bucket = aws_s3_bucket.lambda_bucket.id
-  s3_key    = aws_s3_object.lambdas.key
-
-  runtime = "nodejs16.x"
-  handler = "addUser.handler"
-
-  source_code_hash = data.archive_file.lambdas.output_base64sha256
-
-  role = aws_iam_role.lambda_exec.arn
-
-  timeout = 10
-
-  environment {
-    variables = {
-      PFP_STORAGE_BUCKET = aws_s3_bucket.pfp_storage.bucket
-    }
-  }
-}
-
-resource "aws_apigatewayv2_integration" "addUser" {
-  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
-
-  integration_uri    = aws_lambda_function.addUser.invoke_arn
-  integration_type   = "AWS_PROXY"
-  integration_method = "POST"
-}
-
-resource "aws_apigatewayv2_route" "addUser" {
-  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.id
-
-  route_key = "POST /user/addUser"
-  target    = "integrations/${aws_apigatewayv2_integration.addUser.id}"
-}
-
-resource "aws_lambda_permission" "api_gw_addUser" {
-  statement_id  = "AllowExecutionFromAPIGateway"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.addUser.function_name
-  principal     = "apigateway.amazonaws.com"
-
-  source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"
-}
-
-resource "aws_cloudwatch_log_group" "addUser" {
-  name = "/aws/lambda/${aws_lambda_function.addUser.function_name}"
-
-  retention_in_days = 30
-}
-
 # Get user lambda
 resource "aws_lambda_function" "getUser" {
   function_name = "GetUser"
@@ -533,10 +424,6 @@ resource "aws_cloudwatch_log_group" "updateUser" {
   name = "/aws/lambda/${aws_lambda_function.updateUser.function_name}"
 
   retention_in_days = 30
-}
-
-output "addUser" {
-  value = aws_lambda_function.addUser
 }
 
 output "lambda_dynamodb_policy_user" {

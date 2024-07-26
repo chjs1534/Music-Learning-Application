@@ -33,20 +33,17 @@ exports.handler = async (event) => {
         item = {userId: userId}
         let user
         try {
-            // console.log(item)
             user = await dynamo.get({
                 TableName: tableName,
                 Key: item
             }).promise();
-            console.log(user);
-            // console.log(user.Item)
 
             await cognito.adminDeleteUser({
                 UserPoolId: userPoolId,
                 Username: user.Item['username']
             }).promise();
         } catch (cognitoError) {
-            console.error('Failed to delete from Cognito User Pool:', cognitoError, user);
+            console.error('Failed to delete from Cognito User Pool:', cognitoError);
         }
 
         try {

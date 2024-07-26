@@ -125,8 +125,9 @@ resource "aws_cognito_user_pool" "mewsic_user_pool" {
     }
     
     lambda_config {
-      pre_sign_up = aws_lambda_function.verify.arn // TODO: remove (only for testing)
-      post_confirmation = data.terraform_remote_state.Mewsic-workspace-user.outputs.addUser.arn
+      pre_sign_up = aws_lambda_function.verify.arn
+      post_confirmation = aws_lambda_function.addUser.arn
+      pre_authentication = aws_lambda_function.authenticateCheck.arn
     }
 }
 
@@ -226,13 +227,14 @@ resource "aws_iam_role_policy_attachment" "lambda_policy" {
   for_each = {
     "AWSLambdaBasicExecutionRole": "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
     "AWSLambdaCognitoRole": aws_iam_policy.lambda_cognito_policy.arn,
-    "AWSDynamoDBPolicyUser": data.terraform_remote_state.Mewsic-workspace-user.outputs.lambda_dynamodb_policy_user.arn // delete from DynamoDB database
+    "AWSDynamoDBPolicyUser": data.terraform_remote_state.Mewsic-workspace-user.outputs.lambda_dynamodb_policy_user.arn // permissions for user database
   }
   role       = aws_iam_role.lambda_exec.name
   policy_arn = each.value
 }
 
-# Lambda function
+# Lambda functions
+# Verify lambda function
 resource "aws_lambda_function" "verify" {
   function_name = "Verify"
 
@@ -249,7 +251,7 @@ resource "aws_lambda_function" "verify" {
   timeout = 5
 }
 
-# Permission for AWS cognito to invoke verify lambda TODO: get rid of this (for testing)
+# Permission for AWS cognito to invoke verify lambda
 resource "aws_lambda_permission" "allow_execution_from_user_pool" {
   statement_id = "AllowExecutionFromUserPool"
   action = "lambda:InvokeFunction"
@@ -264,16 +266,72 @@ resource "aws_cloudwatch_log_group" "verify" {
   retention_in_days = 30
 }
 
+# AddUser lambda function
+# Permission for AWS cognito to invoke addUser lambda
+resource "aws_lambda_function" "addUser" {
+  function_name = "AddUser"
+
+  s3_bucket = aws_s3_bucket.lambda_bucket.id
+  s3_key    = aws_s3_object.lambdas.key
+
+  runtime = "nodejs18.x"
+  handler = "addUser.handler"
+
+  source_code_hash = data.archive_file.lambdas.output_base64sha256
+
+  role = aws_iam_role.lambda_exec.arn
+
+  timeout = 5
+}
+
 # Permission for AWS cognito to invoke addUser lambda
 resource "aws_lambda_permission" "allow_execution_from_user_pool_addUser" {
-  statement_id = "AllowExecutionFromUserPoolAddUser"
+  statement_id = "AllowExecutionFromUserPool"
   action = "lambda:InvokeFunction"
-  function_name = data.terraform_remote_state.Mewsic-workspace-user.outputs.addUser.function_name
+  function_name = aws_lambda_function.addUser.function_name
   principal = "cognito-idp.amazonaws.com"
   source_arn = aws_cognito_user_pool.mewsic_user_pool.arn
 }
 
-# Delete user lambda
+resource "aws_cloudwatch_log_group" "addUser" {
+  name = "/aws/lambda/${aws_lambda_function.addUser.function_name}"
+
+  retention_in_days = 30
+}
+
+# AuthenticateCheck lambda function
+resource "aws_lambda_function" "authenticateCheck" {
+  function_name = "AuthenticateCheck"
+
+  s3_bucket = aws_s3_bucket.lambda_bucket.id
+  s3_key    = aws_s3_object.lambdas.key
+
+  runtime = "nodejs18.x"
+  handler = "authenticateCheck.handler"
+
+  source_code_hash = data.archive_file.lambdas.output_base64sha256
+
+  role = aws_iam_role.lambda_exec.arn
+
+  timeout = 5
+}
+
+# Permission for AWS cognito to invoke authenticateCheck lambda
+resource "aws_lambda_permission" "allow_execution_from_user_pool_authenticateCheck" {
+  statement_id = "AllowExecutionFromUserPool"
+  action = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.authenticateCheck.function_name
+  principal = "cognito-idp.amazonaws.com"
+  source_arn = aws_cognito_user_pool.mewsic_user_pool.arn
+}
+
+resource "aws_cloudwatch_log_group" "authenticateCheck" {
+  name = "/aws/lambda/${aws_lambda_function.authenticateCheck.function_name}"
+
+  retention_in_days = 30
+}
+
+# Delete user lambda; connect with apigateway
 resource "aws_lambda_function" "deleteUser" {
   function_name = "DeleteUser"
 

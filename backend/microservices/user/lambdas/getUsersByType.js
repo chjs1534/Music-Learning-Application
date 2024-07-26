@@ -27,7 +27,7 @@ exports.handler = async (event, context) => {
 };
 
 const queryUsersByType = async (userType) => {
-    // Query as userId1
+    // Query by usertype
     const params1 = {
         TableName: tableName,
         IndexName: "UserTypeIndex",
