@@ -74,18 +74,6 @@ resource "aws_apigatewayv2_authorizer" "mewsic_gateway_auth" {
   }
 }
 
-resource "aws_apigatewayv2_authorizer" "mewsic_gateway_auth_mobile" {
-  api_id           = aws_apigatewayv2_api.mewsic_api.id
-  authorizer_type  = "JWT"
-  identity_sources = ["$request.header.Authorization"]
-  name             = "Mewsic-cognito-authorizer-mobile"
-
-  jwt_configuration {
-    audience = [data.terraform_remote_state.Mewsic-workspace-auth.outputs.userPoolClientMobile.id]
-    issuer   = "https://${data.terraform_remote_state.Mewsic-workspace-auth.outputs.userPoolMobile.endpoint}"
-  }
-}
-
 # Logging
 resource "aws_cloudwatch_log_group" "api_gw" {
   name = "/aws/api_gw/${aws_apigatewayv2_api.mewsic_api.name}"
@@ -110,10 +98,6 @@ output "mewsic_api_id" {
 
 output "mewsic_gateway_auth_id" {
     value = aws_apigatewayv2_authorizer.mewsic_gateway_auth.id
-}
-
-output "mewsic_gateway_auth_mobile_id" {
-    value = aws_apigatewayv2_authorizer.mewsic_gateway_auth_mobile.id
 }
 
 # Create API Gateway with WebSocket protocol
