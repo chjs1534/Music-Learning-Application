@@ -12,3 +12,5 @@ auth/.terraform
 tests/.env
 auth/lambdas/node_modules
 microservices/messaging/.terraform
+delete/.terraform
+delete/lambdas/node_modules

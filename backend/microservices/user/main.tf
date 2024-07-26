@@ -25,6 +25,17 @@ data "terraform_remote_state" "Mewsic-workspace-apigateway" {
   }
 }
 
+# Access outputs from auth workspace
+data "terraform_remote_state" "Mewsic-workspace-auth" {
+  backend = "remote"
+  config = {
+    organization = "Mewsic"
+    workspaces = {
+      name = "Mewsic-workspace-auth"
+    }
+  }
+}
+
 # User table
 resource "aws_dynamodb_table" "user-table" {
   name           = "UserTable"
@@ -177,6 +188,16 @@ resource "aws_iam_role_policy_attachment" "lambda_policy" {
     "AWSDynamodbRole": aws_iam_policy.lambda_dynamodb_policy_user.arn
   }
   role       = aws_iam_role.lambda_exec.name
+  policy_arn = each.value
+}
+
+# Give permission to addUser to update database
+resource "aws_iam_role_policy_attachment" "lambda_policy_auth" {
+  for_each = {
+    "AWSLambdaBasicExecutionRole": "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+    "AWSDynamodbRole": aws_iam_policy.lambda_dynamodb_policy_user.arn
+  }
+  role       = data.terraform_remote_state.Mewsic-workspace-auth.outputs.authLambdaExec
   policy_arn = each.value
 }
 

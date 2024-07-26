@@ -93,7 +93,7 @@ resource "aws_s3_object" "lambdas" {
 
 # Policies and roles for lambdas
 resource "aws_iam_role" "lambda_exec" {
-  name = "serverless_lambda_auth"
+  name = "serverless_lambda_delete"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -118,7 +118,7 @@ resource "aws_iam_policy" "lambda_cognito_policy" {
       {
         Effect = "Allow",
         Action = "cognito-idp:AdminDeleteUser",
-        Resource = aws_cognito_user_pool.mewsic_user_pool.arn
+        Resource = data.terraform_remote_state.Mewsic-workspace-auth.outputs.userPool.arn
       }
     ]
   })
@@ -152,7 +152,7 @@ resource "aws_lambda_function" "deleteUser" {
 
   environment {
     variables = {
-      USERPOOL_ID = data.terraform_remote_state.Mewsic-workspace-auth.outputs.cognito_user_pool.id
+      USERPOOL_ID = data.terraform_remote_state.Mewsic-workspace-auth.outputs.userPool.id
     }
   }
 }

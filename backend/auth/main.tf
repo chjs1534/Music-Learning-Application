@@ -218,38 +218,6 @@ resource "aws_cloudwatch_log_group" "verify" {
   retention_in_days = 30
 }
 
-# AddUser lambda function
-resource "aws_lambda_function" "addUser" {
-  function_name = "AddUser"
-
-  s3_bucket = aws_s3_bucket.lambda_bucket.id
-  s3_key    = aws_s3_object.lambdas.key
-
-  runtime = "nodejs18.x"
-  handler = "addUser.handler"
-
-  source_code_hash = data.archive_file.lambdas.output_base64sha256
-
-  role = aws_iam_role.lambda_exec.arn
-
-  timeout = 5
-}
-
-# Permission for AWS cognito to invoke addUser lambda
-resource "aws_lambda_permission" "allow_execution_from_user_pool_addUser" {
-  statement_id = "AllowExecutionFromUserPool"
-  action = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.addUser.function_name
-  principal = "cognito-idp.amazonaws.com"
-  source_arn = aws_cognito_user_pool.mewsic_user_pool.arn
-}
-
-resource "aws_cloudwatch_log_group" "addUser" {
-  name = "/aws/lambda/${aws_lambda_function.addUser.function_name}"
-
-  retention_in_days = 30
-}
-
 # AuthenticateCheck lambda function
 resource "aws_lambda_function" "authenticateCheck" {
   function_name = "AuthenticateCheck"
@@ -282,6 +250,38 @@ resource "aws_cloudwatch_log_group" "authenticateCheck" {
   retention_in_days = 30
 }
 
+# AddUser lambda function
+resource "aws_lambda_function" "addUser" {
+  function_name = "AddUser"
+
+  s3_bucket = aws_s3_bucket.lambda_bucket.id
+  s3_key    = aws_s3_object.lambdas.key
+
+  runtime = "nodejs18.x"
+  handler = "addUser.handler"
+
+  source_code_hash = data.archive_file.lambdas.output_base64sha256
+
+  role = aws_iam_role.lambda_exec.arn
+
+  timeout = 5
+}
+
+# Permission for AWS cognito to invoke addUser lambda
+resource "aws_lambda_permission" "allow_execution_from_user_pool_addUser" {
+  statement_id = "AllowExecutionFromUserPool"
+  action = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.addUser.function_name
+  principal = "cognito-idp.amazonaws.com"
+  source_arn = aws_cognito_user_pool.mewsic_user_pool.arn
+}
+
+resource "aws_cloudwatch_log_group" "addUser" {
+  name = "/aws/lambda/${aws_lambda_function.addUser.function_name}"
+
+  retention_in_days = 30
+}
+
 output "userPool" {
     value = aws_cognito_user_pool.mewsic_user_pool
 }
@@ -289,4 +289,8 @@ output "userPool" {
 output "userPoolClient" {
     value = aws_cognito_user_pool_client.mewsic_user_pool_client
     sensitive = true
+}
+
+output "authLambdaExec" {
+  value = aws_iam_role.lambda_exec.name
 }

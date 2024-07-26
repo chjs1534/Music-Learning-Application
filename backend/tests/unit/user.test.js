@@ -81,8 +81,8 @@ describe('Auth', () => {
 		// Check user in database
 		const payload = JSON.stringify({ pathParameters: { userId: userSub } });
 		const params = {
-				FunctionName: 'GetUser',
-				Payload: payload
+			FunctionName: 'GetUser',
+			Payload: payload
 		};
 		const lambdaResponse = await lambda.invoke(params).promise();
 		const result3 = JSON.parse(lambdaResponse.Payload);
