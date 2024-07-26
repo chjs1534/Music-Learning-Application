@@ -7,3 +7,4 @@ microservices/terraform/node_modules
 microservices/upload/node_modules
 microservices/.terraform
 microservices/match/.terraform
+microservices/messaging/.terraform

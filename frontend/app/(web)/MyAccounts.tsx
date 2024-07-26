@@ -1,8 +1,10 @@
-import React, { useState, ChangeEvent, useRef } from 'react';
+import React, { useState, ChangeEvent, useRef, useEffect } from 'react';
 import { CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
 import '../styles/website.css';
 import NavBar from './NavBar';
 import { mobilePoolData } from '../config/poolData';
+import StudentCard from '../../components/StudentCard';
+import { useNavigate } from 'react-router-dom';
 
 const UserPool = new CognitoUserPool(mobilePoolData);
 
@@ -10,8 +12,11 @@ interface AccountDetails {
     username: string;
 }
 
+
 const MyAccounts: React.FC = () => {
     const [username, setUsername] = useState<string>('');
+    const [firstname, setFirstname] = useState<string>('');
+    const [lastname, setLastname] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
     const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
@@ -19,11 +24,18 @@ const MyAccounts: React.FC = () => {
     const [errorMessage, setErrorMessage] = useState<string>('');
     const [showModal, setShowModal] = useState<boolean>(false);
     const [accounts, setAccounts] = useState<AccountDetails[]>([]);
+    const [subAccounts, setSubAccounts] = useState();
+    const [token, setToken] = useState<string>();
+    const [id, setId] = useState<string>();
+
     const modalRef = useRef<HTMLDivElement>(null);
+    const navigate = useNavigate();
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
         if (id === 'username') setUsername(value);
+        if (id === 'firstname') setFirstname(value);
+        if (id === 'lastname') setLastname(value);
         if (id === 'password') setPassword(value);
         if (id === 'confirmPassword') setConfirmPassword(value);
     };
@@ -75,6 +87,7 @@ const MyAccounts: React.FC = () => {
         UserPool.signUp(username, password, attributeList, null, (err, result) => {
             if (err) {
                 setErrorMessage(err.message || JSON.stringify(err));
+                return;
             } else {
                 setAccounts(prevAccounts => [...prevAccounts, { username }]);
                 setUsername('');
@@ -84,16 +97,41 @@ const MyAccounts: React.FC = () => {
                 setErrorMessage('');
             }
         });
+
+        await fetch('https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/addUser', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              userId: id,
+              email: "",
+              username: username,
+              userType: "Child",
+              firstName: firstname,
+              lastName: lastname
+            }),
+          })
+            .then(response => {
+              if (!response.ok) {
+                return response.text().then(text => { throw new Error(text) });
+              }
+              else {
+                console.log(response);
+              }
+              return response.json();
+            })
+            .then(data => {
+              console.log('Success:', data);
+            })
+            .catch(error => {
+              console.error('Error:', error.message, error.code || error);
+            });
     };
 
     const handleCloseModal = (e: React.MouseEvent<HTMLDivElement>) => {
         if (modalRef.current === e.target) {
-            // setShowModal(false);
-            // setUsername('');
-            // setPassword('');
-            // setConfirmPassword('');
-            // setErrorMessage('');
-            console.log("handleCloseModal if click outside to close")
+            setShowModal(false);
         }
     };
 
@@ -108,6 +146,51 @@ const MyAccounts: React.FC = () => {
     const handleDeleteProfile = (username: string) => {
         console.log(`Delete profile for ${username}`);
     };
+
+    useEffect(() => {
+        setToken(localStorage.getItem('token'));
+        setId(localStorage.getItem('id'));
+    }, []);
+
+    useEffect(() => {
+        getMyAccounts();
+    }, [id, token]);
+
+    useEffect(() => {
+        console.log(subAccounts)
+    }, [subAccounts]);
+
+    const getMyAccounts = async () => {
+        await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getFamily/${id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': token,
+                'Content-Type': 'application/json'
+            },
+        }).then(response => {
+            if (response.status === 204) {
+                console.log('Success: No content returned from the server.');
+                return;
+            }
+            if (!response.ok) {
+                return response.text().then(text => { throw new Error(text) });
+            }
+            else {
+                console.log(response);
+            }
+            return response.json();
+        }).then(data => {
+            console.log("oo", data.Items);
+            setSubAccounts(data.Items);
+        })
+        .catch(error => {
+            console.error('Error:', error.message, error.code || error);
+        });
+    }
+
+    const handleClick = (accountId) => {
+        navigate(`/profile/${accountId}`);
+    }
 
     return (
         <div className="homepage">
@@ -131,6 +214,32 @@ const MyAccounts: React.FC = () => {
                                     onBlur={handleInputBlur}
                                 />
                                 <label htmlFor="username">Username</label>
+                            </div>
+                            <div className="input-container">
+                                <input
+                                    className="form-inputs"
+                                    placeholder=""
+                                    type="text"
+                                    id="firstname"
+                                    value={firstname}
+                                    onChange={handleInputChange}
+                                    onFocus={handleInputFocus}
+                                    onBlur={handleInputBlur}
+                                />
+                                <label htmlFor="username">First Name</label>
+                            </div>
+                            <div className="input-container">
+                                <input
+                                    className="form-inputs"
+                                    placeholder=""
+                                    type="text"
+                                    id="lastname"
+                                    value={lastname}
+                                    onChange={handleInputChange}
+                                    onFocus={handleInputFocus}
+                                    onBlur={handleInputBlur}
+                                />
+                                <label htmlFor="username">Last Name</label>
                             </div>
                             <div className="input-container password-container">
                                 <input
@@ -187,6 +296,15 @@ const MyAccounts: React.FC = () => {
                         </div>
                     </div>
                 ))}
+                <div className="myteachers">
+            {subAccounts && subAccounts.length > 0 ? (subAccounts.map(acc => (
+              <StudentCard
+                id={acc.userId}
+                token={token}
+                handleClick={handleClick}
+              />
+            ))) : null}
+          </div>
             </div>
         </div>
     );

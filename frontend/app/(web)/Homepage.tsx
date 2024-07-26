@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
 import NavBar from './NavBar';
 import '../styles/website.css';
+import { StringLiteral } from 'typescript';
 
 const Homepage: React.FC = () => {
     // const location = useLocation();

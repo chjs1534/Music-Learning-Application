@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { BrowserRouter as Router, Route, Routes, createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 
@@ -12,6 +12,8 @@ import MyAccounts from './(web)/MyAccounts'
 import Message from './(web)/Message'
 import Students from './(web)/Students'
 import Teachers from './(web)/Teachers'
+import Notifications from './(web)/Notifications';
+import ViewMatches from './(web)/ViewMatches';
 
 // const router = createBrowserRouter([
 //   {
@@ -41,6 +43,32 @@ import Teachers from './(web)/Teachers'
 // ]);
 
 const App: React.FC = () => {
+  // const [id, setId] = useState(null);
+  // const [token, setToken] = useState(null);
+  // const [userType, setUserType] = useState(null);
+  
+  // useEffect(() => {
+  //   const id = localStorage.getItem('id');
+  //   if (id) {
+  //     setId(id);
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   const token = localStorage.getItem('token');
+  //   if (token) {
+  //     setToken(token);
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   const userType = localStorage.getItem('userType');
+  //   if (userType) {
+  //     setUserType(userType);
+  //   }
+  // }, []);
+
+
   return (
     <>
       {/* <RouterProvider router={router} /> */}
@@ -51,12 +79,14 @@ const App: React.FC = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/verification" element={<Verification />} />
           <Route path="/homepage" element={<Homepage />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/:id" element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/my-accounts" element={<MyAccounts />} />
           <Route path="/message" element={<Message />} />
           <Route path="/students" element={<Students />} />
           <Route path="/teachers" element={<Teachers />} />
+          <Route path="/notifications" element={<Notifications />} />
+          <Route path="/viewmatches/:id" element={<ViewMatches />} />
         </Routes>
       </Router>
     </>

@@ -1,99 +1,20 @@
 import { StyleSheet, Text, TouchableOpacity, View, ScrollView } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
-import { Camera, useCameraDevices } from 'react-native-vision-camera'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Button from '../../components/Button'
 import * as ImagePicker from "expo-image-picker"
 import { Video } from 'expo-av'
-import { USERPOOL_ID } from '@env'
+import { REACT_APP_USERPOOL_ID_MOBILE } from '@env';
 import { useGlobalSearchParams } from "expo-router"
-import { ffmpeg } from 'fluent-ffmpeg'
+import { useNavigation } from '@react-navigation/native';
+import { router } from 'expo-router';
+
 const Upload = () => {
-  // const camera = useRef(null);
-  // const [cameraPermission, setCameraPermission] = useState('');
-  // const [microphonePermission, setMicrophonePermission] = useState('');
-  // const [videoPath, setVideoPath] = useState();
   const [video, setVideo] = useState([]);
   const params = useGlobalSearchParams();
-  console.log(params);
   const { authToken } = params;
-  console.log(authToken);
-  console.log(USERPOOL_ID);
-  // useEffect(() => {
-  //   (async () => {
-  //     const cameraPermissionStatus = await Camera.requestCameraPermission();
-  //     const microphonePermissionStatus = await Camera.requestMicrophonePermission();
-  //     setCameraPermission(cameraPermissionStatus);
-  //     setMicrophonePermission(microphonePermissionStatus);
-  //   })();
-  // }, []);
+  const navigation = useNavigation();
 
-  // if (cameraPermission === '' || microphonePermission === '') {
-  //   //  add error to request for camera and microphone permissions
-  //   return <Text>Requesting permissions</Text>
-  // }
-
-  // const devices = useCameraDevices();
-  // const cameraDevice = devices.find(device => device.position === 'back');
-
-  // const handleRecordVideo = async () => {
-  //   try {
-  //     camera.current.startRecording({
-  //       flash: 'on',
-  //       onRecordingFinished: video => setVideoPath(video.path),
-  //       onRecordingError: error => console.error(error),
-  //     })
-  //   } catch (e) {
-  //     console.log(e)
-  //   }
-  // }
-
-  // const handleStopVideo = async () => {
-  //   try {
-  //     await camera.current.stopRecording();
-  //   } catch (e) {
-  //     console.log(e)
-  //   }
-  // }
-
-  // const renderRecordingVideo = () => {
-  //   return (
-  //     <View>
-  //       <Camera 
-  //         ref={camera}
-  //         device={cameraDevice}
-  //         isActive={true}
-  //         video
-  //       />
-  //       <View>
-  //         <TouchableOpacity onPress={handleRecordVideo}>
-  //           <Text>Record Video</Text>
-  //         </TouchableOpacity>
-  //         <TouchableOpacity onPress={handleStopVideo}>
-  //           <Text>stop Video</Text>
-  //         </TouchableOpacity>
-  //       </View>
-  //       <View>
-  //       {videoPath && (
-  //         <Video source={{  uri: videoPath }} />
-  //       )}
-  //       </View>
-  //     </View>
-      
-  //   )
-  // }
-
-  // const renderContent = () => {
-  //   if (cameraDevice == null) {
-  //     return null;
-  //   }
-  //   if (cameraPermission !== 'granted') {
-  //     return null;
-  //   }
-  //   return renderRecordingVideo();
-  // }
-
-  // uploading logic
   useEffect(() => {
     (async () => {
       const { status: mediaStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -113,7 +34,7 @@ const Upload = () => {
           Authorization: authToken as string,
       },
       body: JSON.stringify({
-        userId: USERPOOL_ID
+        userId: REACT_APP_USERPOOL_ID_MOBILE
       }),
     })
     .then(response => response.json())
@@ -141,7 +62,6 @@ const Upload = () => {
       // send the video to the backend
       uploadToS3(result.assets[0].uri)
     }
-
   };
 
   const recordVideo = async () => {
@@ -174,24 +94,29 @@ const Upload = () => {
     setVideo([]);
   }
 
-  // function to send video to backend
+  const handleVideoPress = (id) => {
+    router.replace({ pathname: '/Video', params: { id }})
+  };
 
   return (
     <View>
       <SafeAreaView className="bg-green-200 h-full">
         <ScrollView>
         {video.length > 0 ? video.map((videoUri, index) => (
-          <View key={index} className="m-1 border-black border-2 p-1">
-            <Video
-              source={{ uri: videoUri }}
-              rate={1.0}
-              volume={1.0}
-              isMuted={false}
-              resizeMode="contain"
-              style={{ width: '100%', height: 200 }}
-              useNativeControls
-            />
-          </View>
+          <TouchableOpacity key={index} onPress={() => handleVideoPress(videoUri)}>
+            <View key={index} className="m-1 border-black border-2 p-1">
+                <Video
+                  source={{ uri: videoUri }}
+                  rate={1.0}
+                  volume={1.0}
+                  isMuted={false}
+                  resizeMode="contain"
+                  style={{ width: '100%', height: 200 }}
+                  useNativeControls
+                />
+              </View>
+          </TouchableOpacity>
+          
         )) :
         <View className="justify-center items-center min-h-[75vh]">
           <Text className="text-3xl font-bold">Start by uploading a video</Text>
@@ -211,7 +136,16 @@ const Upload = () => {
             textStyles="text-lg font-semibold"    
             handlePress={recordVideo}      
           />
+          
         </View>
+        <View>
+        <Button 
+            title="go to video"
+            containerStyles="bg-green-400 m-5 pt-5 pb-5 pl-7 pr-7"
+            textStyles="text-lg font-semibold"    
+            handlePress={() => handleVideoPress('1')}
+          />
+      </View>
       </SafeAreaView>
     </View>
   )
