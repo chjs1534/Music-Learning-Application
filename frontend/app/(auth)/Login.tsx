@@ -54,8 +54,7 @@ const Login = () => {
       alert("Password must be longer than 8 characters");
       return;
     }
-
-    // const authResult = await authenticate(username, password);
+    const authResult = await authenticate(username, password);
 
     authenticate(username, password)
     .then((data) => {
@@ -77,13 +76,14 @@ const Login = () => {
       })
       .then((authToken: string) => 
         {console.log(authToken); 
-          router.replace({ pathname: '/Home', params: { authToken } })
+        router.replace({ pathname: '/Home', params: { authToken } })
       })
     })
     .catch((err) => {
       console.log(err);
       // wrong account details
     });
+
     setIsSubmitting(false);
   }
 

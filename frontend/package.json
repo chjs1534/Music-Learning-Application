@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.23.1",
+    "@react-navigation/native": "^6.1.18",
+    "@react-navigation/stack": "^6.4.1",
     "@types/react": "~18.2.79",
     "amazon-cognito-identity-js": "^6.3.12",
     "dotenv": "^16.4.5",

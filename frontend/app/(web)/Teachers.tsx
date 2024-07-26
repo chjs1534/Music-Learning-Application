@@ -17,15 +17,10 @@ const Teachers = () => {
 
   useEffect(() => {
     getMyTeachers();
-    getDetails();
   }, [id, token]);
 
   useEffect(() => {
-    console.log(teachers)
-  }, [teachers]);
-  useEffect(() => {
-    console.log("crycry", myTeachers)
-
+    getDetails();
   }, [myTeachers]);
 
   const getDetails = async () => {
@@ -50,7 +45,15 @@ const Teachers = () => {
     })
       .then(data => {
         console.log('Success:', data);
+        console.log("tytytyy",myTeachers);
+        // filter teachers by myteachers
+        if (myTeachers.matches.length > 0) {
+          const filteredList = data.users.filter(item => !myTeachers.includes(item));
+          setTeachers(filteredList);
+        }
         setTeachers(data.users);
+        console.log('something', teachers);
+
       })
       .catch(error => {
         console.error('Error:', error.message, error.code || error);
