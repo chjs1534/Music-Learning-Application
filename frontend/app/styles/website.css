@@ -104,6 +104,7 @@ body {
     align-items: center;
     z-index: 1;
     overflow-y: auto;
+    color: black;
 }
 
 .dashboard {
@@ -125,7 +126,7 @@ body {
     background-color: var(--navbar-background);
     padding: 10px 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    position: fixed;
+    position: relative;
     top: 0;
     left: 0;
     right: 0;
@@ -962,4 +963,8 @@ body {
 .modal-accounts-div {
     display: flex;
     margin: 20px;
+}
+
+.betton {
+    color: var(--text-color);
 }

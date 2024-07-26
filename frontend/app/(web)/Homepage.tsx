@@ -23,12 +23,14 @@ const Homepage: React.FC = () => {
         }
         setToken(localStorage.getItem('token'));
         setUserId(localStorage.getItem('id'));
-      }, []);
+
+        console.log('authToken:', token);
+        console.log('userId:', userId);
+      }, [token, userId]);
     
     const clickMe = async () => {
         console.log('authToken:', token);
         console.log('userId:', userId);
-
     };
 
     return (
@@ -36,7 +38,7 @@ const Homepage: React.FC = () => {
             <div className="dashboard">
                 <NavBar />
                 Welcome to the Homepage!
-                <button onClick={clickMe}>click me!</button>
+                <button className="betton" onClick={clickMe}>click me!</button>
             </div>
         </div>
     )

@@ -8,7 +8,7 @@ import {
   CognitoUserAttribute,
 } from 'amazon-cognito-identity-js';
 import { poolData } from '../config/poolData';
-// import { mobilePoolData } from '../config/poolData';
+
 
 interface LocationState {
   email: string;
@@ -16,7 +16,6 @@ interface LocationState {
 }
 
 const UserPool = new CognitoUserPool(poolData);
-const mobileUserPool = new CognitoUserPool(mobilePoolData);
 
 export const verifyUser = (
   email: string,
@@ -133,7 +132,7 @@ const Verification: React.FC = () => {
 
                 attributeList.push(attributeUsername);
 
-                mobileUserPool.signUp(username, password, attributeList, null, (err, result) => {
+                UserPool.signUp(username, password, attributeList, null, (err, result) => {
                   if (err) {
                     console.log(err.message || JSON.stringify(err));
                   } else {

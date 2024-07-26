@@ -270,6 +270,7 @@ const Profile: React.FC = () => {
             <p className="profileName">Name : {user.firstName} {user.lastName}</p>
             <p className="profileUserName">@{user.username}</p>
             <p className="aboutme">About Me:</p>
+            <p className="aboutme">User Type: {user.userType}</p>
           </div>}
           <div>{renderContent()}</div>
         </div>

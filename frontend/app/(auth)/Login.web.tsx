@@ -19,32 +19,6 @@ interface Position {
 
 const UserPool = new CognitoUserPool(poolData);
 
-export const authenticate = (Email: string, Password: string): Promise<CognitoUserSession> => {
-  return new Promise((resolve, reject) => {
-    const user = new CognitoUser({
-      Username: Email,
-      Pool: UserPool
-    });
-
-    const authDetails = new AuthenticationDetails({
-      Username: Email,
-      Password
-    });
-
-    user.authenticateUser(authDetails, {
-      onSuccess: (result: CognitoUserSession) => {
-        console.log("login successful");
-
-        resolve(result);
-      },
-      onFailure: (err: Error) => {
-        console.log("login failed", err);
-        reject(err);
-      }
-    });
-  });
-};
-
 const Login: React.FC = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -56,17 +30,68 @@ const Login: React.FC = () => {
 
   const [isDarkMode, setIsDarkMode] = useState(false);
   useEffect(() => {
-      const storedDarkMode = localStorage.getItem('darkMode');
-      if (storedDarkMode === 'enabled') {
-        setIsDarkMode(true);
-        document.body.classList.add('dark-mode');
-      } else {
-        setIsDarkMode(false);
-        document.body.classList.remove('dark-mode');
-      }
+    const storedDarkMode = localStorage.getItem('darkMode');
+    if (storedDarkMode === 'enabled') {
+      setIsDarkMode(true);
+      document.body.classList.add('dark-mode');
+    } else {
+      setIsDarkMode(false);
+      document.body.classList.remove('dark-mode');
+    }
   }, []);
 
-  // const navigate = useNavigate();
+  const authenticate = async () => {
+    let jwtToken;
+    let userId;
+    const authenticationDetails = new AuthenticationDetails({
+      Username: username,
+      Password: password,
+    });
+    const userData = {
+      Username: username,
+      Pool: UserPool
+    };
+    const cognitoUser = new CognitoUser(userData);
+    await new Promise((resolve, reject) => {
+      cognitoUser.authenticateUser(authenticationDetails, {
+        onSuccess: function (result) {
+          jwtToken = result.idToken.jwtToken;
+          const jwtPayload = JSON.parse(atob(jwtToken.split('.')[1]));
+          userId = jwtPayload.sub;
+          resolve();
+        },
+        onFailure: function (err) {
+          reject(err);
+        },
+      });
+    });
+
+    const queryParams = new URLSearchParams({ jwtToken, userId });
+    localStorage.setItem('id', userId);
+    localStorage.setItem('token', jwtToken);
+    await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getUser/${userId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': jwtToken,
+        'Content-Type': 'application/json'
+      },
+    }).then(response => {
+      if (!response.ok) {
+        return response.text().then(text => { throw new Error(text) });
+      }
+      else {
+        console.log(response);
+      }
+      return response.json();
+    })
+      .then(data => {
+        localStorage.setItem('userType', data.userType);
+        console.log(data.userType)
+
+      })
+    console.log(jwtToken, userId)
+    window.location.href = `/homepage?${queryParams.toString()}`;
+  };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -116,58 +141,7 @@ const Login: React.FC = () => {
       return;
     }
 
-    try {
-      await authenticate(username, password);
-
-      const authToken = await new Promise<string | null>((resolve, reject) => {
-        const cognitoUser = UserPool.getCurrentUser();
-        if (cognitoUser) {
-          cognitoUser.getSession((err: Error | null, session: CognitoUserSession | null) => {
-            if (err) {
-              reject(err);
-            } else if (!session?.isValid()) {
-              resolve(null);
-            } else {
-              resolve(session?.getIdToken().getJwtToken() || null);
-            }
-          });
-        } else {
-          resolve(null);
-        }
-      });
-      await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getUserId/${username}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': authToken,
-          'Content-Type': 'application/json'
-        },
-      }).then(response => {
-        if (!response.ok) {
-          return response.text().then(text => { throw new Error(text) });
-        }
-        else {
-          console.log(response);
-        }
-        return response.json();
-      })
-        .then(data => {
-          console.log('Success:', data);
-          localStorage.setItem('id', data.userId);
-          localStorage.setItem('userType', data.userType);
-        })
-        .catch(error => {
-          console.error('Error:', error.message, error.code || error);
-        });
-
-      const queryParams = new URLSearchParams();
-      window.location.href = `/homepage?${queryParams.toString()}`;
-      console.log(authToken)
-      localStorage.setItem('token', authToken);
-
-    } catch (err) {
-      setErrorMessage(err);
-      setPassword("");
-    }
+    await authenticate();
   };
 
   const handleMouseDown = (e: MouseEvent<HTMLImageElement>) => {
@@ -190,6 +164,11 @@ const Login: React.FC = () => {
       });
     }
   };
+
+  const handleLogoClick = (url: string) => {
+    window.location.href = url;
+  };
+
 
   useEffect(() => {
     document.addEventListener('mousemove', handleMouseMove);
@@ -261,16 +240,22 @@ const Login: React.FC = () => {
             src="https://cdn-icons-png.flaticon.com/128/300/300221.png"
             alt="Google"
             className="company-button"
+            data-text="Register with Google"
+            onClick={() => handleLogoClick('https://www.google.com')}
           />
           <img
             src="https://cdn-icons-png.flaticon.com/128/731/731985.png"
             alt="Apple"
             className="company-button"
+            data-text="Register with Apple"
+            onClick={() => handleLogoClick('https://www.apple.com')}
           />
           <img
             src="https://cdn-icons-png.flaticon.com/128/5968/5968764.png"
             alt="Facebook"
             className="company-button"
+            data-text="Register with Facebook"
+            onClick={() => handleLogoClick('https://www.facebook.com')}
           />
         </div>
         <span className="auth-text">Don't have an account? <a className="anchor1" href="/register">Register Now</a></span>
