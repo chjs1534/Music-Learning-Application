@@ -10,6 +10,8 @@ const UserPool = new CognitoUserPool(poolData);
 const Register: React.FC = () => {
   const [userType, setUserType] = useState<string>('');
   const [email, setEmail] = useState<string>('');
+  const [firstName, setFirstName] = useState<string>('');
+  const [lastName, setLastName] = useState<string>('');
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
@@ -17,10 +19,9 @@ const Register: React.FC = () => {
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState<boolean>(false);
 
-
   const [isDarkMode, setIsDarkMode] = useState(false);
   useEffect(() => {
-    // Initialize dark mode state from local storage
+    console.log(poolData)
     const storedDarkMode = localStorage.getItem('darkMode');
     if (storedDarkMode === 'enabled') {
       setIsDarkMode(true);
@@ -44,8 +45,6 @@ const Register: React.FC = () => {
     }
   };
 
-  // const navigate = useNavigate();
-
   const validateEmail = (email: string): boolean => {
     const regex = /^[a-zA-Z0-9]+@[a-zA-Z\.]+$/;
     return regex.test(email);
@@ -58,6 +57,8 @@ const Register: React.FC = () => {
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     if (id === 'email') setEmail(value);
+    if (id === 'first-name') setFirstName(value);
+    if (id === 'last-name') setLastName(value);
     if (id === 'username') setUsername(value);
     if (id === 'password') setPassword(value);
     if (id === 'confirmPassword') setConfirmPassword(value);
@@ -87,6 +88,39 @@ const Register: React.FC = () => {
     setConfirmPasswordVisible(!confirmPasswordVisible);
   };
 
+  const authenticate = async () => {
+    let jwtToken;
+    let userId;
+    const authenticationDetails = new AuthenticationDetails({
+      Username: username,
+      Password: password,
+    });
+    const userData = {
+      Username: username,
+      Pool: UserPool
+    };
+    const cognitoUser = new CognitoUser(userData);
+    await new Promise((resolve, reject) => {
+      cognitoUser.authenticateUser(authenticationDetails, {
+        onSuccess: function (result) {
+          jwtToken = result.idToken.jwtToken;
+          const jwtPayload = JSON.parse(atob(jwtToken.split('.')[1]));
+          userId = jwtPayload.sub;
+          resolve();
+        },
+        onFailure: function (err) {
+          reject(err);
+        },
+      });
+    });
+
+    const queryParams = new URLSearchParams({ jwtToken, userId });
+    localStorage.setItem('id', userId);
+    localStorage.setItem('userType', userType)
+    console.log(jwtToken, userId, userType);
+    window.location.href = `/homepage?${queryParams.toString()}`;
+  }
+
   const register = async () => {
     console.log(poolData)
     if (!userType) {
@@ -95,6 +129,14 @@ const Register: React.FC = () => {
     }
     if (!validateEmail(email)) {
       setErrorMessage("Please enter a valid email address");
+      return;
+    }
+    if (firstName.length < 2) {
+      setErrorMessage("First name too short");
+      return;
+    }
+    if (lastName.length < 2) {
+      setErrorMessage("Last name too short");
       return;
     }
     if (username.length < 3) {
@@ -110,34 +152,49 @@ const Register: React.FC = () => {
       return;
     }
 
-    const attributeList: CognitoUserAttribute[] = [];
-
-    const dataEmail = {
+    const attributeList = [];
+    const attributeEmail = new CognitoUserAttribute({
       Name: 'email',
       Value: email
-    };
-    const dataUsername = {
-      Name: 'username',
+    });
+    const attributeUsername = new CognitoUserAttribute({
+      Name: 'custom:username',
       Value: username
-    };
-    const attributeEmail = new CognitoUserAttribute(dataEmail);
-    const attributeUsername = new CognitoUserAttribute(dataUsername);
+    });
+    const attributeUserType = new CognitoUserAttribute({
+      Name: 'custom:userType',
+      Value: userType
+    });
+    const attributeFirstName = new CognitoUserAttribute({
+      Name: 'custom:firstName',
+      Value: firstName
+    });
+    const attributeLastName = new CognitoUserAttribute({
+      Name: 'custom:lastName',
+      Value: lastName
+    });
 
     attributeList.push(attributeEmail);
     attributeList.push(attributeUsername);
+    attributeList.push(attributeUserType);
+    attributeList.push(attributeFirstName);
+    attributeList.push(attributeLastName);
 
-    UserPool.signUp(email, password, attributeList, null, (err, result) => {
-      if (err) {
-        console.error(err);
-      } else {
-        console.log(result);
-        // navigate('/verification', { state: { email, password } });
-        window.location.href = '/verification', { state: { userType, email, password } };
-        // const queryParams = new URLSearchParams({ userType, email, password });
-        // window.location.href = `/verification?${queryParams.toString()}`;
-      }
+    const result = await new Promise((resolve, reject) => {
+      UserPool.signUp(username, password, attributeList, null, (err, result) => {
+        if (err) {
+          console.error(err);
+        }
+        else {
+          authenticate();
+        }
+        resolve(result);
+      });
     });
-    console.log(userType, "hi")
+  };
+
+  const handleLogoClick = (url: string) => {
+    window.location.href = url;
   };
 
   return (
@@ -188,6 +245,32 @@ const Register: React.FC = () => {
           />
           <label htmlFor="username">Username</label>
         </div>
+        <div className="input-container">
+          <input
+            className="form-inputs"
+            placeholder=""
+            type="text"
+            id="first-name"
+            value={firstName}
+            onChange={handleInputChange}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+          />
+          <label htmlFor="first-name">First Name</label>
+        </div>
+        <div className="input-container">
+          <input
+            className="form-inputs"
+            placeholder=""
+            type="text"
+            id="last-name"
+            value={lastName}
+            onChange={handleInputChange}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+          />
+          <label htmlFor="last-name">Last Name</label>
+        </div>
         <div className="input-container password-container">
           <input
             className="form-inputs"
@@ -236,28 +319,34 @@ const Register: React.FC = () => {
             src="https://cdn-icons-png.flaticon.com/128/300/300221.png"
             alt="Google"
             className="company-button"
+            data-text="Register with Google"
+            onClick={() => handleLogoClick('https://www.google.com')}
           />
           <img
             src="https://cdn-icons-png.flaticon.com/128/731/731985.png"
             alt="Apple"
             className="company-button"
+            data-text="Register with Apple"
+            onClick={() => handleLogoClick('https://www.apple.com')}
           />
           <img
             src="https://cdn-icons-png.flaticon.com/128/5968/5968764.png"
             alt="Facebook"
             className="company-button"
+            data-text="Register with Facebook"
+            onClick={() => handleLogoClick('https://www.facebook.com')}
           />
         </div>
         <span className="auth-text">Already have an account? <a className="anchor1" href="/">Log In</a></span>
         <div className="dark-mode-toggle">
-            <label htmlFor="darkModeSwitch">Dark Mode</label>
-            <input
-              type="checkbox"
-              id="darkModeSwitch"
-              checked={isDarkMode}
-              onChange={toggleDarkMode}
-            />
-          </div>
+          <label htmlFor="darkModeSwitch">Dark Mode</label>
+          <input
+            type="checkbox"
+            id="darkModeSwitch"
+            checked={isDarkMode}
+            onChange={toggleDarkMode}
+          />
+        </div>
       </div>
     </div>
   );

@@ -7,11 +7,20 @@ const Notifications = () => {
     const [requests, setRequests] = useState();
     const [id, setId] = useState<string>();
     const [token, setToken] = useState<string>();
+    const [isDarkMode, setIsDarkMode] = useState(false);
 
     // fetch requests and map them /match/getRequests/{userId}
     useEffect(() => {
       setId(localStorage.getItem('id'))
       setToken(localStorage.getItem('token'))
+      const storedDarkMode = localStorage.getItem('darkMode');
+      if (storedDarkMode === 'enabled') {
+        setIsDarkMode(true);
+        document.body.classList.add('dark-mode');
+      } else {
+        setIsDarkMode(false);
+        document.body.classList.remove('dark-mode');
+      }
     }, []);
 
     useEffect(() => {

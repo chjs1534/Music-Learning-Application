@@ -7,9 +7,10 @@ import Register from './(auth)/Register'
 import Verification from './(auth)/Verification'
 import Homepage from './(web)/Homepage'
 import Profile from './(web)/Profile'
+import EditProfile from './(web)/EditProfile'
 import Settings from './(web)/Settings'
 import MyAccounts from './(web)/MyAccounts'
-import Message from './(web)/Message'
+import MessageScreen from './(web)/Message'
 import Students from './(web)/Students'
 import Teachers from './(web)/Teachers'
 import Notifications from './(web)/Notifications';
@@ -80,9 +81,10 @@ const App: React.FC = () => {
           <Route path="/verification" element={<Verification />} />
           <Route path="/homepage" element={<Homepage />} />
           <Route path="/profile/:id" element={<Profile />} />
+          <Route path="/edit-profile/:id" element={<EditProfile />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/my-accounts" element={<MyAccounts />} />
-          <Route path="/message" element={<Message />} />
+          <Route path="/message" element={<MessageScreen />} />
           <Route path="/students" element={<Students />} />
           <Route path="/teachers" element={<Teachers />} />
           <Route path="/notifications" element={<Notifications />} />

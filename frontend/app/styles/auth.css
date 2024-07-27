@@ -230,17 +230,38 @@ body.dark-mode {
 }
 
 .company-button {
+    position: relative; /* Necessary for positioning the ::after element */
     padding: 12px;
     width: 36px;
     height: 36px;
     border: 1px transparent;
     border-radius: 10000px;
-    transition: background-color 0.3s ease-out;
+    transition: background-color 0.3s ease-out, transform 0.2s ease-out;
 }
 
 .company-button:hover {
-    background-color: var(--company-button-hover-bg-color);
-    color: var(--text-color);
+    transform: scale(1.1);
+}
+
+.company-button::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background-color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    white-space: nowrap; /* Prevent text from wrapping */
+    z-index: 1; /* Ensure the tooltip is above other content */
+    opacity: 0; /* Start hidden */
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out; /* Smooth transition */
+}
+
+.company-button:hover::after {
+    opacity: 1; /* Show on hover */
+    transform: translateX(-50%) translateY(0); /* Slight upward movement */
 }
 
 .anchor1 {

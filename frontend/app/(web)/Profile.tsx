@@ -11,6 +11,7 @@ const Profile: React.FC = () => {
   const [matched, setMatched] = useState<boolean>(false);
   const [subAccounts, setSubAccounts] = useState();
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const { id } = useParams();
 
@@ -21,12 +22,22 @@ const Profile: React.FC = () => {
   useEffect(() => {
     setToken(localStorage.getItem('token'));
     setUserType(localStorage.getItem('userType'));
+    const storedDarkMode = localStorage.getItem('darkMode');
+    if (storedDarkMode === 'enabled') {
+      setIsDarkMode(true);
+      document.body.classList.add('dark-mode');
+    } else {
+      setIsDarkMode(false);
+      document.body.classList.remove('dark-mode');
+    }
+    console.log("Mode:" + storedDarkMode)
   }, []);
 
   useEffect(() => {
-    getDetails();
+    if (token && id) {
+      getDetails();
+    }
   }, [id, token]);
-
 
   useEffect(() => {
     if (user !== null) {
@@ -81,36 +92,33 @@ const Profile: React.FC = () => {
     });
   }
 
-  // fetch user using id
   const getDetails = async () => {
-    console.log("asdadadsasdaddad", token)
     await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getUser/${id}`, {
       method: 'GET',
       headers: {
-        'Authorization': token,
-        'Content-Type': 'application/json'
+        'Authorization': token!,
+        'Content-Type': 'application/json',
       },
-    }).then(response => {
-      if (response.status === 204) {
-        console.log('Success: No content returned from the server.');
-        return;
-      }
-      if (!response.ok) {
-        return response.text().then(text => { throw new Error(text) });
-      }
-      else {
-        console.log(response);
-      }
-      return response.json();
     })
+      .then(response => {
+        if (!response.ok) {
+          return response.text().then(text => { throw new Error(text); });
+        }
+        return response.json();
+      })
       .then(data => {
-        console.log('Success:', data);
         setUser(data);
+        console.log(data)
       })
       .catch(error => {
-        console.error('Error:', error.message, error.code || error);
+        console.error('Error:', error.message);
       });
-  }
+  };
+
+  const goToEditProfile = () => {
+    const queryParams = new URLSearchParams();
+    window.location.href = `/edit-profile/${id}?${queryParams.toString()}`;
+  };
 
 
   const handleRequest = async (accId) => {
@@ -121,17 +129,17 @@ const Profile: React.FC = () => {
         'userId2': id,
       }),
       headers: {
-        'Authorization': token,
-        'Content-Type': 'application/json'
+        'Authorization': token!,
+        'Content-Type': 'application/json',
       },
     }).then(() => {
       alert("request sent")
       setShowModal(false);
     })
       .catch(error => {
-        console.error('Error:', error.message, error.code || error);
+        console.error('Error:', error.message);
       });
-  }
+  };
 
   const getMyTeachers = async () => {
     await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/match/getMatches/${id}`, {
@@ -208,7 +216,7 @@ const Profile: React.FC = () => {
   const renderContent = () => {
     if (id === localStorage.getItem('id')) {
       return (
-        <img src={"https://cdn-icons-png.flaticon.com/128/860/860814.png"} alt="edit profile" className="editprofilebutton" />
+        <img onClick={goToEditProfile} src="https://cdn-icons-png.flaticon.com/128/860/860814.png" alt="Edit Profile" className="edit-profile-button" />
       );
     } else if (user !== null) {
       if (userType === "Student" && user.userType === "Teacher") {
@@ -221,7 +229,7 @@ const Profile: React.FC = () => {
       } else if (userType === "Parent" && user.userType === "Teacher") {
         // request match have modal for kids
         console.log(subAccounts)
-        return (<button onClick={() => setShowModal(true)}>request match</button>);
+        return (<button className="request-button" onClick={() => setShowModal(true)}>request match</button>);
       } else if (user.userType === "Child") {
         // navigate view matches/ id
         return (<button onClick={viewMatch}>view matches</button>);
@@ -235,7 +243,7 @@ const Profile: React.FC = () => {
     <div className="homepage">
       <div className="profile">
         <NavBar />
-        <div className="details-container">
+        <div className="profile-details">
           {showModal && (
             <div className="modal" ref={modalRef} onClick={handleCloseModal}>
               <div className="modal-content">
@@ -256,23 +264,40 @@ const Profile: React.FC = () => {
             </div>
           )}
           <div className="pfp">
-            <h2 className="profileword">Profile</h2>
-            <img src={"https://cdn-icons-png.flaticon.com/128/5653/5653986.png"} alt="pfp" className="pfp-icon" />
+            {user && <img src={"https://cdn-icons-png.flaticon.com/128/847/847969.png"} alt="Profile" className="profile-icon" />}
           </div>
           {user && <div className="profiledeets">
-            <p className="profileName">{user.firstName} {user.lastName}</p>
-            <p className="profileUserName">{user.username}</p>
-            <p className="aboutme">aboutme</p>
+            <p className="profileName">Name : {user.firstName} {user.lastName}</p>
+            <p className="profileUserName">@{user.username}</p>
+            <p className="aboutme">About Me:</p>
+            <p className="aboutme">User Type: {user.userType}</p>
           </div>}
           <div>{renderContent()}</div>
         </div>
-        <div className="details-container2">
-          <h2 className="profileword">Teacher Details</h2>
-          <p>heloolhelho</p>
+        {/* {user && (
+          <div className="profile-content">
+            <div className="profile-details">
+              <p>{user.firstName} {user.lastName}</p>
+              <p>@{user.username}</p>
+            </div>
+            <div className="profile-actions">
+              {id === localStorage.getItem('id') ? (
+                <button className="edit-profile-button">
+                  <img onClick={goToEditProfile} src="https://cdn-icons-png.flaticon.com/128/860/860814.png" alt="Edit Profile" className="edit-profile-button" />
+                </button>
+              ) : (
+                <button className="request-button" onClick={handleRequest}>Request</button>
+              )}
+            </div>
+          </div>
+        )} */}
+        <div className="profile-extra">
+          <h2>Extra Details</h2>
+          <p>Details here...</p>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Profile
+export default Profile;

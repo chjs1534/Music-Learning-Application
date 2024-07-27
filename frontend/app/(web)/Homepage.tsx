@@ -8,43 +8,29 @@ import { StringLiteral } from 'typescript';
 const Homepage: React.FC = () => {
     // const location = useLocation();
     // const authToken = location.state?.authToken;
+    const [token, setToken] = useState<string | null>(null);
+    const [userId, setUserId] = useState<string | null>(null);
+    const [isDarkMode, setIsDarkMode] = useState(false);
+    
+    useEffect(() => {
+        const storedDarkMode = localStorage.getItem('darkMode');
+        if (storedDarkMode === 'enabled') {
+          setIsDarkMode(true);
+          document.body.classList.add('dark-mode');
+        } else {
+          setIsDarkMode(false);
+          document.body.classList.remove('dark-mode');
+        }
+        setToken(localStorage.getItem('token'));
+        setUserId(localStorage.getItem('id'));
 
-    const queryParams = new URLSearchParams(location.search);
-    const authToken = queryParams.get('authToken') || '';
-
-    const token = `Bearer ${encodeURIComponent(authToken || '')}`;
+        console.log('authToken:', token);
+        console.log('userId:', userId);
+      }, [token, userId]);
     
     const clickMe = async () => {
         console.log('authToken:', token);
-
-        await fetch('https://x5yhk546p1.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage2/hello', {
-            method: 'POST',
-            headers: {
-                'Authorization': token,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ testId: 'Adam nib' }),
-        })
-            .then(response => {
-                console.log('Success IMKIDIDNG HAAHBHAAHAH stop its not funny acutally');
-                if (response.status === 204) {
-                    console.log('Success: No content returned from the server.');
-                    return;
-                }
-                if (!response.ok) {
-                    return response.text().then(text => { throw new Error(text) });
-                }
-                else {
-                    console.log(response);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Success:', data);
-            })
-            .catch(error => {
-                console.error('Error:', error.message, error.code || error);
-            });
+        console.log('userId:', userId);
     };
 
     return (
@@ -52,7 +38,7 @@ const Homepage: React.FC = () => {
             <div className="dashboard">
                 <NavBar />
                 Welcome to the Homepage!
-                <button onClick={clickMe}>click me!</button>
+                <button className="betton" onClick={clickMe}>click me!</button>
             </div>
         </div>
     )
