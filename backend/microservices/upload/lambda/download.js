@@ -26,7 +26,7 @@ exports.handler = async (event, context, callback) => {
     s3Client,
     new GetObjectCommand({
       Bucket: BUCKET_NAME,
-      Key: `${userId}/${fileId}/${filename}.png`,
+      Key: `${userId}/${fileId}/${filename}.jpg`,
     }),
     { expiresIn: 600 },
   );

@@ -8,6 +8,8 @@ import { Video } from 'expo-av'
 import { USERPOOL_ID } from '@env'
 import { useGlobalSearchParams } from "expo-router"
 import { ffmpeg } from 'fluent-ffmpeg'
+import * as VideoThumbnails from 'expo-video-thumbnails'
+
 const Upload = () => {
   // const camera = useRef(null);
   // const [cameraPermission, setCameraPermission] = useState('');
@@ -104,9 +106,13 @@ const Upload = () => {
     })();
   }, []);
 
-  const uploadToS3 = async (uri) => {
-    const res = await fetch(uri);
-    const content = await res.blob();
+  const uploadToS3 = async (videoUri) => {
+    const { uri } = await VideoThumbnails.getThumbnailAsync(videoUri)
+    const thumbnailRes = await fetch(videoUri);
+    const thumbnailBlob = await thumbnailRes.blob();
+    const videoRes = await fetch(uri);
+    const videoBlob = await videoRes.blob();
+
     fetch("https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/upload", {
       method: 'POST',
       headers: {
@@ -117,9 +123,9 @@ const Upload = () => {
       }),
     })
     .then(response => response.json())
-    .then(json => json.uploadURL)
-    .then(url => {
-      fetch(url, { method: 'PUT', body: content });
+    .then(json => {
+      fetch(json.uploadVideoUrl, { method: 'PUT', body: videoBlob });
+      fetch(json.uploadThumbnailUrl, { method: 'PUT', body: thumbnailBlob });      
     });
   };
 

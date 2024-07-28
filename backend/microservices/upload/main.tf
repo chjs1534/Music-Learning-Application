@@ -90,6 +90,23 @@ resource "aws_s3_bucket" "video_storage" {
   bucket = random_pet.video_bucket_name.id
 }
 
+resource "aws_s3_bucket_cors_configuration" "video_storage" {
+  bucket = aws_s3_bucket.video_storage.id
+
+  cors_rule {
+    allowed_headers = ["*"]
+    allowed_methods = ["PUT", "POST"]
+    allowed_origins = ["*"]
+    expose_headers  = ["ETag"]
+    max_age_seconds = 3000
+  }
+
+  cors_rule {
+    allowed_methods = ["GET"]
+    allowed_origins = ["*"]
+  }
+}
+
 resource "aws_s3_bucket_ownership_controls" "video_storage" {
   bucket = aws_s3_bucket.video_storage.id
   rule {
@@ -242,7 +259,7 @@ resource "aws_lambda_function" "videos" {
   s3_bucket = aws_s3_bucket.lambda_bucket.id
   s3_key    = aws_s3_object.lambda_upload.key
 
-  runtime = "python3.8"
+  runtime = "nodejs18.x"
   handler = "videos.handler"
 
   source_code_hash = data.archive_file.lambda_upload.output_base64sha256
@@ -291,8 +308,8 @@ resource "aws_apigatewayv2_route" "download" {
 
   route_key = "POST /download"
   target    = "integrations/${aws_apigatewayv2_integration.download.id}"
-  authorization_type = "JWT"
-  authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+  # authorization_type = "JWT"
+  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
 }
 
 # Integration of videos lambda
