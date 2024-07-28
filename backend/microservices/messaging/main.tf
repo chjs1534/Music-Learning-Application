@@ -185,8 +185,8 @@ resource "aws_apigatewayv2_route" "sendMessage" {
 
   route_key = "sendMessage"
   target    = "integrations/${aws_apigatewayv2_integration.sendMessage.id}"
-#   authorization_type = "REQUEST"
-#   authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id_websocket
+  # authorization_type = "JWT"
+  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id_websocket
 }
 
 resource "aws_lambda_permission" "api_gw_sendMessage" {
@@ -242,8 +242,8 @@ resource "aws_apigatewayv2_route" "connect" {
 
   route_key = "$connect"
   target    = "integrations/${aws_apigatewayv2_integration.connect.id}"
-#   authorization_type = "REQUEST"
-#   authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id_websocket
+  # authorization_type = "JWT"
+  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id_websocket
 }
 
 resource "aws_lambda_permission" "api_gw_connect" {
@@ -291,8 +291,8 @@ resource "aws_apigatewayv2_route" "disconnect" {
 
   route_key = "$disconnect"
   target    = "integrations/${aws_apigatewayv2_integration.disconnect.id}"
-#   authorization_type = "REQUEST"
-#   authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id_websocket
+  # authorization_type = "JWT"
+  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id_websocket
 }
 
 resource "aws_lambda_permission" "api_gw_disconnect" {
@@ -340,8 +340,8 @@ resource "aws_apigatewayv2_route" "default" {
 
   route_key = "$default"
   target    = "integrations/${aws_apigatewayv2_integration.default.id}"
-#   authorization_type = "REQUEST"
-#   authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id_websocket
+  # authorization_type = "JWT"
+  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id_websocket
 }
 
 resource "aws_lambda_permission" "api_gw_default" {

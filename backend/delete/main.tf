@@ -14,6 +14,17 @@ terraform {
   }
 }
 
+# Access outputs from match workspace
+data "terraform_remote_state" "Mewsic-workspace-match" {
+  backend = "remote"
+  config = {
+    organization = "Mewsic"
+    workspaces = {
+      name = "Mewsic-workspace-match"
+    }
+  }
+}
+
 # Access outputs from user workspace
 data "terraform_remote_state" "Mewsic-workspace-user" {
   backend = "remote"
@@ -128,7 +139,8 @@ resource "aws_iam_role_policy_attachment" "lambda_policy" {
   for_each = {
     "AWSLambdaBasicExecutionRole": "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
     "AWSLambdaCognitoRole": aws_iam_policy.lambda_cognito_policy.arn,
-    "AWSDynamoDBPolicyUser": data.terraform_remote_state.Mewsic-workspace-user.outputs.lambda_dynamodb_policy_user.arn // permissions for user database
+    "AWSDynamoDBPolicyUser": data.terraform_remote_state.Mewsic-workspace-user.outputs.lambda_dynamodb_policy_user.arn // permissions for user database,
+    "AWSDynamoDBPolicyMatch": data.terraform_remote_state.Mewsic-workspace-match.outputs.lambda_dynamodb_policy_match.arn // permissions for match database
   }
   role       = aws_iam_role.lambda_exec.name
   policy_arn = each.value

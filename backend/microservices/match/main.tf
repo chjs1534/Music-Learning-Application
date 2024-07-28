@@ -398,3 +398,7 @@ resource "aws_cloudwatch_log_group" "removeMatch" {
 
   retention_in_days = 30
 }
+
+output "lambda_dynamodb_policy_match" {
+  value = aws_iam_policy.lambda_dynamodb_policy_match
+}

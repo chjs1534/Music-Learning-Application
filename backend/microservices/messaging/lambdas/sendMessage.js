@@ -14,10 +14,7 @@ exports.handler = async (event) => {
     const domainName = event.requestContext.domainName;
     const stage = event.requestContext.stage;
     const callbackUrl = `https://${domainName}/${stage}`;
-    let eventBody = event.body;
-    if (typeof eventBody != Object) {
-        eventBody = JSON.parse(eventBody);
-    }
+    let eventBody = JSON.parse(event.body);
     const senderId = eventBody.senderId;
     const receiverId = eventBody.receiverId;
     const msg = eventBody.msg;
