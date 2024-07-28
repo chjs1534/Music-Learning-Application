@@ -266,31 +266,15 @@ const Profile: React.FC = () => {
           <div className="pfp">
             {user && <img src={"https://cdn-icons-png.flaticon.com/128/847/847969.png"} alt="Profile" className="profile-icon" />}
           </div>
-          {user && <div className="profiledeets">
+          {user && <div className="profile-details">
             <p className="profileName">Name : {user.firstName} {user.lastName}</p>
             <p className="profileUserName">@{user.username}</p>
             <p className="aboutme">About Me:</p>
-            <p className="aboutme">User Type: {user.userType}</p>
+            <p className="type">User Type: {user.userType}</p>
           </div>}
           <div>{renderContent()}</div>
         </div>
-        {/* {user && (
-          <div className="profile-content">
-            <div className="profile-details">
-              <p>{user.firstName} {user.lastName}</p>
-              <p>@{user.username}</p>
-            </div>
-            <div className="profile-actions">
-              {id === localStorage.getItem('id') ? (
-                <button className="edit-profile-button">
-                  <img onClick={goToEditProfile} src="https://cdn-icons-png.flaticon.com/128/860/860814.png" alt="Edit Profile" className="edit-profile-button" />
-                </button>
-              ) : (
-                <button className="request-button" onClick={handleRequest}>Request</button>
-              )}
-            </div>
-          </div>
-        )} */}
+
         <div className="profile-extra">
           <h2>Extra Details</h2>
           <p>Details here...</p>

@@ -104,6 +104,7 @@ const Register: React.FC = () => {
       cognitoUser.authenticateUser(authenticationDetails, {
         onSuccess: function (result) {
           jwtToken = result.idToken.jwtToken;
+          localStorage.setItem('token', jwtToken)
           const jwtPayload = JSON.parse(atob(jwtToken.split('.')[1]));
           userId = jwtPayload.sub;
           resolve();
