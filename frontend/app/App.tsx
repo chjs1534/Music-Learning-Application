@@ -15,7 +15,7 @@ import Students from "./(web)/Students";
 import Teachers from "./(web)/Teachers";
 import Notifications from "./(web)/Notifications";
 import ViewMatches from "./(web)/ViewMatches";
-import { config } from "./tamagui.config";
+import { config } from "../tamagui.config";
 
 // const router = createBrowserRouter([
 //   {
