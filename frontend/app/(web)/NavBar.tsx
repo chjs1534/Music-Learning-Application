@@ -71,8 +71,8 @@ const NavBar: React.FC = () => {
 
   return (
     <nav className="navbar">
-      <button className="nav-button website-logo" onClick={() => handleNavigation('/homepage')}>
-        Mewsic
+      <button className="nav-button" onClick={() => handleNavigation('/homepage')}>
+        <span className="website-logo">Mewsic</span>
       </button>
       <div className={`nav-options ${isMenuOpen ? 'open' : ''}`}>
         {renderContent()}

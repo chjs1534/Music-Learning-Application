@@ -32,18 +32,18 @@ const Register: React.FC = () => {
     }
   }, []);
 
-  const toggleDarkMode = () => {
-    setIsDarkMode(prevMode => !prevMode);
-    if (!isDarkMode) {
-      localStorage.setItem('darkMode', 'enabled');
-      document.body.classList.add('dark-mode');
-      console.log("black time");
-    } else {
-      localStorage.setItem('darkMode', 'disabled');
-      document.body.classList.remove('dark-mode');
-      console.log("white time");
-    }
-  };
+  // const toggleDarkMode = () => {
+  //   setIsDarkMode(prevMode => !prevMode);
+  //   if (!isDarkMode) {
+  //     localStorage.setItem('darkMode', 'enabled');
+  //     document.body.classList.add('dark-mode');
+  //     console.log("black time");
+  //   } else {
+  //     localStorage.setItem('darkMode', 'disabled');
+  //     document.body.classList.remove('dark-mode');
+  //     console.log("white time");
+  //   }
+  // };
 
   const validateEmail = (email: string): boolean => {
     const regex = /^[a-zA-Z0-9]+@[a-zA-Z\.]+$/;
@@ -339,7 +339,7 @@ const Register: React.FC = () => {
           />
         </div>
         <span className="auth-text">Already have an account? <a className="anchor1" href="/">Log In</a></span>
-        <div className="dark-mode-toggle">
+        {/* <div className="dark-mode-toggle">
           <label htmlFor="darkModeSwitch">Dark Mode</label>
           <input
             type="checkbox"
@@ -347,7 +347,7 @@ const Register: React.FC = () => {
             checked={isDarkMode}
             onChange={toggleDarkMode}
           />
-        </div>
+        </div> */}
       </div>
     </div>
   );

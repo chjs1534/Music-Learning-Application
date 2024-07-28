@@ -184,6 +184,7 @@ body.dark-mode {
     border: none;
     border-radius: 8px;
     cursor: pointer;
+    text-align: center;
 }
 
 .button1:hover {
@@ -201,6 +202,7 @@ body.dark-mode {
     border-radius: 8px;
     cursor: pointer;
     border: 1px solid var(--button2-border-color);
+    text-align: center;
 }
 
 .button2.selected {

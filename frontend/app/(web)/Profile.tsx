@@ -216,7 +216,7 @@ const Profile: React.FC = () => {
   const renderContent = () => {
     if (id === localStorage.getItem('id')) {
       return (
-        <img onClick={goToEditProfile} src="https://cdn-icons-png.flaticon.com/128/860/860814.png" alt="Edit Profile" className="edit-profile-button" />
+        <img onClick={goToEditProfile} src="https://cdn-icons-png.flaticon.com/128/860/860814.png" alt="Edit Profile" className="editprofile-button" />
       );
     } else if (user !== null) {
       if (userType === "Student" && user.userType === "Teacher") {
@@ -269,16 +269,18 @@ const Profile: React.FC = () => {
           {user && <div className="profile-details">
             <p className="profileName">Name : {user.firstName} {user.lastName}</p>
             <p className="profileUserName">@{user.username}</p>
-            <p className="aboutme">About Me:</p>
-            <p className="type">User Type: {user.userType}</p>
+            <p className="aboutme">About Me : {user.aboutMe}</p>
+            <p className="type">User Type : {user.userType}</p>
+            <div>{renderContent()}</div>
           </div>}
-          <div>{renderContent()}</div>
         </div>
 
-        <div className="profile-extra">
+        {user &&
+          <div className="profile-extra">
           <h2>Extra Details</h2>
           <p>Details here...</p>
         </div>
+        }
       </div>
     </div>
   );
