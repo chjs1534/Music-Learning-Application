@@ -22,13 +22,11 @@ const TeacherCard: React.FC<TeacherCardProps> = ({ name, pfp, rating, reviews, s
   }
   useEffect(() => {
     getDetails();
-    console.log("kokokok")
   }, []);
   const getDetails = async () => {
     await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getUser/${id}`, {
       method: 'GET',
       headers: {
-        'Authorization': token,
         'Content-Type': 'application/json'
       },
     }).then(response => {

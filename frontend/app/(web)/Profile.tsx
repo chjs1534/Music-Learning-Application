@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import '../styles/website.css';
 import NavBar from './NavBar';
 import StudentCard from '../../components/StudentCard';
+import VideoCard from '../../components/VideoCard';
 
 const Profile: React.FC = () => {
   const [userType, setUserType] = useState<string>();
@@ -12,6 +13,8 @@ const Profile: React.FC = () => {
   const [subAccounts, setSubAccounts] = useState();
   const [showModal, setShowModal] = useState<boolean>(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [videos, setVideos] = useState();
+  const [thumbnail, setThumbnail] = useState();
 
   const { id } = useParams();
 
@@ -50,6 +53,23 @@ const Profile: React.FC = () => {
       getSubAccounts();
     }
   }, [user]);
+
+  useEffect(() => {
+    console.log("tuyuyututuqwro")
+    getVideos();
+    
+
+  }, []);
+
+  useEffect(() => {
+    if (videos != null) {
+      videos.map(id => {
+        console.log(id)
+      })
+    }
+  }, [videos]);
+
+  
 
   const viewMatch = () => {
     navigate(`/viewmatches/${id}`);
@@ -96,7 +116,7 @@ const Profile: React.FC = () => {
     await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getUser/${id}`, {
       method: 'GET',
       headers: {
-        'Authorization': token!,
+        'Authorization': token,
         'Content-Type': 'application/json',
       },
     })
@@ -203,6 +223,36 @@ const Profile: React.FC = () => {
       });
   }
 
+  const getVideos = async () => {
+    await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/videos?userId=123`, {
+      method: 'GET',
+      headers: {
+        'Authorization': token,
+        'Content-Type': 'application/json'
+      },
+    }).then(response => {
+      if (response.status === 204) {
+        console.log('Success: No content returned from the server.');
+        return;
+      }
+      if (!response.ok) {
+        return response.text().then(text => { throw new Error(text) });
+      }
+      else {
+        console.log(response);
+      }
+      return response.json();
+    }).then(data => {
+      console.log(data, "videos setting")
+      setVideos(data.fileIds);
+    })
+      .catch(error => {
+        console.error('Error:', error.message, error.code || error);
+      });
+  }
+
+
+
   // cases
 
   // teacher view own, student
@@ -291,9 +341,19 @@ const Profile: React.FC = () => {
             </div>
           </div>
         )} */}
-        <div className="profile-extra">
+        {/* <div className="profile-extra">
           <h2>Extra Details</h2>
           <p>Details here...</p>
+        </div> */}
+        <div className="profile-extra">
+          <h2>Videos</h2>
+          <div>
+            {(videos && videos.length > 0) ? videos.map(qwe => (
+              <VideoCard id={qwe} token={token}/>
+            )         
+            ): <p>hi</p>}
+          </div>
+          
         </div>
       </div>
     </div>

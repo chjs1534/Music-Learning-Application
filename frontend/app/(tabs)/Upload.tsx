@@ -8,12 +8,13 @@ import { REACT_APP_USERPOOL_ID_MOBILE } from '@env';
 import { useGlobalSearchParams } from "expo-router"
 import { useNavigation } from '@react-navigation/native';
 import { router } from 'expo-router';
+import * as VideoThumbnails from 'expo-video-thumbnails'
 
 const Upload = () => {
   const [video, setVideo] = useState([]);
+  const [videoId, setVideoId] = useState();
   const params = useGlobalSearchParams();
   const { authToken } = params;
-  const navigation = useNavigation();
 
   useEffect(() => {
     (async () => {
@@ -25,23 +26,36 @@ const Upload = () => {
     })();
   }, []);
 
-  const uploadToS3 = async (uri) => {
-    const res = await fetch(uri);
-    const content = await res.blob();
-    fetch("https://ywi1k1tgpg.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/upload", {
+  useEffect(() => {
+    getVideos()
+  }, []);
+
+  const uploadToS3 = async (videoUri) => {
+    const { uri } = await VideoThumbnails.getThumbnailAsync(videoUri)
+    const thumbnailRes = await fetch(uri);
+    const thumbnailBlob = await thumbnailRes.blob();
+    const videoRes = await fetch(videoUri);
+    const videoBlob = await videoRes.blob();
+
+    fetch("https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/upload", {
       method: 'POST',
       headers: {
           Authorization: authToken as string,
       },
       body: JSON.stringify({
-        userId: REACT_APP_USERPOOL_ID_MOBILE
+        userId: '123',
+        isRef: false,
+        fileId: 'hello'
       }),
     })
-    .then(response => response.json())
-    .then(json => json.uploadURL)
-    .then(url => {
-      fetch(url, { method: 'PUT', body: content });
-    });
+    .then(response => {
+      console.log(response)
+      return response.json()
+    })
+    .then(json => {
+      fetch(json.uploadVideoUrl, { method: 'PUT', body: videoBlob });
+      fetch(json.uploadThumbnailUrl, { method: 'PUT', body: thumbnailBlob });  
+    })
   };
 
   const pickVideo = async () => {
@@ -95,13 +109,44 @@ const Upload = () => {
   }
 
   const handleVideoPress = (id) => {
-    router.replace({ pathname: '/Video', params: { id }})
+    router.replace({ pathname: `/video`, params: { id, authToken }})
   };
+
+  const getVideos = async () => {
+    await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/videos?userId=123`, {
+      method: 'GET',
+      headers: {
+        'Authorization': authToken as string,
+        'Content-Type': 'application/json'
+      },
+    }).then(response => {
+      if (response.status === 204) {
+        console.log('Success: No content returned from the server.');
+        return;
+      }
+      if (!response.ok) {
+        return response.text().then(text => { throw new Error(text) });
+      }
+      else {
+        console.log(response);
+      }
+      return response.json();
+    }).then(data => {
+      console.log(data, "videos setting")
+      setVideoId(data.fileIds);
+    })
+      .catch(error => {
+        console.error('Error:', error.message, error.code || error);
+      });
+  }
 
   return (
     <View>
       <SafeAreaView className="bg-green-200 h-full">
         <ScrollView>
+          {videoId ? videoId.map(id => (<TouchableOpacity key={id} onPress={() => handleVideoPress(id)}>
+              <Text>{id}</Text>
+          </TouchableOpacity>)): <Text>qweqweq</Text>}
         {video.length > 0 ? video.map((videoUri, index) => (
           <TouchableOpacity key={index} onPress={() => handleVideoPress(videoUri)}>
             <View key={index} className="m-1 border-black border-2 p-1">

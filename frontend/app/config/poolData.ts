@@ -6,7 +6,7 @@ export const poolData = {
 };
 try {
     const UserPool = new CognitoUserPool(poolData);
-    // console.log(poolData.UserPoolId, poolData.ClientId)
+    console.log(poolData.UserPoolId, poolData.ClientId)
 } catch (e) {
     console.error(e)
 }

@@ -15,6 +15,7 @@ import Students from './(web)/Students'
 import Teachers from './(web)/Teachers'
 import Notifications from './(web)/Notifications';
 import ViewMatches from './(web)/ViewMatches';
+import Video from './(web)/Video';
 
 // const router = createBrowserRouter([
 //   {
@@ -89,6 +90,7 @@ const App: React.FC = () => {
           <Route path="/teachers" element={<Teachers />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/viewmatches/:id" element={<ViewMatches />} />
+          <Route path="/video/:id" element={<Video />} />
         </Routes>
       </Router>
     </>
