@@ -45,10 +45,7 @@ const NavBar: React.FC = () => {
     } else if (userType === "Student") {
       return (
         <>
-          <button className="nav-button" onClick={() => handleNavigation('/sheet-music')}>
-            {/* <img src="https://cdn-icons-png.flaticon.com/128/10455/10455354.png" alt="Teachers" className="nav-icon" /> */}
-            <span className="nav-button-text">Sheet Music</span>
-          </button><button className="nav-button" onClick={() => handleNavigation('/teachers')}>
+          <button className="nav-button" onClick={() => handleNavigation('/teachers')}>
             {/* <img src="https://cdn-icons-png.flaticon.com/128/10455/10455354.png" alt="Teachers" className="nav-icon" /> */}
             <span className="nav-button-text">My Teachers</span>
           </button>
@@ -81,6 +78,10 @@ const NavBar: React.FC = () => {
       </button>
       <div className={`nav-options ${isMenuOpen ? 'open' : ''}`}>
         {renderContent()}
+        <button className="nav-button" onClick={() => handleNavigation('/sheet-music')}>
+          {/* <img src="https://cdn-icons-png.flaticon.com/128/10455/10455354.png" alt="Teachers" className="nav-icon" /> */}
+          <span className="nav-button-text">Sheet Music</span>
+        </button>
         <button title="Messages" className="nav-button" onClick={() => handleNavigation('/message')}>
           <img src="https://cdn-icons-png.flaticon.com/128/542/542638.png" alt="Message" className="nav-icon" />
           {/* <span className="nav-button-text">Message</span> */}

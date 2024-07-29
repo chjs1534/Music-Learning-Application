@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import NavBar from './NavBar';
-import '../styles/website.css';
+import '../styles/messageStyles.css';
 
 const WEBSOCKET_API = 'wss://ssj8wlu7j0.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage_websocket/';
 
