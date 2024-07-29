@@ -447,6 +447,15 @@ resource "aws_cloudwatch_log_group" "updateUser" {
   retention_in_days = 30
 }
 
+# Outputs
 output "lambda_dynamodb_policy_user" {
   value = aws_iam_policy.lambda_dynamodb_policy_user
+}
+
+output "lambdaGetUser" {
+  value = aws_lambda_function.getUser
+}
+
+output "lambdaGetFamily" {
+  value = aws_lambda_function.getFamily
 }

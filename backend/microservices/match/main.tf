@@ -25,6 +25,17 @@ data "terraform_remote_state" "Mewsic-workspace-apigateway" {
   }
 }
 
+# Access outputs from user workspace
+data "terraform_remote_state" "Mewsic-workspace-user" {
+  backend = "remote"
+  config = {
+    organization = "Mewsic"
+    workspaces = {
+      name = "Mewsic-workspace-user"
+    }
+  }
+}
+
 # Match table
 resource "aws_dynamodb_table" "match-table" {
   name           = "MatchTable"
@@ -147,7 +158,8 @@ resource "aws_iam_policy" "lambda_dynamodb_policy_match" {
 resource "aws_iam_role_policy_attachment" "lambda_policy" {
   for_each = {
     "AWSLambdaBasicExecutionRole": "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-    "AWSDynamodbRole": aws_iam_policy.lambda_dynamodb_policy_match.arn
+    "AWSDynamodbRole": aws_iam_policy.lambda_dynamodb_policy_match.arn,
+    "AWSInvokeLambdaRole": aws_iam_policy.invoke_lambda_policy_match.arn
   }
   role       = aws_iam_role.lambda_exec.name
   policy_arn = each.value
@@ -399,6 +411,80 @@ resource "aws_cloudwatch_log_group" "removeMatch" {
   retention_in_days = 30
 }
 
+# Get matches for messaging lambda
+resource "aws_lambda_function" "getMatchesForMessaging" {
+  function_name = "GetMatchesForMessaging"
+
+  s3_bucket = aws_s3_bucket.lambda_bucket.id
+  s3_key    = aws_s3_object.lambdas.key
+
+  runtime = "nodejs16.x"
+  handler = "getMatchesForMessaging.handler"
+
+  source_code_hash = data.archive_file.lambdas.output_base64sha256
+
+  role = aws_iam_role.lambda_exec.arn
+
+  timeout = 10
+}
+
+resource "aws_apigatewayv2_integration" "getMatchesForMessaging" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  integration_uri    = aws_lambda_function.getMatchesForMessaging.invoke_arn
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_route" "getMatchesForMessaging" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.id
+
+  route_key = "GET /match/getMatchesForMessaging/{userId}"
+  target    = "integrations/${aws_apigatewayv2_integration.getMatchesForMessaging.id}"
+  authorization_type = "JWT"
+  authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+}
+
+resource "aws_lambda_permission" "api_gw_getMatchesForMessaging" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.getMatchesForMessaging.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"
+}
+
+resource "aws_cloudwatch_log_group" "getMatchesForMessaging" {
+  name = "/aws/lambda/${aws_lambda_function.getMatchesForMessaging.function_name}"
+
+  retention_in_days = 30
+}
+
+// Allow 
+resource "aws_iam_policy" "invoke_lambda_policy_match" {
+  name        = "InvokeLambdaPolicyMatch"
+  description = "Policy to allow invoking another Lambda function"
+  
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "lambda:InvokeFunction"
+        ]
+        Effect   = "Allow"
+        Resource = [
+          data.terraform_remote_state.Mewsic-workspace-user.outputs.lambdaGetUser.arn,
+          data.terraform_remote_state.Mewsic-workspace-user.outputs.lambdaGetFamily.arn,
+          aws_lambda_function.getMatches.arn
+        ]
+      }
+    ]
+  })
+}
+
+
+# Output
 output "lambda_dynamodb_policy_match" {
   value = aws_iam_policy.lambda_dynamodb_policy_match
 }

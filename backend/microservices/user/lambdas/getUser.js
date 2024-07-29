@@ -12,12 +12,13 @@ exports.handler = async (event) => {
     let item;
 
     try {
+        let userId;
         if (!event.pathParameters || !event.pathParameters.userId) {
-            const error = new Error('Missing pathParameters or userId');
-            error.statusCode = 400;
-            throw error;
+            userId = event.userId
+        } else {
+            userId = event.pathParameters.userId;
         }
-        const userId = event.pathParameters.userId;
+        
         if (typeof userId !== 'string' || userId.trim() === '') {
             const error = new Error('Invalid userId');
             error.statusCode = 400;

@@ -12,31 +12,59 @@ exports.handler = async (event, context) => {
     };
 
     try {
-        let parentUser = await dynamo.get(
+        let userId;
+        if (!event.pathParameters || !event.pathParameters.userId) {
+            userId = event.userId;
+        } else {
+            userId = event.pathParameters.userId;
+        }
+
+        // Get email of user
+        let currUser = await dynamo.get(
             {
               TableName: tableName,
               Key: {
-                userId: event.pathParameters.userId,
+                userId: userId,
               },
             }
         ).promise();
-        let email = parentUser.Item.email
-    
-        // Query as email
-        const params1 = {
-            TableName: tableName,
-            IndexName: "EmailIndex",
-            KeyConditionExpression: "#email = :email",
-            FilterExpression: "#userType = :userType",
-            ExpressionAttributeNames: {
-                "#email": "email",
-                "#userType": "userType"
-            },
-            ExpressionAttributeValues: {
-                ":email": email,
-                ":userType": "Child"
-            }
-        };
+        let email = currUser.Item.email
+        
+        let params1;
+        if (currUser.Item.userType === "Parent") {
+            // Query for children
+            params1 = {
+                TableName: tableName,
+                IndexName: "EmailIndex",
+                KeyConditionExpression: "#email = :email",
+                FilterExpression: "#userType = :userType",
+                ExpressionAttributeNames: {
+                    "#email": "email",
+                    "#userType": "userType"
+                },
+                ExpressionAttributeValues: {
+                    ":email": email,
+                    ":userType": "Child"
+                }
+            };
+        } else {
+            // Query for parent
+            params1 = {
+                TableName: tableName,
+                IndexName: "EmailIndex",
+                KeyConditionExpression: "#email = :email",
+                FilterExpression: "#userType = :userType",
+                ExpressionAttributeNames: {
+                    "#email": "email",
+                    "#userType": "userType"
+                },
+                ExpressionAttributeValues: {
+                    ":email": email,
+                    ":userType": "Parent"
+                }
+            };
+        }
+        
         body =  await dynamo.query(params1).promise();
     } catch (err) {
         statusCode = 400;
