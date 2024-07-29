@@ -215,7 +215,8 @@ resource "aws_iam_role_policy_attachment" "lambda_policy" {
     "AWSDynamoRole": aws_iam_policy.lambda_dynamodb_policy_user.arn,
     "AWSVPCRole": "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole",
     "AWSEFSRole": "arn:aws:iam::aws:policy/AmazonElasticFileSystemClientFullAccess",
-    "AWSCloudwatch": "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+    "AWSCloudwatch": "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess",
+    "AWSPolly": "arn:aws:iam::aws:policy/AmazonPollyFullAccess"
   }
   role       = aws_iam_role.lambda_exec.name
   policy_arn = each.value
@@ -300,6 +301,23 @@ resource "aws_lambda_function" "comments" {
   role = aws_iam_role.lambda_exec.arn
 
   timeout = 5
+}
+
+resource "aws_lambda_function" "tts" {
+  function_name = "TextToSpeech"
+
+  s3_bucket = aws_s3_bucket.lambda_bucket.id
+  s3_key    = aws_s3_object.lambda_upload.key
+
+  runtime = "nodejs18.x"
+  handler = "tts.handler"
+
+  source_code_hash = data.archive_file.lambda_upload.output_base64sha256
+
+  role = aws_iam_role.lambda_exec.arn
+
+  timeout = 30
+  # memory_size = 512
 }
 
 
@@ -394,6 +412,24 @@ resource "aws_apigatewayv2_route" "comments" {
   # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
 }
 
+# Integration of Text To Speech lambda
+resource "aws_apigatewayv2_integration" "tts" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  integration_uri    = aws_lambda_function.tts.invoke_arn
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_route" "tts" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  route_key = "GET /tts"
+  target    = "integrations/${aws_apigatewayv2_integration.tts.id}"
+  # authorization_type = "JWT"
+  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+}
+
 # Permission for upload lambda
 resource "aws_lambda_permission" "api_gw_upload" {
   statement_id  = "AllowExecutionFromAPIGateway"
@@ -439,6 +475,16 @@ resource "aws_lambda_permission" "api_gw_comments" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.comments.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"
+}
+
+# Permission for Text To Speech lambda
+resource "aws_lambda_permission" "api_gw_tts" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.tts.function_name
   principal     = "apigateway.amazonaws.com"
 
   source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"

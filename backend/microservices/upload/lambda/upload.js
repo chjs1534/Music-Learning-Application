@@ -15,7 +15,7 @@ exports.handler = async (event, context, callback) => {
     const userId = requestBody.userId;
     const fileId = requestBody.fileId;
     const isRef = requestBody.isRef;
-    const time = Date.now();
+    let time = Date.now();
     if (isRef) time = fileId;
   
     const filename = isRef ? 'reference' : 'upload';
