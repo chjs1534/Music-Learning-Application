@@ -27,20 +27,20 @@ data "terraform_remote_state" "Mewsic-workspace-apigateway" {
 
 # User table
 resource "aws_dynamodb_table" "review_table" {
-  name           = "Reviews"
+  name           = "VideosTable"
   billing_mode   = "PROVISIONED"
   read_capacity  = 1
   write_capacity = 1
-  hash_key       = "UserId"
-  range_key      = "FileId"
+  hash_key       = "userId"
+  range_key      = "fileId"
 
   attribute {
-    name = "UserId"
+    name = "userId"
     type = "S"
   }
 
   attribute {
-    name = "FileId"
+    name = "fileId"
     type = "S"
   }
 
@@ -173,7 +173,8 @@ resource "aws_iam_policy" "lambda_dynamodb_policy_user" {
         Effect = "Allow",
         Action = [
           "dynamodb:GetItem",
-          "dynamodb:PutItem"
+          "dynamodb:PutItem",
+          "dynamodb:UpdateItem",
         ],
         Resource = [
           aws_dynamodb_table.review_table.arn
@@ -269,11 +270,38 @@ resource "aws_lambda_function" "videos" {
   timeout = 5
 }
 
-resource "aws_cloudwatch_log_group" "upload" {
-  name = "/aws/lambda/${aws_lambda_function.upload.function_name}"
+resource "aws_lambda_function" "comment" {
+  function_name = "Comment"
 
-  retention_in_days = 30
+  s3_bucket = aws_s3_bucket.lambda_bucket.id
+  s3_key    = aws_s3_object.lambda_upload.key
+
+  runtime = "nodejs18.x"
+  handler = "comment.handler"
+
+  source_code_hash = data.archive_file.lambda_upload.output_base64sha256
+
+  role = aws_iam_role.lambda_exec.arn
+
+  timeout = 5
 }
+
+resource "aws_lambda_function" "comments" {
+  function_name = "Comments"
+
+  s3_bucket = aws_s3_bucket.lambda_bucket.id
+  s3_key    = aws_s3_object.lambda_upload.key
+
+  runtime = "nodejs18.x"
+  handler = "comments.handler"
+
+  source_code_hash = data.archive_file.lambda_upload.output_base64sha256
+
+  role = aws_iam_role.lambda_exec.arn
+
+  timeout = 5
+}
+
 
 # API Gateway integration
 # Integration of upload lambda
@@ -290,8 +318,8 @@ resource "aws_apigatewayv2_route" "upload" {
 
   route_key = "POST /upload"
   target    = "integrations/${aws_apigatewayv2_integration.upload.id}"
-  authorization_type = "JWT"
-  authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+  # authorization_type = "JWT"
+  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
 }
 
 # Integration of download lambda
@@ -306,7 +334,7 @@ resource "aws_apigatewayv2_integration" "download" {
 resource "aws_apigatewayv2_route" "download" {
   api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
 
-  route_key = "POST /download"
+  route_key = "GET /download"
   target    = "integrations/${aws_apigatewayv2_integration.download.id}"
   # authorization_type = "JWT"
   # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
@@ -326,6 +354,42 @@ resource "aws_apigatewayv2_route" "videos" {
 
   route_key = "GET /videos"
   target    = "integrations/${aws_apigatewayv2_integration.videos.id}"
+  # authorization_type = "JWT"
+  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+}
+
+# Integration of comments lambda
+resource "aws_apigatewayv2_integration" "comment" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  integration_uri    = aws_lambda_function.comment.invoke_arn
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_route" "comment" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  route_key = "POST /comment"
+  target    = "integrations/${aws_apigatewayv2_integration.comment.id}"
+  # authorization_type = "JWT"
+  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+}
+
+# Integration of getComments lambda
+resource "aws_apigatewayv2_integration" "comments" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  integration_uri    = aws_lambda_function.comments.invoke_arn
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_route" "comments" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  route_key = "GET /comments"
+  target    = "integrations/${aws_apigatewayv2_integration.comments.id}"
   # authorization_type = "JWT"
   # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
 }
@@ -355,6 +419,26 @@ resource "aws_lambda_permission" "api_gw_videos" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.videos.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"
+}
+
+# Permission for comment lambda
+resource "aws_lambda_permission" "api_gw_comment" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.comment.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"
+}
+
+# Permission for comment lambda
+resource "aws_lambda_permission" "api_gw_comments" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.comments.function_name
   principal     = "apigateway.amazonaws.com"
 
   source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"

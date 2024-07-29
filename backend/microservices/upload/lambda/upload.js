@@ -40,15 +40,18 @@ exports.handler = async (event, context, callback) => {
       { expiresIn: 600 },
     );
   
-    // // put in dynamo database 
-    // docClient.send(new PutCommand({
-    //   TableName: 'Reviews',
-    //   Item: {
-    //     UserId: `${userId}`,
-    //     FileId: `${time}`,
-    //     Review: "Review does not exist."
-    //   }
-    // }));
+    // put in dynamo database 
+    if (!isRef) {
+      docClient.send(new PutCommand({
+        TableName: 'VideosTable',
+        Item: {
+          userId: `${userId}`,
+          fileId: `${time}`,
+          review: "Review does not exist.",
+          comments: []
+        }
+      }));
+    }
   
     callback(null, {
       statusCode: 200,

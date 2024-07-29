@@ -5,22 +5,22 @@ BUCKET_NAME = "truly-entirely-hip-raccoon";
 
 exports.handler = async (event, context, callback) => {
   try {
-    const userId = event.queryStringParameters.userId
+    const userId = event.queryStringParameters.userId;
 
     const command = new ListObjectsV2Command({
       'Bucket': BUCKET_NAME,
       'Prefix': `${userId}/`
     });
     const response = await s3Client.send(command);
-    console.log(response)
-    console.log(response.Contents)
-    console.log(response.Contents[0])
-    const fileIds = []
-    for (const obj of response.Contents) {
-      console.log(obj)
-      fileIds.push(obj.Key.split('/')[1])
-    }
 
+    const fileIds = [];
+
+    if (response.Contents) {
+      for (const obj of response.Contents) {
+        console.log(obj);
+        fileIds.push(obj.Key.split('/')[1]);
+      }
+    }
     console.log(fileIds)
 
     callback(null, {

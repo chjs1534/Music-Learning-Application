@@ -6,11 +6,11 @@ BUCKET_NAME = "truly-entirely-hip-raccoon"
 const s3Client = new S3Client({});
 
 exports.handler = async (event, context, callback) => {
-  const requestBody = JSON.parse(event.body);
-  const userId = requestBody.userId;
-  const fileId = requestBody.fileId;
-  const isRef = requestBody.isRef
-
+  const userId = event.queryStringParameters.userId;
+  const fileId = event.queryStringParameters.fileId;
+  const isRef = event.queryStringParameters?.isRef === '';
+  console.log(event.queryStringParameters)
+  console.log(isRef)
   const filename = isRef ? 'reference' : 'upload';
 
   const downloadVideoUrl = await getSignedUrl(
