@@ -1,5 +1,4 @@
 const path = require("path");
-const { TamaguiPlugin } = require("tamagui-loader");
 
 module.exports = {
   entry: "./app/index.web.tsx",
@@ -41,8 +40,5 @@ module.exports = {
 };
 
 config.plugins.push(
-  new TamaguiPlugin({
-    config: "./src/tamagui.config.ts",
-    components: ["tamagui"],
-  })
+
 );

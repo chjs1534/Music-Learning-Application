@@ -44,10 +44,15 @@ const NavBar: React.FC = () => {
       );
     } else if (userType === "Student") {
       return (
-        <button className="nav-button" onClick={() => handleNavigation('/teachers')}>
-          {/* <img src="https://cdn-icons-png.flaticon.com/128/10455/10455354.png" alt="Teachers" className="nav-icon" /> */}
-          <span className="nav-button-text">My Teachers</span>
-        </button>
+        <>
+          <button className="nav-button" onClick={() => handleNavigation('/sheet-music')}>
+            {/* <img src="https://cdn-icons-png.flaticon.com/128/10455/10455354.png" alt="Teachers" className="nav-icon" /> */}
+            <span className="nav-button-text">Sheet Music</span>
+          </button><button className="nav-button" onClick={() => handleNavigation('/teachers')}>
+            {/* <img src="https://cdn-icons-png.flaticon.com/128/10455/10455354.png" alt="Teachers" className="nav-icon" /> */}
+            <span className="nav-button-text">My Teachers</span>
+          </button>
+        </>
       );
     } else if (userType === "Parent") {
       return (

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
+import axios from 'axios';
 import NavBar from './NavBar';
 import '../styles/website.css';
 
@@ -22,9 +22,26 @@ const Homepage: React.FC = () => {
     setUserId(localStorage.getItem('id'));
   }, []);
 
-  const clickMe = async () => {
+  const fetchTTS = async (text: string) => {
+    try {
+      const response = await axios.get(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/tts?text=${encodeURIComponent(text)}`, {
+        responseType: 'arraybuffer'
+      });
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const audioBuffer = await audioContext.decodeAudioData(response.data);
+      const source = audioContext.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(audioContext.destination);
+      source.start();
+    } catch (error) {
+      console.error('Error fetching TTS:', error);
+    }
+  };
+
+  const clickMe = () => {
     console.log('authToken:', token);
     console.log('userId:', userId);
+    fetchTTS(token);
   };
 
   return (
@@ -46,7 +63,7 @@ const Homepage: React.FC = () => {
           </div>
         </div>
         <div className="button-section">
-          <button className="betton" onClick={clickMe}>click me!</button>
+          <button className="button" onClick={clickMe}>click me!</button>
         </div>
         <div className="footer-section">
           <p>© 2024 Mewsic. All rights reserved.</p>
@@ -54,6 +71,6 @@ const Homepage: React.FC = () => {
       </div>
     </div>
   );
-}
+};
 
 export default Homepage;

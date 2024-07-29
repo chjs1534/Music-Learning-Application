@@ -239,6 +239,47 @@ const Profile: React.FC = () => {
     }
   }
 
+  const renderExtraContent = () => {
+    if (userType === "Student") {
+      return (
+        <><h2>Achievements</h2>
+        <div className="achievements">
+          {/* Map through achievements data */}
+          <div className="achievement-card">
+            <img src="https://example.com/icon.png" alt="Achievement Icon" />
+            <div className="achievement-info">
+              <h3>Upload Recordings</h3>
+              <p><em>Recordings uploaded</em></p>
+              <p>Count: 10</p>
+            </div>
+          </div>
+          {/* More achievements */}
+        </div></>
+      );
+    } else if (userType === "Teacher") {
+      return (
+        <div className="teacher-details">
+          <h2>Certifications & Experience</h2>
+          {/* Map through certifications data */}
+          <div className="certification-card">
+            <h3>Certification Name</h3>
+            <p>Details about the certification</p>
+          </div>
+          {/* More certifications */}
+          <h2>Reviews & Ratings</h2>
+          {/* Map through reviews data */}
+          <div className="review-card">
+            <p>Review text...</p>
+            <p>Rating: 5/5</p>
+          </div>
+          {/* More reviews */}
+        </div>
+      );
+    } else if (userType === "Parent") {
+      return null;
+    }
+  }
+
   return (
     <div className="homepage">
       <div className="profile">
@@ -266,21 +307,23 @@ const Profile: React.FC = () => {
           <div className="pfp">
             {user && <img src={"https://cdn-icons-png.flaticon.com/128/847/847969.png"} alt="Profile" className="profile-icon" />}
           </div>
-          {user && <div className="profile-details">
-            <p className="profileName">Name : {user.firstName} {user.lastName}</p>
-            <p className="profileUserName">@{user.username}</p>
-            <p className="aboutme">About Me : {user.aboutMe}</p>
-            <p className="type">User Type : {user.userType}</p>
-            <div>{renderContent()}</div>
+          {user && <div className="profile-info">
+            <div className="profile-words">
+              <p className="profileName">Full Name : {user.firstName} {user.lastName}</p>
+              <p className="profileUserName">Username : @{user.username}</p>
+              <p className="type">User Type : {user.userType}</p>
+              <p className="aboutme">About Me : {user.aboutMe}</p>
+            </div>
+
+            <div className="render-content">{renderContent()}</div>
           </div>}
         </div>
 
-        {user &&
+        {/* {user &&
           <div className="profile-extra">
-          <h2>Extra Details</h2>
-          <p>Details here...</p>
-        </div>
-        }
+            {renderExtraContent()}
+          </div>
+        } */}
       </div>
     </div>
   );

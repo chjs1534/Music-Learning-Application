@@ -15,5 +15,3 @@ try {
 } catch (e) {
   console.error(e);
 }
-
-export const useTamagui = false;

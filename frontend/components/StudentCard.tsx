@@ -12,12 +12,12 @@ const StudentCard: React.FC<StudentCardProps> = ({ id, token, handleClick }) => 
 
     useEffect(() => {
         getDetails();
-        console.log(id, token)
+        // console.log(id, token)
     }, []);
 
-    useEffect(() => {
-        console.log("help", user)
-    }, [user]);
+    // useEffect(() => {
+    //     console.log("help", user)
+    // }, [user]);
 
     const getDetails = async () => {
         await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getUser/${id}`, {
@@ -35,11 +35,11 @@ const StudentCard: React.FC<StudentCardProps> = ({ id, token, handleClick }) => 
                 return response.text().then(text => { throw new Error(text) });
             }
             else {
-                console.log(response);
+                // console.log(response);
             }
             return response.json();
         }).then(data => {
-            console.log('Success:', data);
+            // console.log('Success:', data);
             setUser(data);
         })
         .catch(error => {

@@ -125,7 +125,7 @@ const MessageComponent: React.FC = () => {
 
   const getFriendIDs = async () => {
     if (!userId) return;
-    await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/match/getMatches/${userId}`, {
+    await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/match/getMatchesForMessaging/${userId}`, {
       method: 'GET',
       headers: {
         'Authorization': token!,
