@@ -1,4 +1,4 @@
-const { GetObjectCommand, S3Client } = require('@aws-sdk/client-s3');
+const { GetObjectCommand, S3Client, HeadObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
 BUCKET_NAME = "truly-entirely-hip-raccoon"
@@ -13,21 +13,42 @@ exports.handler = async (event, context, callback) => {
   console.log(isRef)
   const filename = isRef ? 'reference' : 'upload';
 
+  const videoParams = {
+    Bucket: BUCKET_NAME,
+    Key: `${userId}/${fileId}/${filename}.mp4`,
+  };
+  const thumbnailParams = {
+    Bucket: BUCKET_NAME,
+    Key: `${userId}/${fileId}/${filename}.jpg`,
+  };
+
+  // check if objects exist
+  try {
+    await s3Client.send(new HeadObjectCommand(videoParams));
+    await s3Client.send(new HeadObjectCommand(thumbnailParams));  
+  } catch (e) {
+    if (e.name === 'NotFound') {
+      return {
+        statusCode: 422,
+        body: JSON.stringify({
+          error: 'Object does not exist in S3.'
+        }),
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+        },
+      };
+    }
+  }
+
   const downloadVideoUrl = await getSignedUrl(
     s3Client,
-    new GetObjectCommand({
-      Bucket: BUCKET_NAME,
-      Key: `${userId}/${fileId}/${filename}.mp4`,
-    }),
+    new GetObjectCommand(videoParams),
     { expiresIn: 600 },
   );
 
   const downloadThumbnailUrl = await getSignedUrl(
     s3Client,
-    new GetObjectCommand({
-      Bucket: BUCKET_NAME,
-      Key: `${userId}/${fileId}/${filename}.jpg`,
-    }),
+    new GetObjectCommand(thumbnailParams),
     { expiresIn: 600 },
   );
 
