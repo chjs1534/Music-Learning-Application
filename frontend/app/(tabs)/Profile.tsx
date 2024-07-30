@@ -14,7 +14,7 @@ const Profile = () => {
   }, [])
 
   const getDetails = async () => {
-    await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getUser/${id}`, {
+    await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getUser/${userId}`, {
       method: 'GET',
       headers: {
         'Authorization': authToken as string,
@@ -41,10 +41,10 @@ const Profile = () => {
       <Text className="text-3xl font-semibold text-white m-5">Profile</Text>
       <View className="display-flex flex-row">
         <Image source={require('../assets/profile.png')} style={[styles.image, {tintColor: 'gray'}]} className="m-5"/>
-        {
+        {user &&
           <View className="flex-col mt-6">
-            <Text className="text-white text-2xl">Ben Jeong</Text>
-            <Text className="text-gray-500 text-1.5xl">@benny</Text>
+            <Text className="text-white text-2xl">{user.firstName} {user.lastName}</Text>
+            <Text className="text-gray-500 text-1.5xl">@{user.username}</Text>
           </View>
           }
       </View>

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, BackHandler, Alert, SafeAreaView } from 'react-native'
+import { StyleSheet, Text, View, BackHandler, Alert, SafeAreaView , TouchableOpacity} from 'react-native'
 import React, { useState, useEffect, useRef } from 'react'
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Video } from 'expo-av';
@@ -6,14 +6,10 @@ import * as ImagePicker from "expo-image-picker"
 import * as VideoThumbnails from 'expo-video-thumbnails'
 import Button from '../components/Button';
 
-// TODO
-// SHOW STATS OR WAHTEVBER AFTER UPLOADING VIDEO
-
-
 const video = () => {
     const [video, setVideo] = useState();
     const [reference, setReference] = useState();
-    const [reviews, setReviews] = useState(["hi", "hey"]);
+    const [reviews, setReviews] = useState();
 
     const route = useRoute();
     const { id, fileId, token } = route.params;
@@ -83,7 +79,6 @@ const video = () => {
         const thumbnailBlob = await thumbnailRes.blob();
         const videoRes = await fetch(videoUri);
         const videoBlob = await videoRes.blob();
-        console.log(token, id, fileId)
 
         fetch("https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/upload", {
             method: 'POST',
@@ -118,12 +113,20 @@ const video = () => {
         console.log(json)
         setReviews(json.comments);
     }
+    const handleTimestampClick = async (timestamp) => {
+        const seconds = timestamp * 1000
+        if (ref.current) {
+            await ref.current.setPositionAsync(seconds);
+            console.log("set position to"+ {timestamp})
+        }
+    };
 
     return (
         <View>
             <SafeAreaView className="bg-black h-full">
                 <View className="m-1 border-white border-2 p-1">
                     <Video
+                        ref={ref}
                         source={{ uri: video }}
                         rate={1.0}
                         volume={1.0}
@@ -134,6 +137,7 @@ const video = () => {
                     />
                 </View>
                 {reference ?
+                    <View className="m-1 border-white border-2 p-1">
                     <Video
                         source={{ uri: reference }}
                         rate={1.0}
@@ -143,19 +147,25 @@ const video = () => {
                         style={{ width: '100%', height: 200 }}
                         useNativeControls
                     />
+                </View>
                     : <Button
                         title="Upload reference Video"
                         containerStyles="bg-green-400 m-5 pt-5 pb-5 pl-7 pr-7"
                         textStyles="text-lg font-semibold"
                         handlePress={pickVideo}
                     />}
+                <Text></Text>
                 {reviews ? 
                     <View>
-                        {reviews.map((text) => (
-                            <Text className="text-gray-500">{text}</Text>
+                        {reviews.map((review) => (
+                            <TouchableOpacity className="border-gray border-2 mt-2" onPress={() => handleTimestampClick(review.videoTime)}>
+                                <Text className="text-gray-300">At {Math.round(review.videoTime)}s Posted on {review.timestamp}</Text>
+                                <Text className="text-gray-300">{review.commentText}</Text>
+                            </TouchableOpacity>
+                            
                         ))}
                     </View>
-                    : <Text className="text-gray-500">No reviews yet</Text>
+                    : <Text className="text-gray-500 self-center">No reviews yet</Text>
                 }
             </SafeAreaView>
         </View>
