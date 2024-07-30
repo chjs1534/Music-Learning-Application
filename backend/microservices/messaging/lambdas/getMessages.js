@@ -12,9 +12,6 @@ exports.handler = async (event) => {
     let item;
     const userId1 = event.pathParameters.userId1 >= event.pathParameters.userId2 ? event.pathParameters.userId1 : event.pathParameters.userId2;
     const userId2 = event.pathParameters.userId1 >= event.pathParameters.userId2 ? event.pathParameters.userId2 : event.pathParameters.userId1;
-    const page = event.queryStringParameters.page;
-    const limit = event.queryStringParameters.limit;
-    let msgs = [];
 
     try {
         item = await dynamo.get(
@@ -26,16 +23,11 @@ exports.handler = async (event) => {
               },
             }
         ).promise();
-        const allMsgs = item.Item.messages;
-        const totalMessages = allMsgs.length;
-        const start = Math.max(totalMessages - (page * limit), 0);
-        const end = totalMessages - ((page - 1) * limit);
-        msgs = allMsgs.slice(start, end);
     } catch (err) {
         statusCode = err.statusCode || 500;
         body = err.message;
     } finally {
-        body = JSON.stringify( { "messages": msgs });
+        body = JSON.stringify( { "messages": item.Item.messages });
     }
 
     return {

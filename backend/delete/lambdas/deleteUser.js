@@ -45,6 +45,7 @@ exports.handler = async (event) => {
         }
 
         if (userType === "Parent") {
+            // Delete children users
             let children;
             try {
                 let parentUser = await dynamo.get(
@@ -80,7 +81,11 @@ exports.handler = async (event) => {
             }
         } 
         
-        await doDeleteUser(item);
+        try {
+            await doDeleteUser(item);
+        } catch (err) {
+            console.err(err);
+        }
     } catch (err) {
         statusCode = err.statusCode || 500;
         body = err.message;

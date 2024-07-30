@@ -25,22 +25,6 @@ exports.handler = async (event) => {
             TableName: tableName,
         }).promise();
         if (res && res.Items && res.Items.length) {
-            await Promise.all(
-                res.Items.map(async (obj) => {
-                    try {
-                        const clientApi = new aws.ApiGatewayManagementApi({
-                            endpoint: callbackUrl,
-                        });
-                        const requestParams = {
-                            ConnectionId: obj.connectionId,
-                            Data: `{"senderId":"${senderId}", "receiverId":"${receiverId}", "msg":"${msg}"}`,
-                        };
-                        await clientApi.postToConnection(requestParams).promise()
-                    } catch (e) {
-                        console.log(e);
-                    }
-                })
-            );
             const userId1 = senderId >= receiverId ? senderId : receiverId;
             const userId2 = senderId >= receiverId ? receiverId : senderId;
             await dynamo.update(
@@ -59,6 +43,23 @@ exports.handler = async (event) => {
                     }
                 }
             ).promise();
+
+            await Promise.all(
+                res.Items.map(async (obj) => {
+                    try {
+                        const clientApi = new aws.ApiGatewayManagementApi({
+                            endpoint: callbackUrl,
+                        });
+                        const requestParams = {
+                            ConnectionId: obj.connectionId,
+                            Data: `{"senderId":"${senderId}", "receiverId":"${receiverId}", "msg":"${msg}"}`,
+                        };
+                        await clientApi.postToConnection(requestParams).promise()
+                    } catch (e) {
+                        console.log(e);
+                    }
+                })
+            );
         }
     } catch (err) {
         statusCode = 400;
