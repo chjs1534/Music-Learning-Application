@@ -8,7 +8,7 @@ const EditProfile: React.FC = () => {
     const [token, setToken] = useState<string | null>(null);
     const [firstName, setFirstName] = useState<string>('');
     const [lastName, setLastName] = useState<string>('');
-    const [username, setUsername] = useState<string>('');
+    const [aboutMe, setAboutMe] = useState<string>('');
     const [profileImage, setProfileImage] = useState<File | null>(null);
     const [profileImageURL, setProfileImageURL] = useState<string>('https://cdn-icons-png.flaticon.com/128/847/847969.png');
     const [isDarkMode, setIsDarkMode] = useState(false);
@@ -50,7 +50,7 @@ const EditProfile: React.FC = () => {
                 setUser(data);
                 setFirstName(data.firstName);
                 setLastName(data.lastName);
-                setUsername(data.username);
+                setAboutMe(data.aboutMe);
                 // Set profile image URL from user data if available
                 if (data.profileImageURL) {
                     setProfileImageURL(data.profileImageURL);
@@ -65,7 +65,7 @@ const EditProfile: React.FC = () => {
         const { id, value } = e.target;
         if (id === 'first-name') setFirstName(value);
         if (id === 'last-name') setLastName(value);
-        if (id === 'username') setUsername(value);
+        if (id === 'aboutme') setAboutMe(value);
     };
 
     const handleInputFocus = (e: ChangeEvent<HTMLInputElement>) => {
@@ -101,7 +101,33 @@ const EditProfile: React.FC = () => {
         window.location.href = `/profile/${id}?${queryParams.toString()}`;
     };
 
-    const submitEditProfile = () => {
+    const submitEditProfile = async () => {
+        await fetch(
+            `https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/updateUser`,
+            {
+              method: "PUT",
+              headers: {
+                Authorization: token,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                firstName: firstName,
+                lastName: lastName,
+                aboutMe: aboutMe,
+                userId: id
+              }),
+            }
+          )
+            .then((response) => {
+              if (!response.ok) {
+                return response.text().then((text) => {
+                  throw new Error(text);
+                });
+              } else {
+                console.log(response);
+              }
+              return response.json();
+            })
         const queryParams = new URLSearchParams();
         window.location.href = `/profile/${id}?${queryParams.toString()}`;
     };
@@ -132,19 +158,6 @@ const EditProfile: React.FC = () => {
                                 className="form-inputs"
                                 placeholder=""
                                 type="text"
-                                id="username"
-                                value={username}
-                                onChange={handleInputChange}
-                                onFocus={handleInputFocus}
-                                onBlur={handleInputBlur}
-                            />
-                            <label htmlFor="username">Username</label>
-                        </div>
-                        <div className="input-container">
-                            <input
-                                className="form-inputs"
-                                placeholder=""
-                                type="text"
                                 id="first-name"
                                 value={firstName}
                                 onChange={handleInputChange}
@@ -165,6 +178,19 @@ const EditProfile: React.FC = () => {
                                 onBlur={handleInputBlur}
                             />
                             <label htmlFor="last-name">Last Name</label>
+                        </div>
+                        <div className="input-container">
+                            <input
+                                className="form-inputs"
+                                placeholder=""
+                                type="text"
+                                id="aboutme"
+                                value={aboutMe}
+                                onChange={handleInputChange}
+                                onFocus={handleInputFocus}
+                                onBlur={handleInputBlur}
+                            />
+                            <label htmlFor="aboutme">About Me</label>
                         </div>
                     </div>
                 ) : (

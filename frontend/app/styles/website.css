@@ -3,6 +3,8 @@
     --background-color: #ffffff;
     --text-color: #000000;
     --dashboard-background: #ffffff;
+    --button-bg-color: rgb(150, 153, 255);
+    --button-hover-bg-color: #cdceff;
     /* Navbar */
     --navbar-background: #ffffff;
     --nav-button-background: #ffffff;
@@ -12,6 +14,7 @@
     --profile-header-background: #ffffff;
     --profile-icon-box-shadow: rgba(0, 0, 0, 0.5);
     --profile-details-text-color: #555;
+    --editprofile-button-hover: #ccc;
     --request-button-background: #007bff;
     --request-button-hover: #0056b3;
     --cancel-button: #ccc;
@@ -51,6 +54,9 @@ body.dark-mode {
     --background-color: #181818;
     --text-color: #ffffff;
     --dashboard-background: rgba(30, 30, 30);
+    --button-bg-color: rgb(75, 78, 128);
+    /* A darker shade of the light mode color */
+    --button-hover-bg-color: #6e70b1;
     /* Nav */
     --navbar-background: rgba(30, 30, 30);
     --nav-button-background: #303030;
@@ -100,11 +106,11 @@ body {
     background-color: var(--background-color);
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: start;
     align-items: center;
     z-index: 1;
     overflow-y: auto;
-    color: black;
+    color: var(--text-color);
 }
 
 .dashboard {
@@ -113,19 +119,88 @@ body {
     background-color: var(--dashboard-background);
     display: flex;
     flex-direction: column;
-    justify-content: top;
+    justify-content: flex-start;
     align-items: center;
+}
+
+.welcome-section {
+    margin: 0px 0;
+    text-align: center;
+}
+
+.welcome-section h1 {
+    font-size: 3em;
+    margin-bottom: 10px;
+}
+
+.welcome-section p {
+    font-size: 1.5em;
+    color: var(--text-color);
+}
+
+.content-section {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.text-box,
+.quote-box {
+    max-width: 300px;
+    padding: 10px;
+    background-color: var(--background-color);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.text-box h2,
+.quote-box h2 {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+}
+
+.text-box p,
+.quote-box p {
+    font-size: 1.2em;
+    color: var(--text-color);
+}
+
+.button-section {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.betton {
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 1em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.betton {
+    background-color: #007BFF;
+    color: white;
+}
+
+.footer-section {
+    margin-top: 30px;
+    font-size: 0.9em;
+    color: #999;
 }
 
 /* Nav Bar */
 .navbar {
+    max-height: 72px;
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: var(--navbar-background);
-    padding: 10px 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
     position: relative;
     top: 0;
     left: 0;
@@ -140,13 +215,13 @@ body {
     flex-direction: column;
     border: none;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 20px;
     cursor: pointer;
     transition: background-color 0.3s ease;
     background-color: var(--nav-button-background);
     color: var(--text-color);
-    margin: 0 10px;
-    padding: 10px;
+    margin: 0 24px;
+    padding: 8px;
 }
 
 .nav-button:hover {
@@ -155,16 +230,19 @@ body {
 
 .website-logo {
     font-family: 'Music';
-    font-size: 24px;
+    font-size: 45px;
     color: var(--text-color);
     cursor: pointer;
     padding: 0;
     border: none;
     background: none;
+    font-weight: 1000;
+    padding: 0px;
+    margin: 0px;
 }
 
 .nav-button-text {
-    font-size: 12px;
+    font-size: 16px;
     color: var(--text-color);
 }
 
@@ -175,8 +253,8 @@ body {
 }
 
 .nav-icon {
-    width: 24px;
-    height: 24px;
+    width: 30px;
+    height: 30px;
 }
 
 .hamburger {
@@ -287,6 +365,21 @@ body {
     align-items: center;
 }
 
+.profile-details {
+    /* flex: 1; */
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 40vw;
+    margin-top: 12px;
+}
+
 .profile-header {
     display: flex;
     justify-content: center;
@@ -297,9 +390,10 @@ body {
 .profile-icon {
     width: 150px;
     height: 150px;
-    box-shadow: var(--profile-icon-box-shadow);
+    box-shadow: 0 0 3px 1px var(--profile-icon-box-shadow);
     border-radius: 50%;
     object-fit: cover;
+    border: 1px solid rgb(45, 45, 45, 20%);
 }
 
 .profile-content {
@@ -322,13 +416,42 @@ body {
     width: 100vw;
 }
 
+.profile-info {
+    text-align: center;
+    color: var(--text-color);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    min-width: 640px;
+    position: relative;
+}
+
+.profile-words {
+    text-align: left;
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+}
+
+.render-content {
+    text-align: right;
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    align-items: right;
+    justify-content: end;
+    position: absolute;
+    right: 0;
+}
+
 .profile-details h3 {
     margin: 0;
     font-size: 1.5rem;
 }
 
 .profile-details p {
-    margin: 5px 0;
+    margin: 0px 0;
     color: var(--text-color);
 }
 
@@ -338,11 +461,15 @@ body {
     margin-left: 20px;
 }
 
-.edit-profile-button {
+.editprofile-button {
     width: 30px;
     height: 30px;
     margin: 0;
     padding: 0;
+}
+
+.editprofile-button:hover {
+    background-color: var(--editprofile-button-hover);
 }
 
 .request-button {
@@ -367,6 +494,45 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.profile-extra {
+    margin-top: 30px;
+}
+
+.achievements,
+.teacher-details {
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.achievement-card,
+.certification-card,
+.review-card {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.achievement-card img,
+.review-card img {
+    width: 40px;
+    height: 40px;
+    margin-right: 0px;
+}
+
+.achievement-info,
+.review-info {
+    flex-grow: 1;
+}
+
+.achievement-info h3,
+.review-info h3 {
+    margin: 0;
+    font-size: 1.2rem;
 }
 
 /* edit profile styles */
@@ -462,465 +628,109 @@ body {
     background-color: var(--save-button-hover);
 }
 
-/* message styles */
-.messages {
-    width: 100vw;
-    height: 100vh;
-    background-color: var(--message-background);
-    display: flex;
-    flex-direction: column;
-    justify-content: top;
-    align-items: center;
+/* teacher styles */
+.teacher-container,
+.student-container {
+    width: 90%;
+    margin: 0 auto;
+    padding: 20px 0;
 }
 
-.message-screen {
-    display: flex;
-    width: 100vw;
-    height: 90vh;
-    background-color: var(--message-box-background);
-}
-
-.friend-list {
-    width: 20%;
-    border-right: 1px solid #ccc;
-    padding: 10px;
-    overflow-y: auto;
-}
-
-.friend-list h2 {
+/* Headers */
+.teacher-header,
+.student-header {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
     text-align: center;
-    margin-bottom: 10px;
 }
 
-.friend-list div {
-    padding: 10px;
+/* Teachers List */
+.teachers-list,
+.student-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+/* Teacher Card */
+.teacher-card,
+.student-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
     cursor: pointer;
+    padding: 4px;
+    height: auto;
+    overflow-y: auto;
+    overflow: hidden;
 }
 
-.friend {
+.teacher-card:hover,
+.student-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Teacher Ad */
+.teacher-ad,
+.student-ad {
     display: flex;
     align-items: center;
-    padding: 10px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+    justify-content: center;
+    width: 100%;
+    height: 150px;
+    overflow: hidden;
+    border: 1px solid black;
+    border-radius: 8px;
 }
 
-.friend:hover {
-    background-color: var(--message-box-background);
+.teacher-ad img,
+.student-ad img {
+    width: 50%;
+    height: auto;
 }
 
-.friend .profile-pic {
+/* Teacher Details */
+.teacher-detail,
+.student-detail {
+    padding: 15px;
+    text-align: center;
+}
+
+.teacher-pfp,
+.student-pfp {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    margin-right: 10px;
-}
-
-.friend-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.friend-name {
-    font-weight: bold;
-}
-
-.friend-id {
-    font-size: 0.9em;
-    color: #888;
-}
-
-.message-box {
-    width: 80%;
-    padding: 10px;
-
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.user-container {
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
-}
-
-.message-container {
-    height: 300px;
-    overflow-y: auto;
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 10px;
-    background-color: var(--message-box-background);
-}
-
-.profile-pic-large {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    margin-right: 10px;
-}
-
-.user-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.user-name {
-    font-weight: bold;
-    font-size: 1.2em;
-}
-
-.user-id {
-    font-size: 0.9em;
-    color: #888;
-}
-
-.chat-container {
-    display: flex;
-}
-
-.chat-container input {
-    flex: 1;
-    padding: 10px;
-    margin-right: 10px;
-}
-
-.chat-container button {
-    padding: 10px;
-}
-
-.message {
-    display: flex;
-    align-items: flex-start;
     margin-bottom: 10px;
 }
 
-.my-message {
-    justify-content: flex-end;
+.teacher-name,
+.teacher-aboutme,
+.teacher-rating,
+.student-name,
+.student-aboutme {
+    margin: 5px 0;
 }
 
-.their-message {
-    justify-content: flex-start;
-}
-
-.message .profile-pic {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 10px;
-}
-
-.message-content {
-    max-width: 60%;
-    background-color: var(--message-background);
-    padding: 10px;
-    border-radius: 5px;
-    color: var(--text-color);
-}
-
-.message-sender {
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-.message-text {
-    margin: 0;
-}
-
-.message-time {
-    font-size: 0.8em;
-    color: #888;
-    text-align: right;
-    margin-top: 5px;
-}
-
-.chat-container {
-    display: flex;
-    padding: 10px;
-    border-top: 1px solid #ccc;
-    background-color: var(--message-box-background);
-}
-
-.message-input {
-    flex-grow: 1;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    margin-right: 10px;
-    background-color: var(--message-background);
-    color: var(--text-color);
-}
-
-.message-input:focus {
-    outline: none;
-}
-
-.send-button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: #7289da;
-    color: #fff;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.send-button:hover {
-    background-color: #5b6eae;
-}
-
-@media (max-width: 768px) {
-    .message-screen {
-        flex-direction: column;
-    }
-
-    .friend-list {
-        width: 100%;
-        border-right: none;
-        border-bottom: 1px solid #ccc;
-    }
-
-    .message-box {
-        width: 100%;
-        flex-grow: 1;
-    }
-}
-
-/* .friend-list {
-    width: 20%;
-    border-right: 1px solid #ccc;
-    padding: 10px;
-    background-color: #ffffff;
-}
-
-.friend-list h2 {
-    margin-bottom: 10px;
-}
-
-.friend {
-    display: flex;
-    align-items: center;
-    padding: 10px 0;
-    cursor: pointer;
-}
-
-.friend img.profile-pic {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 10px;
-}
-
-.friend .friend-name {
-    font-size: 16px;
-}
-
-.message-box {
-    width: 100%;
-    height: 90vh;
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #ccc;
-}
-
-.user-container {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    border: 1px solid #ccc;
-    background-color: #ff0019;
-}
-
-.user-container img.profile-pic {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 10px;
-}
-
-.user-container .username {
+.teacher-name,
+.student-name {
     font-size: 18px;
     font-weight: bold;
 }
 
-.message-container {
-    flex-grow: 1;
-    padding: 10px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    background-color: #000000;
-}
-
-.message {
-    display: flex;
-    align-items: flex-start;
-    margin-bottom: 10px;
-    background-color: #00c8ff;
-}
-
-.message img.profile-pic {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    margin-right: 10px;
-}
-
-.message .message-content {
-    background-color: #f1f1f1;
-    padding: 10px;
-    border-radius: 10px;
-    max-width: 60%;
-}
-
-.message.user-message {
-    justify-content: flex-end;
-    text-align: right;
-}
-
-.message.user-message .message-content {
-    background-color: #dcf8c6;
-    margin-left: 10px;
-    order: 1;
-}
-
-.message.user-message img.profile-pic {
-    margin-left: 10px;
-    margin-right: 0;
-}
-
-.message.user-message .profile-pic {
-    margin-left: 10px;
-    margin-right: 0;
-    order: 2;
-}
-
-.message .message-sender {
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-.message .message-text {
-    margin: 0;
-}
-
-.message .message-time {
-    font-size: 12px;
-    color: #888;
-    margin-top: 5px;
-}
-
-.message .message-image {
-    max-width: 100%;
-    border-radius: 10px;
-}
-
-.chat-container {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    border-top: 1px solid #ccc;
-    height: 100px;
-}
-
-.message-input {
-    flex-grow: 1;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 20px;
-    margin-right: 10px;
-}
-
-.send-button img,
-.emoji-button img,
-.image-button img {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    width: 50px;
-}
-
-.image-input {
-    display: none;
-}
-
-.user-pic {
-    margin-left: 10px;
-    margin-right: 0;
-} */
-
-
-/* teacher styles */
-.teacher-container {
-    width: 80vw;
-    max-height: 80vh;
-    padding: 15px;
-    margin-left: 100px;
-
-}
-
-.teacher-header {
-    align-self: left;
-}
-
-.myteachers {
-    display: flex;
-    padding: 10px;
-    flex-wrap: wrap;
-    gap: 16px;
-}
-
-.teacher-card {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 16px;
-    width: 15vw;
-    margin-left: 15px;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.teacher-ad {
-    height: 100px;
-    display: flex;
-    justify-content: center;
-}
-
-.teacher-info {}
-
-.teacher-name {
-    font-weight: bold;
-    margin-left: 10px;
-    align-self: center;
+.teacher-aboutme,
+.student-aboutme {
+    font-size: 14px;
+    color: #666;
 }
 
 .teacher-rating {
-    color: #f39c12;
-    margin-top: -10px;
-}
-
-.teacher-detail {
-    display: flex;
-}
-
-.teacher-pfp {
-    border-radius: 50%;
-    max-width: 25px;
-    max-height: 25px;
-    align-self: center;
-}
-
-.teacher-card:hover {
-    transform: scale(1.05);
-}
-
-.teacher-aboutme {
-    overflow: hidden;
-    margin-top: -20px;
+    font-size: 14px;
+    color: #333;
 }
 
 /* request styles */
@@ -945,22 +755,6 @@ body {
 
 .request-button {}
 
-.website-logo {
-    border: none;
-    border-radius: 100000;
-    text-align: center;
-    text-decoration: none;
-    display: flex;
-    font-family: 'Music';
-    font-size: 36px;
-    cursor: pointer;
-    transition: background-color 0.5s ease-out;
-    margin: 4px 16px 4px 16px;
-    padding: 12px 12px;
-    width: 100px;
-    height: 50px;
-}
-
 /* Settings Styles */
 .settings {
     width: 100vw;
@@ -972,11 +766,156 @@ body {
     align-items: center;
 }
 
-.modal-accounts-div {
-    display: flex;
-    margin: 20px;
+.settings-container {
+    background: var(--input-background);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    max-width: 90%;
 }
 
-.betton {
+.settings h2 {
+    margin-bottom: 10px;
+    font-size: 1.5rem;
     color: var(--text-color);
+}
+
+.settings-profile,
+.settings-theme,
+.settings-account {
+    margin-bottom: 20px;
+}
+
+.edit-profile-button,
+.logout-button,
+.delete-account-button,
+input[type="checkbox"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    height: 32px;
+    transition: background-color 0.3s ease;
+    background-color: var(--button-bg-color);
+    color: var(--button-text-color);
+}
+
+.edit-profile-button img,
+.logout-button img,
+.delete-account-button img {
+    margin-left: 10px;
+    height: 20px;
+    width: 20px;
+}
+
+button:hover {
+    background-color: var(--button-hover-bg-color);
+}
+
+input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-left: 10px;
+}
+
+label {
+    cursor: pointer;
+}
+
+.dark-mode-toggle {
+    display: flex;
+    align-items: center;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgb(206, 206, 206);
+    transition: .4s;
+    border-radius: 34px;
+    z-index: 0;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    border-radius: 50%;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+}
+
+input:checked+.slider {
+    background-color: rgb(54, 54, 54);
+}
+
+input:checked+.slider:before {
+    transform: translateX(26px);
+}
+
+label {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+}
+
+.edit-profile-button,
+.logout-button,
+.delete-account-button {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.edit-profile-button {
+    color: var(--button-text-color);
+}
+
+.edit-profile-button:hover {
+    background-color: var(--button-hover-bg-color);
+}
+
+.delete-account-button {
+    color: var(--button-text-color);
+}
+
+.delete-account-button:hover {
+    background-color: var(--button-hover-bg-color);
+}
+
+.my-teachers {
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--settings-background);
+    display: flex;
+    flex-direction: column;
+    justify-content: top;
+    align-items: center;
 }
