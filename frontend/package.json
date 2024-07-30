@@ -6,12 +6,16 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "generate-themes": "tamagui generate-themes ./app/theme-builder.ts ./app/themes.ts"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.23.1",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/stack": "^6.4.1",
+    "@tamagui/cli": "^1.105.2",
+    "@tamagui/config": "^1.105.2",
+    "@tamagui/core": "^1.105.2",
     "@types/react": "~18.2.79",
     "amazon-cognito-identity-js": "^6.3.12",
     "dotenv": "^16.4.5",
@@ -42,6 +46,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@tamagui/cli": "^1.105.2",
     "file-loader": "^6.2.0",
     "tailwindcss": "^3.3.2",
     "webpack": "^5.92.1",
