@@ -5,6 +5,7 @@ import { Video } from 'expo-av';
 import * as ImagePicker from "expo-image-picker"
 import * as VideoThumbnails from 'expo-video-thumbnails'
 import Button from '../components/Button';
+import { ScrollView } from 'tamagui';
 
 const video = () => {
     const [video, setVideo] = useState();
@@ -156,15 +157,14 @@ const video = () => {
                     />}
                 <Text></Text>
                 {reviews ? 
-                    <View>
+                    <ScrollView>
                         {reviews.map((review) => (
                             <TouchableOpacity className="border-gray border-2 mt-2" onPress={() => handleTimestampClick(review.videoTime)}>
                                 <Text className="text-gray-300">At {Math.round(review.videoTime)}s Posted on {review.timestamp}</Text>
                                 <Text className="text-gray-300">{review.commentText}</Text>
                             </TouchableOpacity>
-                            
                         ))}
-                    </View>
+                    </ScrollView>
                     : <Text className="text-gray-500 self-center">No reviews yet</Text>
                 }
             </SafeAreaView>
