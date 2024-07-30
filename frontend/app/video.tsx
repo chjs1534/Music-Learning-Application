@@ -1,11 +1,10 @@
-import { StyleSheet, Text, View, BackHandler, Alert, SafeAreaView , TouchableOpacity} from 'react-native'
+import { StyleSheet, Text, View, BackHandler, Alert, SafeAreaView , TouchableOpacity, ScrollView } from 'react-native'
 import React, { useState, useEffect, useRef } from 'react'
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Video } from 'expo-av';
 import * as ImagePicker from "expo-image-picker"
 import * as VideoThumbnails from 'expo-video-thumbnails'
 import Button from '../components/Button';
-import { ScrollView } from 'tamagui';
 
 const video = () => {
     const [video, setVideo] = useState();
