@@ -15,7 +15,7 @@ import Students from './(web)/Students'
 import Teachers from './(web)/Teachers'
 import Notifications from './(web)/Notifications';
 import ViewMatches from './(web)/ViewMatches';
-import Video from './(web)/Video';
+import VideoWeb from './(web)/Video';
 
 // const router = createBrowserRouter([
 //   {
@@ -45,31 +45,6 @@ import Video from './(web)/Video';
 // ]);
 
 const App: React.FC = () => {
-  // const [id, setId] = useState(null);
-  // const [token, setToken] = useState(null);
-  // const [userType, setUserType] = useState(null);
-  
-  // useEffect(() => {
-  //   const id = localStorage.getItem('id');
-  //   if (id) {
-  //     setId(id);
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   const token = localStorage.getItem('token');
-  //   if (token) {
-  //     setToken(token);
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   const userType = localStorage.getItem('userType');
-  //   if (userType) {
-  //     setUserType(userType);
-  //   }
-  // }, []);
-
 
   return (
     <>
@@ -90,7 +65,7 @@ const App: React.FC = () => {
           <Route path="/teachers" element={<Teachers />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/viewmatches/:id" element={<ViewMatches />} />
-          <Route path="/video/:id" element={<Video />} />
+          <Route path="/video/:id/:fileId" element={<VideoWeb />} />
         </Routes>
       </Router>
     </>

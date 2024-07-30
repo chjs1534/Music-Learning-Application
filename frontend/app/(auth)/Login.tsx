@@ -6,6 +6,7 @@ import Button from '../../components/Button'
 import { router } from 'expo-router'
 import { AuthenticationDetails, CognitoUser, CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
 import { poolData } from '../config/poolData';
+import { StatusBar } from 'expo-status-bar'
 
 const UserPool = new CognitoUserPool(poolData);
 
@@ -74,12 +75,16 @@ const Login = () => {
           resolve(null);
         }
       })
-      .then((authToken: string) => 
+      .then((authToken :string) => 
         {console.log(authToken); 
-        router.replace({ pathname: '/Home', params: { authToken } })
+          const jwtPayload = JSON.parse(atob(authToken.split('.')[1]));
+          let userId = jwtPayload.sub;
+          console.log(userId)
+        router.replace({ pathname: '/Home', params: { authToken, userId } })
       })
     })
     .catch((err) => {
+      alert(err);
       console.log(err);
       // wrong account details
     });
@@ -91,32 +96,35 @@ const Login = () => {
   // make an option to show password
 
   return (
-    <SafeAreaView className="h-full bg-purple-200">
+    <SafeAreaView className="h-full bg-black">
       <ScrollView>
         <View className="w-full justify-center min-h-[85vh] px-4 my-6">
-          <Text className="text-5xl mb-5 font-semibold">Mewsic</Text>
-          <Text className="text-3xl font-semibold">Login</Text>
+          {/* <Text className="text-5xl text-white mb-5 font-semibold">Mewsic</Text> */}
+          <Text className="text-4xl font-semibold text-white">Log in to Mewsic</Text>
           <FormField 
             title="Username"
             value={username}
             handleChangeText={(e) => setUsername(e)}
             otherStyles="mt-7"
+            placeholder="Your username"
           />
           <FormField 
             title="Password"
             value={password}
             handleChangeText={(e) => setPassword(e)}
             otherStyles="mt-7"
+            placeholder="Your password"
           />
           <Button
-            title="Sign In"
+            title="Login"
             handlePress={login}
-            containerStyles="mt-7"
+            containerStyles="mt-10 bg-white"
             isLoading={isSubmitting}
-            textStyles="text-lg"
+            textStyles="text-lg font-semibold"
           />
         </View>
       </ScrollView>
+      <StatusBar backgroundColor='#161622'/>
     </SafeAreaView>
   )
 }

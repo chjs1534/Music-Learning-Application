@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, BackHandler, Alert, SafeAreaView } from 'react-native'
 import React, { useState, useEffect, useRef } from 'react'
-import { useRoute } from '@react-navigation/native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import { Video } from 'expo-av';
 import * as ImagePicker from "expo-image-picker"
 import * as VideoThumbnails from 'expo-video-thumbnails'
@@ -12,12 +12,17 @@ import Button from '../components/Button';
 
 const video = () => {
     const [video, setVideo] = useState();
+    const [reference, setReference] = useState();
+    const [reviews, setReviews] = useState(["hi", "hey"]);
+
     const route = useRoute();
-    const { id, token } = route.params;
+    const { id, fileId, token } = route.params;
     const ref = useRef(null);
 
     useEffect(() => {
         getVideo()
+        getReference()
+        getComments()
     }, []);
 
     useEffect(() => {
@@ -27,13 +32,8 @@ const video = () => {
     }, [video]);
 
     const getVideo = async () => {
-        const res = await fetch("https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/download", {
-            method: 'POST',
-            body: JSON.stringify({
-                'userId': '123',
-                fileId: id,
-                isRef: false
-            }),
+        const res = await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/download?userId=${id}&fileId=${fileId}`, {
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -42,6 +42,21 @@ const video = () => {
         const json = await res.json();
         console.log(json.downloadVideoUrl);
         setVideo(json.downloadVideoUrl);
+    };
+
+    const getReference = async () => {
+        await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/download?userId=${id}&fileId=${fileId}&isRef`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        }).then((res) => {
+            return res.json();
+        }).then((json) => {
+            setReference(json.downloadVideoUrl);
+        }).catch((error) => {
+            setReference(null)
+        })
     };
 
     const pickVideo = async () => {
@@ -61,13 +76,14 @@ const video = () => {
             uploadToS3(result.assets[0].uri)
         }
     };
+
     const uploadToS3 = async (videoUri) => {
         const { uri } = await VideoThumbnails.getThumbnailAsync(videoUri)
         const thumbnailRes = await fetch(uri);
         const thumbnailBlob = await thumbnailRes.blob();
         const videoRes = await fetch(videoUri);
         const videoBlob = await videoRes.blob();
-        console.log(token)
+        console.log(token, id, fileId)
 
         fetch("https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/upload", {
             method: 'POST',
@@ -75,9 +91,9 @@ const video = () => {
                 Authorization: token as string,
             },
             body: JSON.stringify({
-                userId: '123',
+                userId: id,
                 isRef: true,
-                fileId: id
+                fileId: fileId
             }),
         })
             .then(response => {
@@ -90,31 +106,61 @@ const video = () => {
             })
     };
 
+    const getComments = async () => {
+        const res = await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/comments?userId=${id}&fileId=${fileId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        const json = await res.json();
+        console.log(json)
+        setReviews(json.comments);
+    }
+
     return (
         <View>
-            <Text>{id}</Text>
-            <Text>hello</Text>
-            <View className="m-1 border-black border-2 p-1">
-                <Video
-                    source={{ uri: video }}
-                    rate={1.0}
-                    volume={1.0}
-                    isMuted={false}
-                    resizeMode="contain"
-                    style={{ width: '100%', height: 200 }}
-                    useNativeControls
-                />
-            </View>
-            <Button
-                title="Upload rerference Video"
-                containerStyles="bg-green-400 m-5 pt-5 pb-5 pl-7 pr-7"
-                textStyles="text-lg font-semibold"
-                handlePress={pickVideo}
-            />
+            <SafeAreaView className="bg-black h-full">
+                <View className="m-1 border-white border-2 p-1">
+                    <Video
+                        source={{ uri: video }}
+                        rate={1.0}
+                        volume={1.0}
+                        isMuted={false}
+                        resizeMode="contain"
+                        style={{ width: '100%', height: 200 }}
+                        useNativeControls
+                    />
+                </View>
+                {reference ?
+                    <Video
+                        source={{ uri: reference }}
+                        rate={1.0}
+                        volume={1.0}
+                        isMuted={false}
+                        resizeMode="contain"
+                        style={{ width: '100%', height: 200 }}
+                        useNativeControls
+                    />
+                    : <Button
+                        title="Upload reference Video"
+                        containerStyles="bg-green-400 m-5 pt-5 pb-5 pl-7 pr-7"
+                        textStyles="text-lg font-semibold"
+                        handlePress={pickVideo}
+                    />}
+                {reviews ? 
+                    <View>
+                        {reviews.map((text) => (
+                            <Text className="text-gray-500">{text}</Text>
+                        ))}
+                    </View>
+                    : <Text className="text-gray-500">No reviews yet</Text>
+                }
+            </SafeAreaView>
         </View>
+
     )
 }
 
 export default video
-
-const styles = StyleSheet.create({})

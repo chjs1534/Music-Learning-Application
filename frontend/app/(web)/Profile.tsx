@@ -55,11 +55,10 @@ const Profile: React.FC = () => {
   }, [user]);
 
   useEffect(() => {
-    console.log("tuyuyututuqwro")
     getVideos();
     
 
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (videos != null) {
@@ -215,7 +214,6 @@ const Profile: React.FC = () => {
       }
       return response.json();
     }).then(data => {
-      console.log(data.Items, "helkopmepls")
       setSubAccounts(data.Items);
     })
       .catch(error => {
@@ -224,7 +222,7 @@ const Profile: React.FC = () => {
   }
 
   const getVideos = async () => {
-    await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/videos?userId=123`, {
+    await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/videos?userId=${id}`, {
       method: 'GET',
       headers: {
         'Authorization': token,
@@ -289,6 +287,10 @@ const Profile: React.FC = () => {
     }
   }
 
+  const handleThumbnailClick = (fileId) => {
+    navigate(`/video/${id}/${fileId}`)
+  }
+
   return (
     <div className="homepage">
       <div className="profile">
@@ -345,16 +347,17 @@ const Profile: React.FC = () => {
           <h2>Extra Details</h2>
           <p>Details here...</p>
         </div> */}
-        <div className="profile-extra">
+        {user && user.userType === "Student" && <div className="profile-extra">
           <h2>Videos</h2>
-          <div>
+          <div className="profile-videos">
             {(videos && videos.length > 0) ? videos.map(qwe => (
-              <VideoCard id={qwe} token={token}/>
+              <VideoCard key={qwe} id={id} fileId={qwe} token={token} handlePress={() => handleThumbnailClick(qwe)} web={true}/>
             )         
             ): <p>hi</p>}
           </div>
           
-        </div>
+        </div>}
+        
       </div>
     </div>
   );

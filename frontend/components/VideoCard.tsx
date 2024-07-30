@@ -1,34 +1,38 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate } from "react-router-dom";
+import { StyleSheet, Text, Image, View, TouchableOpacity } from 'react-native'
+import { styled } from 'nativewind';
+import video from '../app/video';
 
 interface VideoCardProps {
     id: string;
+    fileId: string;
     token: string;
+    handlePress
+    web: boolean
 }
 
+const StyledImage = styled(Image);
 
-const VideoCard: React.FC<VideoCardProps> = ({ id, token }) => {
+
+const VideoCard: React.FC<VideoCardProps> = ({ id, fileId, token, handlePress, web }) => {
     const [thumbnail, setThumbnail] = useState();
-    const navigate = useNavigate();
-    const handleClick = () => {
-        navigate(`/video/${id}`);
-    }
 
     useEffect(() => {
         getThumbnail();
     }, []);
 
+    useEffect(() => {
+        if (thumbnail) {
+            console.log(thumbnail)
+        }
+    }, [thumbnail]);
+
 
     const getThumbnail = async () => {
-        await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/download`, {
-            method: 'POST',
-            body: JSON.stringify({
-                'userId': '123',
-                fileId: id,
-                isRef: false
-            }),
+        console.log("qwagagaga", id, fileId)
+        await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/download?userId=${id}&fileId=${fileId}`, {
+            method: 'GET',
             headers: {
-                'Authorization': token,
                 'Content-Type': 'application/json'
             },
         }).then(response => {
@@ -44,7 +48,8 @@ const VideoCard: React.FC<VideoCardProps> = ({ id, token }) => {
             }
             return response.json();
         }).then(data => {
-            console.log(data, "thumbnail setting")
+
+            console.log("dataasda", data.downloadThumbnailUrl)
             setThumbnail(data.downloadThumbnailUrl);
         }).catch(error => {
             console.error('Error:', error.message, error.code || error);
@@ -53,8 +58,25 @@ const VideoCard: React.FC<VideoCardProps> = ({ id, token }) => {
 
 
     return (
-        <div onClick={handleClick}><p>{id}</p><img src={thumbnail} alt="hello" className="profile-icon"/></div>
+        <>
+            {thumbnail && (<TouchableOpacity onPress={handlePress} className="justify-center items-center m-5 border-2 border-white">
+                <StyledImage style={web ? styles.web : styles.mobile} source={{ uri: thumbnail }} alt="hello" />
+            </TouchableOpacity>)}
+        </>
+
     )
 }
+
+const styles = StyleSheet.create({
+    web: {
+        width: 200,
+        height: 200,
+    },
+    mobile: {
+        width: 200,
+        height: 200,
+    }
+
+});
 
 export default VideoCard;
