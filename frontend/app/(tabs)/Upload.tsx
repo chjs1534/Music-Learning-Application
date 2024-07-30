@@ -108,10 +108,6 @@ const Upload = () => {
     } catch (error) {
       console.log("Error recording video:", error);
     }
-  };
-
-  const clearVideos = () => {
-    setVideo([]);
   }
 
   const handleVideoPress = (id) => {
@@ -152,8 +148,6 @@ const Upload = () => {
       });
   }
 
-  
-
   return (
     <View>
       <SafeAreaView className="bg-black h-full">
@@ -180,7 +174,7 @@ const Upload = () => {
             : <Text className="text-gray-300 self-center mt-5">Upload or Record a video to begin</Text>
           }
           </>
-          : <Text className="text-gray-300 self-center mt-5">Loading</Text>}
+          : <Text className="text-gray-300 self-center mt-5">Loading...</Text>}
         
         
 

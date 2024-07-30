@@ -278,7 +278,7 @@ const Profile: React.FC = () => {
         // request match have modal for kids
         console.log(subAccounts)
         return (<button className="request-button" onClick={() => setShowModal(true)}>request match</button>);
-      } else if (user.userType === "Child") {
+      } else if (userType === "Parent" && user.userType === "Child") {
         // navigate view matches/ id
         return (<button onClick={viewMatch}>view matches</button>);
       } else if (user.userType === "Student") {

@@ -99,7 +99,6 @@ const Login = () => {
     <SafeAreaView className="h-full bg-black">
       <ScrollView>
         <View className="w-full justify-center min-h-[85vh] px-4 my-6">
-          {/* <Text className="text-5xl text-white mb-5 font-semibold">Mewsic</Text> */}
           <Text className="text-4xl font-semibold text-white">Log in to Mewsic</Text>
           <FormField 
             title="Username"
