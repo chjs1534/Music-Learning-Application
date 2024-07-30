@@ -32,7 +32,8 @@ exports.handler = async (event) => {
             userType: userAttributes['custom:userType'],
             firstName: userAttributes['custom:firstName'],
             lastName: userAttributes['custom:lastName'],
-            aboutMe: ""
+            aboutMe: "",
+            teacherReview: []
         };
     
         await dynamo.put(
