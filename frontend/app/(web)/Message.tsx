@@ -76,6 +76,8 @@ const MessageComponent: React.FC = () => {
           const message = JSON.parse(evt.data);
           console.log(message);
           handleIncomingMessage(message);
+          getMessages();
+
         } catch {
           console.log('error in parsing');
         }
@@ -97,7 +99,47 @@ const MessageComponent: React.FC = () => {
     }
   }, [token, userId]);
 
-  const handleIncomingMessage = (message) => {
+  const getMessages = async () => {
+    console.log(userId, selectedFriendId)
+    if (selectedFriendId) {
+      await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/messaging/getMessages/${userId}/${selectedFriendId}?page=1&limit=4`, {
+        method: 'GET',
+        headers: {
+          // 'Authorization': token,
+          'Content-Type': 'application/json'
+        },
+      }).then(response => {
+        if (!response.ok) {
+          return response.text().then(text => { throw new Error(text) });
+        }
+        else {
+          console.log(response);
+        }
+        return response.json();
+      }).then(data => {
+        console.log(data);
+        
+        // data.messages.forEach(newMessage => {
+        //   setFriends(prevFriends =>
+        //     prevFriends.map(friend =>
+        //       (friend.id === data.messages.senderId && userId === data.messages.receiverId) || (friend.id === data.messages.receiverId && userId === data.messages.senderId)
+        //         ? {
+        //           ...friend,
+        //           messages: [...friend.messages, newMessage]
+        //         }
+        //         : friend
+        //     )
+        //   );
+        // });
+        console.log(friends)
+      })
+        .catch(error => {
+          console.error('Error:', error.message, error.code || error);
+        });
+    }
+  }
+
+  const handleIncomingMessage = async (message) => {
     const newMessage: Message = {
       senderId: message.senderId,
       content: message.msg,
@@ -118,10 +160,6 @@ const MessageComponent: React.FC = () => {
     setMessageText('');
     setTimeout(scrollToBottom, 0);
   };
-
-  useEffect(() => {
-    console.log(friends);
-  }, [friends]);
 
   const getFriendIDs = async () => {
     if (!userId) return;

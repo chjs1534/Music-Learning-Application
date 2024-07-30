@@ -8,16 +8,11 @@ interface StudentCardProps {
 }
 
 const StudentCard: React.FC<StudentCardProps> = ({ id, token, handleClick }) => {
-    const [user, setUser] = useState<string>(null);
+    const [user, setUser] = useState<any>(null);
 
     useEffect(() => {
         getDetails();
-        // console.log(id, token)
     }, []);
-
-    // useEffect(() => {
-    //     console.log("help", user)
-    // }, [user]);
 
     const getDetails = async () => {
         await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getUser/${id}`, {
@@ -34,32 +29,26 @@ const StudentCard: React.FC<StudentCardProps> = ({ id, token, handleClick }) => 
             if (!response.ok) {
                 return response.text().then(text => { throw new Error(text) });
             }
-            else {
-                // console.log(response);
-            }
             return response.json();
         }).then(data => {
-            // console.log('Success:', data);
             setUser(data);
         })
-        .catch(error => {
-            console.error('Error:', error.message, error.code || error);
-        });
-}
+            .catch(error => {
+                console.error('Error:', error.message, error.code || error);
+            });
+    }
 
     return (
-        <div className="teacher-card" onClick={() => handleClick(id)}>
-            <div className="teacher-ad">
+        <div className="student-card" onClick={() => handleClick(id)}>
+            <div className="student-ad">
+                <img src={"https://cdn-icons-png.flaticon.com/128/9316/9316730.png"} alt={"student ad"} />
             </div>
-            {user && <div className="teacher-detail">
-                <p className="teacher-name">{user.firstName}</p>
+            {user && <div className="student-detail">
+                <img src={"https://cdn-icons-png.flaticon.com/128/9316/9316744.png"} alt={`${user.firstName} ${user.lastName}'s profile`} className="student-pfp" />
+                <p className="student-name">Name: {user.firstName} {user.lastName}</p>
+                <p className="student-aboutme">About Me: {user.aboutMe}</p>
             </div>}
-            
-            <div className="teacher-info">
-                <div className="teacher-aboutme">
-                </div>
-            </div>
-        </div>
+        </div >
     )
 }
 
