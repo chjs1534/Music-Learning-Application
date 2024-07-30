@@ -56,7 +56,7 @@ const TeacherCard: React.FC<TeacherCardProps> = ({ name, pfp, rating, reviews, s
   return (
     <div className="teacher-card" onClick={handleClick}>
       <div className="teacher-ad">
-        <img src={"https://cdn-icons-png.flaticon.com/128/651/651717.png"} alt={"teacher ad"} />
+        <img src={"https://cdn-icons-png.flaticon.com/128/125/125104.png"} alt={"teacher ad"} />
       </div>
       {user && <div className="teacher-detail">
         <img src={"https://cdn-icons-png.flaticon.com/128/2354/2354280.png"} alt={`${name}'s profile`} className="teacher-pfp" />
