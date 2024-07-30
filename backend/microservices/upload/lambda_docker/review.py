@@ -15,7 +15,7 @@ def convert_timestamp(timestamp_ref, wp_s):
     timestamp = times[closest_index]
     return timestamp
 
-def handle(event, context):
+def handler(event, context):
     try:
         print('1')
         body = json.loads(event['body'])
@@ -55,7 +55,7 @@ def handle(event, context):
         tempo, beat_frames = librosa.beat.beat_track(y=y, sr=sr)
         tempo_ref, beat_frames_ref = librosa.beat.beat_track(y=y_ref, sr=sr_ref)
 
-        print("Tempo: ", tempo, tempo_ref)
+        # print("Tempo: ", tempo, tempo_ref)
         # print("Beat Frames: ", beat_frames, beat_frames_ref)
         #print("Beat diffs: ", [ beat_frames[i] - beat_frames_ref[i] for i in range(min(len(beat_frames), len(beat_frames_ref))) ])
         print('3')
@@ -64,7 +64,7 @@ def handle(event, context):
         # useful for isolated instruments or drums
         tempo_dynamic = librosa.feature.tempo(y=y, sr=sr, aggregate=None, std_bpm=4, ac_size=8)
         tempo_dynamic_ref = librosa.feature.tempo(y=y_ref, sr=sr_ref, aggregate=None, std_bpm=4, ac_size=8)
-        print('Tempos: ', tempo_dynamic, tempo_dynamic_ref)
+        # print('Tempos: ', tempo_dynamic, tempo_dynamic_ref)
 
         fig, ax = plt.subplots()
         times_ref = librosa.times_like(tempo_dynamic_ref, sr=sr_ref)
@@ -100,64 +100,9 @@ def handle(event, context):
         D, wp = librosa.sequence.dtw(X, Y)
         hop_length = 1024
         wp_s = librosa.frames_to_time(wp, sr=sr_ref, hop_length=hop_length)
-        print("wps", wp_s)
-        print(convert_timestamp(1, wp_s))
-        print(convert_timestamp(140, wp_s))
-
-        print('x')
-        chordino = Chordino(roll_on=1)
-        print('l')
-        chords = chordino.extract_many([audio_path, audio_path_ref])
-        print('d')
-
-        # offset between first matching note
-        # maybe get mean offet from ref to nearest note?
-        offset = 0
-        count = 0
-        for chord_change_ref in chords[1][1]:
-            chord = chord_change_ref[0]
-            timestamp = chord_change_ref[1]
-            if chord != 'N':
-                same = [timestamp - c[1] for c in chords[0][1] if c[0] == chord]
-                if same and abs(min(same, key=abs)) < 5:
-                  offset += min(same, key=abs)
-                  count += 1
-        offset = offset / count
-        print('offset', offset)
-
-        # Compares chord closest in time to reference chord
-        # whenever there is a chord change.
-        # Works best when tempo matches 
-        # e.g. short clips so timestamp offsets don't increase too much
-        # limitation: rapid chord changes
-
-        review = ''
-        for chord_change_ref in chords[1][1]:
-            chord = chord_change_ref[0]
-            ref_timestamp = chord_change_ref[1]
-            # print(f'old {ref_timestamp}')
-            timestamp = convert_timestamp(ref_timestamp, wp_s)
-            # print(timestamp)
-            nearest = '-'
-            min_dist = 5
-            for chord_change in chords[0][1]:
-                dist = abs(timestamp - chord_change[1] + 1.5)
-                if dist < 2 and dist < min_dist:
-                    nearest = chord_change[0]
-                    min_dist = dist
-            review += f'{round(ref_timestamp, 2)}: {chord} {nearest}' + '\n'
-            # print(f'{round(ref_timestamp, 2)}: {chord} {nearest}')  
-        print(review)
-
-        # udpate review in table
-        table = boto3.resource('dynamodb').Table('Reviews')
-        table.update_item(
-            Key={'UserId': userId, 'FileId': fileId},
-            AttributeUpdates={
-                'Review': review,
-            },
-        )
-
+        # print("wps", wp_s)
+        # print(convert_timestamp(1, wp_s))
+        # print(convert_timestamp(140, wp_s))
         from matplotlib.patches import ConnectionPatch
         fig, (ax1, ax2) = plt.subplots(nrows=2, sharex=True, sharey=True, figsize=(8,4))
 
@@ -183,6 +128,52 @@ def handle(event, context):
             ax2.add_artist(con)
         plt.savefig('/tmp/sync.png')
         s3.upload_file('/tmp/sync.png', BUCKET_NAME, f'{userId}/{fileId}/sync.png')
+
+
+        print('x')
+        chordino = Chordino(roll_on=1)
+        print('l')
+        chords = [chordino.extract(audio_path), chordino.extract(audio_path_ref)]
+        print('d')
+        print('wat')
+        print(chords)
+        print(type(chords))
+        print('the')
+
+        # Compares chord closest in time to reference chord
+        # whenever there is a chord change.
+        # Works best when tempo matches 
+        # e.g. short clips so timestamp offsets don't increase too much
+        # limitation: rapid chord changes
+
+        review = ''
+        for chord_change_ref in chords[1]:
+            print('hi')
+
+            chord = chord_change_ref[0]
+            ref_timestamp = chord_change_ref[1]
+            # print(f'old {ref_timestamp}')
+            timestamp = convert_timestamp(ref_timestamp, wp_s)
+            # print(timestamp)
+            nearest = '-'
+            min_dist = 5
+            for chord_change in chords[0]:
+                dist = abs(timestamp - chord_change[1] + 1.5)
+                if dist < 2 and dist < min_dist:
+                    nearest = chord_change[0]
+                    min_dist = dist
+            review += f'{round(ref_timestamp, 2)}: {chord} {nearest}' + '\n'
+            # print(f'{round(ref_timestamp, 2)}: {chord} {nearest}')  
+        print(review)
+
+        # udpate review in table
+        # table = boto3.resource('dynamodb').Table('Reviews')
+        # table.update_item(
+        #     Key={'UserId': userId, 'FileId': fileId},
+        #     AttributeUpdates={
+        #         'Review': review,
+        #     },
+        # )
 
         return {
             "statusCode": 200,
