@@ -32,11 +32,11 @@ const TabsLayout = () => {
       <SafeAreaView style={styles.container}>
         <Tabs
           screenOptions={{
-            tabBarActiveTintColor: "#DC7F2E",
-            tabBarInactiveTintColor: "#4059AD",
+            tabBarActiveTintColor: "#1e88e5",
+            tabBarInactiveTintColor: "#9e9e9e",
             tabBarShowLabel: false,
             tabBarStyle: {
-              backgroundColor: "#C9DDFF",
+              backgroundColor: "#202020",
               borderTopWidth: 0,
               borderBottomWidth: 0,
               borderTopColor: "#4059AD",
@@ -108,7 +108,7 @@ const TabsLayout = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#C9DDFF",
+    backgroundColor: "#202020",
   },
 });
 

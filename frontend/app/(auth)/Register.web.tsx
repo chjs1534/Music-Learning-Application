@@ -117,6 +117,7 @@ const Register: React.FC = () => {
     const queryParams = new URLSearchParams({ jwtToken, userId });
     localStorage.setItem('id', userId);
     localStorage.setItem('userType', userType)
+    localStorage.setItem('token', jwtToken)
     console.log(jwtToken, userId, userType);
     window.location.href = `/homepage?${queryParams.toString()}`;
   }

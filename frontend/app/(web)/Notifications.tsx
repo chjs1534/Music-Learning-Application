@@ -30,9 +30,7 @@ const Notifications = () => {
     const onAction = async () => {
       console.log("onaction clicked")
       getRequests();
-      
     }
-    
 
     const getRequests = async () => {
       await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/match/getRequests/${id}`, {
@@ -62,7 +60,7 @@ const Notifications = () => {
           console.error('Error:', error.message, error.code || error);
         });
     }
-
+    
     return (
         <div className="homepage">
           <div className="profile">
