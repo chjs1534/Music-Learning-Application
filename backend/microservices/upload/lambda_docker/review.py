@@ -146,7 +146,7 @@ def handler(event, context):
         # e.g. short clips so timestamp offsets don't increase too much
         # limitation: rapid chord changes
 
-        review = ''
+        review = []
         for chord_change_ref in chords[1]:
             print('hi')
 
@@ -162,7 +162,7 @@ def handler(event, context):
                 if dist < 2 and dist < min_dist:
                     nearest = chord_change[0]
                     min_dist = dist
-            review += f'{round(ref_timestamp, 2)}: {chord} {nearest}' + '\n'
+            review.append({'timestamp': round(ref_timestamp, 2), 'chordRef': chord, 'chordMatch': nearest})
             # print(f'{round(ref_timestamp, 2)}: {chord} {nearest}')  
         print(review)
 
