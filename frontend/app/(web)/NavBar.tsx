@@ -38,27 +38,29 @@ const NavBar: React.FC = () => {
     if (userType === "Teacher") {
       return (
         <button className="nav-button" onClick={() => handleNavigation('/students')}>
-          <img src="https://cdn-icons-png.flaticon.com/128/9316/9316744.png" alt="Students" className="nav-icon" />
-          <span className="nav-button-text">Students</span>
+          {/* <img src="https://cdn-icons-png.flaticon.com/128/9316/9316744.png" alt="Students" className="nav-icon" /> */}
+          <span className="nav-button-text">My Students</span>
         </button>
       );
     } else if (userType === "Student") {
       return (
-        <button className="nav-button" onClick={() => handleNavigation('/teachers')}>
-          <img src="https://cdn-icons-png.flaticon.com/128/10455/10455354.png" alt="Teachers" className="nav-icon" />
-          <span className="nav-button-text">Teachers</span>
-        </button>
+        <>
+          <button className="nav-button" onClick={() => handleNavigation('/teachers')}>
+            {/* <img src="https://cdn-icons-png.flaticon.com/128/10455/10455354.png" alt="Teachers" className="nav-icon" /> */}
+            <span className="nav-button-text">My Teachers</span>
+          </button>
+        </>
       );
     } else if (userType === "Parent") {
       return (
         <>
           <button className="nav-button" onClick={() => handleNavigation('/teachers')}>
-            <img src="https://cdn-icons-png.flaticon.com/128/10455/10455354.png" alt="Teachers" className="nav-icon" />
-            <span className="nav-button-text">Teachers</span>
+            {/* <img src="https://cdn-icons-png.flaticon.com/128/10455/10455354.png" alt="Teachers" className="nav-icon" /> */}
+            <span className="nav-button-text">My Teachers</span>
           </button>
           <button className="nav-button" onClick={() => handleNavigation('/my-accounts')}>
-            <img src="https://cdn-icons-png.flaticon.com/128/646/646395.png" alt="Accounts" className="nav-icon" />
-            <span className="nav-button-text">Accounts</span>
+            {/* <img src="https://cdn-icons-png.flaticon.com/128/646/646395.png" alt="Accounts" className="nav-icon" /> */}
+            <span className="nav-button-text">My Accounts</span>
           </button>
         </>
       );
@@ -71,26 +73,30 @@ const NavBar: React.FC = () => {
 
   return (
     <nav className="navbar">
-      <button className="nav-button website-logo" onClick={() => handleNavigation('/homepage')}>
-        Mewsic
+      <button className="nav-button" onClick={() => handleNavigation('/homepage')}>
+        <span className="website-logo">Mewsic</span>
       </button>
       <div className={`nav-options ${isMenuOpen ? 'open' : ''}`}>
         {renderContent()}
-        <button className="nav-button" onClick={() => handleNavigation('/message')}>
+        <button className="nav-button" onClick={() => handleNavigation('/sheet-music')}>
+          {/* <img src="https://cdn-icons-png.flaticon.com/128/10455/10455354.png" alt="Teachers" className="nav-icon" /> */}
+          <span className="nav-button-text">Sheet Music</span>
+        </button>
+        <button title="Messages" className="nav-button" onClick={() => handleNavigation('/message')}>
           <img src="https://cdn-icons-png.flaticon.com/128/542/542638.png" alt="Message" className="nav-icon" />
-          <span className="nav-button-text">Message</span>
+          {/* <span className="nav-button-text">Message</span> */}
         </button>
-        <button className="nav-button" onClick={() => handleNavigation('/notifications')}>
+        <button title="Notifications" className="nav-button" onClick={() => handleNavigation('/notifications')}>
           <img src="https://cdn-icons-png.flaticon.com/128/2529/2529521.png" alt="Notifications" className="nav-icon" />
-          <span className="nav-button-text">Notifications</span>
+          {/* <span className="nav-button-text">Notifications</span> */}
         </button>
-        <button className="nav-button" onClick={() => handleNavigation(`/profile/${id}`)}>
+        <button title="My Profile" className="nav-button" onClick={() => handleNavigation(`/profile/${id}`)}>
           <img src="https://cdn-icons-png.flaticon.com/128/1144/1144760.png" alt="Profile" className="nav-icon" />
-          <span className="nav-button-text">Profile</span>
+          {/* <span className="nav-button-text">Profile</span> */}
         </button>
-        <button className="nav-button" onClick={() => handleNavigation('/settings')}>
-          <img src="https://cdn-icons-png.flaticon.com/128/4044/4044064.png" alt="Settings" className="nav-icon" />
-          <span className="nav-button-text">Settings</span>
+        <button title="Settings" className="nav-button" onClick={() => handleNavigation('/settings')}>
+          <img src="https://cdn-icons-png.flaticon.com/128/2099/2099058.png" alt="Settings" className="nav-icon" />
+          {/* <span className="nav-button-text">Settings</span> */}
         </button>
       </div>
       <div className="hamburger" onClick={toggleMenu}>

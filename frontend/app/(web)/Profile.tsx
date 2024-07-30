@@ -264,7 +264,7 @@ const Profile: React.FC = () => {
   const renderContent = () => {
     if (id === localStorage.getItem('id')) {
       return (
-        <img onClick={goToEditProfile} src="https://cdn-icons-png.flaticon.com/128/860/860814.png" alt="Edit Profile" className="edit-profile-button" />
+        <img onClick={goToEditProfile} src="https://cdn-icons-png.flaticon.com/128/860/860814.png" alt="Edit Profile" className="editprofile-button" />
       );
     } else if (user !== null) {
       if (userType === "Student" && user.userType === "Teacher") {
@@ -289,6 +289,47 @@ const Profile: React.FC = () => {
 
   const handleThumbnailClick = (fileId) => {
     navigate(`/video/${id}/${fileId}`)
+  }
+  
+  const renderExtraContent = () => {
+    if (userType === "Student") {
+      return (
+        <><h2>Achievements</h2>
+        <div className="achievements">
+          {/* Map through achievements data */}
+          <div className="achievement-card">
+            <img src="https://example.com/icon.png" alt="Achievement Icon" />
+            <div className="achievement-info">
+              <h3>Upload Recordings</h3>
+              <p><em>Recordings uploaded</em></p>
+              <p>Count: 10</p>
+            </div>
+          </div>
+          {/* More achievements */}
+        </div></>
+      );
+    } else if (userType === "Teacher") {
+      return (
+        <div className="teacher-details">
+          <h2>Certifications & Experience</h2>
+          {/* Map through certifications data */}
+          <div className="certification-card">
+            <h3>Certification Name</h3>
+            <p>Details about the certification</p>
+          </div>
+          {/* More certifications */}
+          <h2>Reviews & Ratings</h2>
+          {/* Map through reviews data */}
+          <div className="review-card">
+            <p>Review text...</p>
+            <p>Rating: 5/5</p>
+          </div>
+          {/* More reviews */}
+        </div>
+      );
+    } else if (userType === "Parent") {
+      return null;
+    }
   }
 
   return (
@@ -318,29 +359,21 @@ const Profile: React.FC = () => {
           <div className="pfp">
             {user && <img src={"https://cdn-icons-png.flaticon.com/128/847/847969.png"} alt="Profile" className="profile-icon" />}
           </div>
-          {user && <div className="profiledeets">
-            <p className="profileName">Name : {user.firstName} {user.lastName}</p>
-            <p className="profileUserName">@{user.username}</p>
-            <p className="aboutme">About Me:</p>
-            <p className="aboutme">User Type: {user.userType}</p>
+          {user && <div className="profile-info">
+            <div className="profile-words">
+              <p className="profileName">Full Name : {user.firstName} {user.lastName}</p>
+              <p className="profileUserName">Username : @{user.username}</p>
+              <p className="type">User Type : {user.userType}</p>
+              <p className="aboutme">About Me : {user.aboutMe}</p>
+            </div>
+
+            <div className="render-content">{renderContent()}</div>
           </div>}
-          <div>{renderContent()}</div>
         </div>
-        {/* {user && (
-          <div className="profile-content">
-            <div className="profile-details">
-              <p>{user.firstName} {user.lastName}</p>
-              <p>@{user.username}</p>
-            </div>
-            <div className="profile-actions">
-              {id === localStorage.getItem('id') ? (
-                <button className="edit-profile-button">
-                  <img onClick={goToEditProfile} src="https://cdn-icons-png.flaticon.com/128/860/860814.png" alt="Edit Profile" className="edit-profile-button" />
-                </button>
-              ) : (
-                <button className="request-button" onClick={handleRequest}>Request</button>
-              )}
-            </div>
+
+        {/* {user &&
+          <div className="profile-extra">
+            {renderExtraContent()}
           </div>
         )} */}
         {/* <div className="profile-extra">
