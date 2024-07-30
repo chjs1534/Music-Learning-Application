@@ -2,6 +2,7 @@ const aws = require('aws-sdk');
 const dynamo = new aws.DynamoDB.DocumentClient();
 
 const tableName = "MessagingTable";
+const tableName2 = "MessagesTable";
 
 exports.handler = async (event) => {
     let body;
@@ -40,6 +41,24 @@ exports.handler = async (event) => {
                     }
                 })
             );
+            const userId1 = senderId >= receiverId ? senderId : receiverId;
+            const userId2 = senderId >= receiverId ? receiverId : senderId;
+            await dynamo.update(
+                {
+                    TableName: tableName2,
+                    Key: {
+                        userId1: userId1,
+                        userId2: userId2
+                    },
+                    UpdateExpression: 'SET messages = list_append(if_not_exists(messages, :empty_list), :new_message)',
+                    ExpressionAttributeValues: {
+                    ':empty_list': [],
+                    ':new_message': [
+                        { 'senderId': senderId, 'receiverId': receiverId, 'msg': msg, 'time':new Date().toISOString() }
+                    ]
+                    }
+                }
+            ).promise();
         }
     } catch (err) {
         statusCode = 400;
