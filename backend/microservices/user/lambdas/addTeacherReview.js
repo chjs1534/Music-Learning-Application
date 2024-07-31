@@ -13,7 +13,7 @@ exports.handler = async (event) => {
 
     try {
         let requestJSON = JSON.parse(event.body);
-        await dynamo.update(
+        item = await dynamo.update(
             {
                 TableName: tableName,
                 Key: {
@@ -32,7 +32,7 @@ exports.handler = async (event) => {
         statusCode = err.statusCode || 500;
         body = err.message;
     } finally {
-        body = JSON.stringify(item.Item);
+        body = JSON.stringify(item);
     }
 
     return {

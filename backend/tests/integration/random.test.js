@@ -7,12 +7,12 @@ aws.config.update({region:'ap-southeast-2'})
 const cognito = new aws.CognitoIdentityServiceProvider();
 const lambda = new aws.Lambda();
 
-describe('Auth', () => {
+describe('Basic', () => {
 	jest.setTimeout(15000);
 	let poolData;
 	let userPool;
 
-  it('basic register and signin', async () => {
+	it('basic register, signin, delete', async () => {
 		const email = 'test@example.com';
 		const username = 'testStudent';
 		const userType = 'Parent';
@@ -25,28 +25,28 @@ describe('Auth', () => {
 		}
 		userPool = new CognitoUserPool(poolData);
 
-    const attributeList = [];
-    const attributeEmail = new CognitoUserAttribute({
-      Name: 'email',
-      Value: email
-    });
-    const attributeUsername = new CognitoUserAttribute({
-      Name: 'custom:username',
-      Value: username
-    });
+		const attributeList = [];
+		const attributeEmail = new CognitoUserAttribute({
+			Name: 'email',
+			Value: email
+		});
+		const attributeUsername = new CognitoUserAttribute({
+			Name: 'custom:username',
+			Value: username
+		});
 		const attributeUserType = new CognitoUserAttribute({
-      Name: 'custom:userType',
-      Value: userType
-    });
+			Name: 'custom:userType',
+			Value: userType
+		});
 		const attributeFirstName = new CognitoUserAttribute({
-      Name: 'custom:firstName',
-      Value: firstName
-    });
+			Name: 'custom:firstName',
+			Value: firstName
+		});
 		const attributeLastName = new CognitoUserAttribute({
-      Name: 'custom:lastName',
-      Value: lastName
-    });
-		
+			Name: 'custom:lastName',
+			Value: lastName
+		});
+			
 		attributeList.push(attributeEmail);
 		attributeList.push(attributeUsername);
 		attributeList.push(attributeUserType);
@@ -54,20 +54,20 @@ describe('Auth', () => {
 		attributeList.push(attributeLastName);
 
 		// Sign up user
-    const result = await new Promise((resolve, reject) => {
-      userPool.signUp(username, password, attributeList, null, (err, result) => {
-        if (err) {
-          return reject(err);
-        }
-        resolve(result);
-      });
-    });
-    console.log(result);
+		const result = await new Promise((resolve, reject) => {
+			userPool.signUp(username, password, attributeList, null, (err, result) => {
+				if (err) {
+				return reject(err);
+				}
+				resolve(result);
+			});
+		});
+		console.log(result);
 		expect(result.user).toBeDefined();
-    expect(result.user.getUsername()).toBeDefined();
+		expect(result.user.getUsername()).toBeDefined();
 
 		// Check user in user pool
-    const user = await cognito.adminGetUser({
+		const user = await cognito.adminGetUser({
 			UserPoolId: poolData.UserPoolId,
 			Username: username
 		}).promise();
@@ -91,7 +91,7 @@ describe('Auth', () => {
 		const body3 = JSON.parse(result3.body)
 		expect(body3.userId).toEqual(userSub);
 		expect(body3.username).toEqual(username);
-		
+			
 		// Sign in user gets user id and auth token
 		let jwtToken;
 		let userId;
@@ -167,7 +167,6 @@ describe('Auth', () => {
 		const result5 = JSON.parse(lambdaResponse2.Payload);
 		console.log(result5);
 		expect(result5.statusCode).toBe(404);
-  });
-
+	});
 });
 

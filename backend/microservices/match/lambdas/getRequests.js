@@ -3,47 +3,37 @@ const dynamo = new aws.DynamoDB.DocumentClient();
 
 const tableName = "MatchTable";
 
-exports.handler = async (event, context) => {
-    let body;
-    let statusCode = 200;
-    const headers = {
-        'Access-Control-Allow-Origin': '*',
-    };
-    
+exports.handler = async (event) => {
+    const userId = event.pathParameters.userId;
+
+    let requests = [];
     try {
-        body = await query(event.pathParameters.userId);
+        const requests1 = await dynamo.query({
+            TableName: tableName,
+            IndexName: "UserId2Index",
+            KeyConditionExpression: "#uid2 = :userId",
+            FilterExpression: "#request = :request",
+            ExpressionAttributeNames: {
+                "#uid2": "userId2",
+                "#request": "request"
+            },
+            ExpressionAttributeValues: {
+                ":userId": userId,
+                ":request": true
+            }
+        }).promise();
+        requests = requests1.Items;
     } catch (err) {
-        statusCode = 400;
-        body = err.message;
-    } finally {
-        const newBody = body.Items.map(item => ({ userId: item.userId1 }));
-        body = JSON.stringify({requests: newBody});
+        console.err("Failed to get requests");
     }
-
+    const newBody = requests.map(item => ({ userId: item.userId1 }));
+    
     return {
-        statusCode,
-        body,
-        headers,
-    };
-};
-
-const query = async (userId) => {
-    // Query as userId2
-    const params = {
-        TableName: tableName,
-        IndexName: "UserId2Index",
-        KeyConditionExpression: "#uid2 = :userId",
-        FilterExpression: "#request = :request",
-        ExpressionAttributeNames: {
-            "#uid2": "userId2",
-            "#request": "request"
-        },
-        ExpressionAttributeValues: {
-            ":userId": userId,
-            ":request": true
+        statusCode: 200,
+        body: JSON.stringify({requests: newBody}),
+        headers: {
+            'Access-Control-Allow-Origin': '*',
         }
     };
-    const result2 = await dynamo.query(params).promise();
-
-    return result2;
 };
+
