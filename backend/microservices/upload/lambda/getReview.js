@@ -3,6 +3,8 @@ const { GetCommand, DynamoDBDocumentClient } = require("@aws-sdk/lib-dynamodb");
 const { GetObjectCommand, S3Client, HeadObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
+BUCKET_NAME = "truly-entirely-hip-raccoon"
+
 const DDBclient = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(DDBclient);
 

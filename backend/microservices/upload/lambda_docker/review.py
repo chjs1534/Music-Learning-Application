@@ -129,16 +129,10 @@ def handler(event, context):
         plt.savefig('/tmp/sync.png')
         s3.upload_file('/tmp/sync.png', BUCKET_NAME, f'{userId}/{fileId}/sync.png')
 
-
-        print('x')
         chordino = Chordino(roll_on=1)
-        print('l')
+
         chords = [chordino.extract(audio_path), chordino.extract(audio_path_ref)]
-        print('d')
-        print('wat')
-        print(chords)
-        print(type(chords))
-        print('the')
+
 
         # Compares chord closest in time to reference chord
         # whenever there is a chord change.
