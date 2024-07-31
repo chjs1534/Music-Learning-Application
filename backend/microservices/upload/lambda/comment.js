@@ -20,8 +20,9 @@ exports.handler = async (event, context, callback) => {
         userId: `${userId}`,
         fileId: `${fileId}`,
       },
-      UpdateExpression: 'SET comments = list_append(comments, :new_comment)',
+      UpdateExpression: 'SET comments = list_append(if_not_exists(comments, :empty_list), :new_comment)',
       ExpressionAttributeValues: {
+        ':empty_list': [],
         ':new_comment': [
           { 'commentText': commentText, 'videoTime': videoTime, 'authorId': authorId, 'timestamp': new Date().toLocaleString() }
         ]

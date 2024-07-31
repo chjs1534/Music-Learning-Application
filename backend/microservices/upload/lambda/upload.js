@@ -48,7 +48,6 @@ exports.handler = async (event, context, callback) => {
           userId: `${userId}`,
           fileId: `${time}`,
           review: "Review does not exist.",
-          comments: []
         }
       }));
     }
