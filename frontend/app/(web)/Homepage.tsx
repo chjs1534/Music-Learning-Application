@@ -1,60 +1,76 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
+import axios from 'axios';
 import NavBar from './NavBar';
 import '../styles/website.css';
 
 const Homepage: React.FC = () => {
-    // const location = useLocation();
-    // const authToken = location.state?.authToken;
+  const [token, setToken] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
-    const queryParams = new URLSearchParams(location.search);
-    const authToken = queryParams.get('authToken') || '';
+  useEffect(() => {
+    const storedDarkMode = localStorage.getItem('darkMode');
+    if (storedDarkMode === 'enabled') {
+      setIsDarkMode(true);
+      document.body.classList.add('dark-mode');
+    } else {
+      setIsDarkMode(false);
+      document.body.classList.remove('dark-mode');
+    }
+    setToken(localStorage.getItem('token'));
+    setUserId(localStorage.getItem('id'));
+  }, []);
 
-    const token = `Bearer ${encodeURIComponent(authToken || '')}`;
-    
-    const clickMe = async () => {
-        console.log('authToken:', token);
+  const fetchTTS = async (text: string) => {
+    try {
+      const response = await axios.get(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/tts?text=${encodeURIComponent(text)}`, {
+        responseType: 'arraybuffer'
+      });
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const audioBuffer = await audioContext.decodeAudioData(response.data);
+      const source = audioContext.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(audioContext.destination);
+      source.start();
+    } catch (error) {
+      console.error('Error fetching TTS:', error);
+    }
+  };
 
-        await fetch('https://x5yhk546p1.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage2/hello', {
-            method: 'POST',
-            headers: {
-                'Authorization': token,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ testId: 'Adam nib' }),
-        })
-            .then(response => {
-                console.log('Success IMKIDIDNG HAAHBHAAHAH stop its not funny acutally');
-                if (response.status === 204) {
-                    console.log('Success: No content returned from the server.');
-                    return;
-                }
-                if (!response.ok) {
-                    return response.text().then(text => { throw new Error(text) });
-                }
-                else {
-                    console.log(response);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Success:', data);
-            })
-            .catch(error => {
-                console.error('Error:', error.message, error.code || error);
-            });
-    };
+  const clickMe = () => {
+    console.log('authToken:', token);
+    console.log('userId:', userId);
+    fetchTTS(token);
+  };
 
-    return (
-        <div className="homepage">
-            <div className="dashboard">
-                <NavBar />
-                Welcome to the Homepage!
-                <button onClick={clickMe}>click me!</button>
-            </div>
+  return (
+    <div className="homepage">
+      <NavBar />
+      <div className="dashboard">
+        <div className="welcome-section">
+          <h1>Welcome to Mewsic</h1>
+          <p>Your ultimate destination for mastering musical instruments and music theory.</p>
         </div>
-    )
-}
+        <div className="content-section">
+          <div className="text-box">
+            <h2>Discover New Lessons</h2>
+            <p>Explore a variety of lessons and tutorials tailored to help you improve your musical skills.</p>
+          </div>
+          <div className="quote-box">
+            <h2>Quote of the Day</h2>
+            <p>"Music is the universal language of mankind." - Henry Wadsworth Longfellow</p>
+          </div>
+        </div>
+        <div className="button-section">
+          <button className="button" onClick={clickMe}>click me!</button>
+        </div>
+        <div className="footer-section">
+          <p>© 2024 Mewsic. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  );
+};
 
-export default Homepage
+export default Homepage;

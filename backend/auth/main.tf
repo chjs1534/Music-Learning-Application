@@ -18,6 +18,7 @@ terraform {
 resource "aws_cognito_user_pool" "mewsic_user_pool" {
     name = "mewsicUserPool"
 
+    # username_attributes = ["username"]
     auto_verified_attributes   = ["email"]
 
     password_policy {
@@ -49,39 +50,6 @@ resource "aws_cognito_user_pool" "mewsic_user_pool" {
             max_length = 256
         }
     }
-}
-
-resource "aws_cognito_user_pool_client" "mewsic_user_pool_client" {
-    name                         = "mewsicUserPoolClient"
-    user_pool_id = aws_cognito_user_pool.mewsic_user_pool.id
-    explicit_auth_flows          = ["ALLOW_USER_PASSWORD_AUTH", "ALLOW_REFRESH_TOKEN_AUTH", "ALLOW_USER_SRP_AUTH"]
-}
-
-output "userPool" {
-    value = aws_cognito_user_pool.mewsic_user_pool
-}
-
-output "userPoolClient" {
-    value = aws_cognito_user_pool_client.mewsic_user_pool_client
-    sensitive = true
-}
-
-# Cognito user pool for mobile
-resource "aws_cognito_user_pool" "mewsic_user_pool_mobile" {
-    name = "mewsicUserPoolMobile"
-
-    password_policy {
-        minimum_length    = 8
-        require_lowercase = false
-        require_numbers   = false
-        require_symbols   = false
-        require_uppercase = false
-    }
-
-    username_configuration {
-        case_sensitive = true
-    }
-
     schema {
         name                     = "username"
         attribute_data_type      = "String"
@@ -95,27 +63,59 @@ resource "aws_cognito_user_pool" "mewsic_user_pool_mobile" {
         }
     }
 
+    schema {
+        name                     = "userType"
+        attribute_data_type      = "String"
+        developer_only_attribute = false
+        mutable                  = true
+        required                 = false
+
+        string_attribute_constraints {
+            min_length = 3
+            max_length = 256
+        }
+    }
+
+    schema {
+        name                     = "firstName"
+        attribute_data_type      = "String"
+        developer_only_attribute = false
+        mutable                  = true
+        required                 = false
+
+        string_attribute_constraints {
+            min_length = 3
+            max_length = 256
+        }
+    }
+
+    schema {
+        name                     = "lastName"
+        attribute_data_type      = "String"
+        developer_only_attribute = false
+        mutable                  = true
+        required                 = false
+
+        string_attribute_constraints {
+            min_length = 3
+            max_length = 256
+        }
+    }
+    
     lambda_config {
-        pre_sign_up = aws_lambda_function.verify.arn
+      pre_sign_up = aws_lambda_function.verify.arn
+      post_confirmation = aws_lambda_function.addUser.arn
+      pre_authentication = aws_lambda_function.authenticateCheck.arn
     }
 }
 
-resource "aws_cognito_user_pool_client" "mewsic_user_pool_client_mobile" {
-    name                         = "mewsicUserPoolClientMobile"
-    user_pool_id = aws_cognito_user_pool.mewsic_user_pool_mobile.id
+resource "aws_cognito_user_pool_client" "mewsic_user_pool_client" {
+    name                         = "mewsicUserPoolClient"
+    user_pool_id = aws_cognito_user_pool.mewsic_user_pool.id
     explicit_auth_flows          = ["ALLOW_USER_PASSWORD_AUTH", "ALLOW_REFRESH_TOKEN_AUTH", "ALLOW_USER_SRP_AUTH"]
 }
 
-output "userPoolMobile" {
-    value = aws_cognito_user_pool.mewsic_user_pool_mobile
-}
-
-output "userPoolClientMobile" {
-    value = aws_cognito_user_pool_client.mewsic_user_pool_client_mobile
-    sensitive = true
-}
-
-# Verify lambda
+# Lambdas
 # Generate s3 bucket name
 resource "random_pet" "lambda_bucket_name" {
   length = 4
@@ -185,7 +185,8 @@ resource "aws_iam_role_policy_attachment" "lambda_policy" {
   policy_arn = each.value
 }
 
-# Lambda function
+# Lambda functions
+# Verify lambda function
 resource "aws_lambda_function" "verify" {
   function_name = "Verify"
 
@@ -208,11 +209,88 @@ resource "aws_lambda_permission" "allow_execution_from_user_pool" {
   action = "lambda:InvokeFunction"
   function_name = aws_lambda_function.verify.function_name
   principal = "cognito-idp.amazonaws.com"
-  source_arn = aws_cognito_user_pool.mewsic_user_pool_mobile.arn
+  source_arn = aws_cognito_user_pool.mewsic_user_pool.arn
 }
 
 resource "aws_cloudwatch_log_group" "verify" {
   name = "/aws/lambda/${aws_lambda_function.verify.function_name}"
 
   retention_in_days = 30
+}
+
+# AuthenticateCheck lambda function
+resource "aws_lambda_function" "authenticateCheck" {
+  function_name = "AuthenticateCheck"
+
+  s3_bucket = aws_s3_bucket.lambda_bucket.id
+  s3_key    = aws_s3_object.lambdas.key
+
+  runtime = "nodejs18.x"
+  handler = "authenticateCheck.handler"
+
+  source_code_hash = data.archive_file.lambdas.output_base64sha256
+
+  role = aws_iam_role.lambda_exec.arn
+
+  timeout = 5
+}
+
+# Permission for AWS cognito to invoke authenticateCheck lambda
+resource "aws_lambda_permission" "allow_execution_from_user_pool_authenticateCheck" {
+  statement_id = "AllowExecutionFromUserPool"
+  action = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.authenticateCheck.function_name
+  principal = "cognito-idp.amazonaws.com"
+  source_arn = aws_cognito_user_pool.mewsic_user_pool.arn
+}
+
+resource "aws_cloudwatch_log_group" "authenticateCheck" {
+  name = "/aws/lambda/${aws_lambda_function.authenticateCheck.function_name}"
+
+  retention_in_days = 30
+}
+
+# AddUser lambda function
+resource "aws_lambda_function" "addUser" {
+  function_name = "AddUser"
+
+  s3_bucket = aws_s3_bucket.lambda_bucket.id
+  s3_key    = aws_s3_object.lambdas.key
+
+  runtime = "nodejs18.x"
+  handler = "addUser.handler"
+
+  source_code_hash = data.archive_file.lambdas.output_base64sha256
+
+  role = aws_iam_role.lambda_exec.arn
+
+  timeout = 5
+}
+
+# Permission for AWS cognito to invoke addUser lambda
+resource "aws_lambda_permission" "allow_execution_from_user_pool_addUser" {
+  statement_id = "AllowExecutionFromUserPool"
+  action = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.addUser.function_name
+  principal = "cognito-idp.amazonaws.com"
+  source_arn = aws_cognito_user_pool.mewsic_user_pool.arn
+}
+
+resource "aws_cloudwatch_log_group" "addUser" {
+  name = "/aws/lambda/${aws_lambda_function.addUser.function_name}"
+
+  retention_in_days = 30
+}
+
+output "userPool" {
+    value = aws_cognito_user_pool.mewsic_user_pool
+}
+
+output "userPoolClient" {
+    value = aws_cognito_user_pool_client.mewsic_user_pool_client
+    sensitive = true
+}
+
+output "authLambdaExec" {
+  value = aws_iam_role.lambda_exec.name
 }
