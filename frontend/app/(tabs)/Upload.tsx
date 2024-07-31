@@ -64,6 +64,19 @@ const Upload = () => {
     })
   };
 
+  const generateReview = async () => {
+    fetch("https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/upload", {
+      method: 'POST',
+      headers: {
+          Authorization: authToken as string,
+      },
+      body: JSON.stringify({
+        userId: "123",
+        
+      }),
+    })
+  };
+
   const pickVideo = async () => {
     console.log("clicked button");
 
