@@ -7,13 +7,12 @@ const s3Client = new S3Client({});
 
 exports.handler = async (event, context, callback) => {
   const studentId = event.queryStringParameters.studentId;
-  const teacherId = event.queryStringParameters.teacherId;
   const taskId = event.queryStringParameters.taskId;
   const filename = event.queryStringParameters.filename;
 
   const params = {
     Bucket: BUCKET_NAME,
-    Key: `${studentId}/${teacherId}/${taskId}/${filename}`,
+    Key: `${studentId}/${taskId}/${filename}`,
   };
 
   // check if objects exist
