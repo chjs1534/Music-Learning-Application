@@ -4,14 +4,16 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 
 // const rootElement = document.getElementById('root');
-const rootElement = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+const rootElement = ReactDOM.createRoot(
+  document.getElementById("root") as HTMLElement
+);
 
 if (rootElement) {
-    rootElement.render(
-        <React.StrictMode>
-            <App />
-        </React.StrictMode>
-    );
+  rootElement.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
 } else {
-    console.error('Root element not found');
+  console.error("Root element not found");
 }

@@ -22,8 +22,8 @@ const Settings = () => {
   }
 
   return (
-    <SafeAreaView className="bg-red-200 h-full justify-center items-center">
-      <Text className="text-3xl font-semibold">Settings</Text>
+    <SafeAreaView className="bg-black h-full justify-center items-center">
+      <Text className="text-3xl font-semibold text-white">Settings</Text>
       <TouchableOpacity onPress={logout} className="mt-5">
         <Text className="text-blue-400">Logout</Text>
       </TouchableOpacity>
