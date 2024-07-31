@@ -1,7 +1,16 @@
-import { StyleSheet, Text, View, Image } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useGlobalSearchParams } from "expo-router";
+import { AuthenticationDetails, CognitoUser, CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
+import { router } from 'expo-router';
+import { USERPOOL_ID, CLIENT_ID } from '@env';
+
+const poolData = {
+  UserPoolId: USERPOOL_ID,
+  ClientId: CLIENT_ID
+};
+
 
 const Profile = () => {
   const [user, setUser] = useState();
@@ -12,6 +21,15 @@ const Profile = () => {
   useEffect(() => {
     getDetails()
   }, [])
+
+  const logout = async () => {
+    //logout
+    const UserPool = new CognitoUserPool(poolData);
+
+    const user = UserPool.getCurrentUser();
+    user.signOut();
+    router.push('/Login');
+  }
 
   const getDetails = async () => {
     await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getUser/${userId}`, {
@@ -60,7 +78,9 @@ const Profile = () => {
           <Text className="text-gray-300 m-3">Graph</Text>
         </View>
       </View>
-      
+      <TouchableOpacity onPress={logout} className="m-5">
+        <Text className="text-blue-400">Logout</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   )
 }

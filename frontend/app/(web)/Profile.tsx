@@ -4,6 +4,7 @@ import '../styles/website.css';
 import NavBar from './NavBar';
 import StudentCard from '../../components/StudentCard';
 import VideoCard from '../../components/VideoCard';
+import Calendar from '../../components/Calendar';
 
 const Profile: React.FC = () => {
   const [userType, setUserType] = useState<string>();
@@ -14,12 +15,18 @@ const Profile: React.FC = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [videos, setVideos] = useState();
-  const [thumbnail, setThumbnail] = useState();
+  const [showTaskModal, setShowTaskModal] = useState<boolean>(false);
+  const [date, setDate] = useState('');
+  const [text, setText] = useState('');
+  const [title, setTitle] = useState('');
+  const [file, setFile] = useState(null);
+  const [assignedTasks, setAssignedTasks] = useState();
 
   const { id } = useParams();
 
   const navigate = useNavigate();
   const modalRef = useRef<HTMLDivElement>(null);
+  const modalRef2 = useRef<HTMLDivElement>(null);
 
   // use effect that calls when id is changed
   useEffect(() => {
@@ -33,7 +40,6 @@ const Profile: React.FC = () => {
       setIsDarkMode(false);
       document.body.classList.remove('dark-mode');
     }
-    console.log("Mode:" + storedDarkMode)
   }, []);
 
   useEffect(() => {
@@ -55,20 +61,16 @@ const Profile: React.FC = () => {
   }, [user]);
 
   useEffect(() => {
-    getVideos();
-    
-
+    if (user !== null) {
+      getAssignedTasks();
+    }
   }, [user]);
 
   useEffect(() => {
-    if (videos != null) {
-      videos.map(id => {
-        console.log(id)
-      })
-    }
-  }, [videos]);
+    getVideos();
+  }, [user]);
 
-  
+
 
   const viewMatch = () => {
     navigate(`/viewmatches/${id}`);
@@ -92,16 +94,6 @@ const Profile: React.FC = () => {
         userId2: localStorage.getItem('id')
       }),
     }).then(response => {
-      if (response.status === 204) {
-        console.log('Success: No content returned from the server.');
-        return;
-      }
-      if (!response.ok) {
-        return response.text().then(text => { throw new Error(text) });
-      }
-      else {
-        console.log(response);
-      }
       return response.json();
     }).then(() => {
       alert("unmacthed")
@@ -127,7 +119,6 @@ const Profile: React.FC = () => {
       })
       .then(data => {
         setUser(data);
-        console.log(data)
       })
       .catch(error => {
         console.error('Error:', error.message);
@@ -168,16 +159,6 @@ const Profile: React.FC = () => {
         'Content-Type': 'application/json'
       },
     }).then(response => {
-      if (response.status === 204) {
-        console.log('Success: No content returned from the server.');
-        return;
-      }
-      if (!response.ok) {
-        return response.text().then(text => { throw new Error(text) });
-      }
-      else {
-        console.log(response);
-      }
       return response.json();
     })
       .then(data => {
@@ -185,7 +166,6 @@ const Profile: React.FC = () => {
         for (let i = 0; i < data.matches.length; i++) {
           if (data.matches[i].userId === localStorage.getItem('id')) {
             setMatched(true);
-            console.log("matched")
           }
         }
       })
@@ -202,16 +182,6 @@ const Profile: React.FC = () => {
         'Content-Type': 'application/json'
       },
     }).then(response => {
-      if (response.status === 204) {
-        console.log('Success: No content returned from the server.');
-        return;
-      }
-      if (!response.ok) {
-        return response.text().then(text => { throw new Error(text) });
-      }
-      else {
-        console.log(response);
-      }
       return response.json();
     }).then(data => {
       setSubAccounts(data.Items);
@@ -229,19 +199,8 @@ const Profile: React.FC = () => {
         'Content-Type': 'application/json'
       },
     }).then(response => {
-      if (response.status === 204) {
-        console.log('Success: No content returned from the server.');
-        return;
-      }
-      if (!response.ok) {
-        return response.text().then(text => { throw new Error(text) });
-      }
-      else {
-        console.log(response);
-      }
       return response.json();
     }).then(data => {
-      console.log(data, "videos setting")
       setVideos(data.fileIds);
     })
       .catch(error => {
@@ -249,6 +208,57 @@ const Profile: React.FC = () => {
       });
   }
 
+  const assign = async (e) => {
+    e.preventDefault()
+    console.log('Date:', date);
+    console.log('Text:', text);
+    console.log('File:', file);
+    console.log('title:', title);
+    await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/task/assign`, {
+      method: 'POST',
+      body: JSON.stringify({
+        "studentId": user.userId, 
+        "teacherId": localStorage.getItem('id'), 
+        "taskTitle": title, 
+        "taskText": text, 
+        "dueDate": date, 
+        "filename": file ? file.name : ""
+      }),
+      headers: {
+        'Authorization': token,
+        'Content-Type': 'application/json'
+      },
+    }).then(response => {
+      return response.json();
+    }).then(data => {
+      fetch(data.uploadUrl, { method: 'PUT', body: file });
+      console.log(data)
+    }).catch(error => {
+      console.error('Error:', error.message, error.code || error);
+    });
+    setFile(null)
+    setText('')
+    setTitle('')
+    setDate('')
+    setShowTaskModal(false)
+  }
+
+  const getAssignedTasks = async () => {
+    await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/tasks?studentId=${id}&teacherId=${localStorage.getItem('id')}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': token,
+        'Content-Type': 'application/json'
+      },
+    }).then(response => {
+      return response.json();
+    }).then(data => {
+      setAssignedTasks(data)
+      console.log(data)
+    }).catch(error => {
+      console.error('Error:', error.message, error.code || error);
+    });
+  }
 
 
   // cases
@@ -276,13 +286,12 @@ const Profile: React.FC = () => {
         }
       } else if (userType === "Parent" && user.userType === "Teacher") {
         // request match have modal for kids
-        console.log(subAccounts)
         return (<button className="request-button" onClick={() => setShowModal(true)}>request match</button>);
       } else if (userType === "Parent" && user.userType === "Child") {
         // navigate view matches/ id
         return (<button onClick={viewMatch}>view matches</button>);
-      } else if (user.userType === "Student") {
-        return;
+      } else if (userType === "Teacher" && user.userType === ("Student" || "Child")) {
+        return (<button onClick={() => setShowTaskModal(true)}>Assign task</button>);
       }
     }
   }
@@ -290,23 +299,23 @@ const Profile: React.FC = () => {
   const handleThumbnailClick = (fileId) => {
     navigate(`/video/${id}/${fileId}`)
   }
-  
+
   const renderExtraContent = () => {
     if (userType === "Student") {
       return (
         <><h2>Achievements</h2>
-        <div className="achievements">
-          {/* Map through achievements data */}
-          <div className="achievement-card">
-            <img src="https://example.com/icon.png" alt="Achievement Icon" />
-            <div className="achievement-info">
-              <h3>Upload Recordings</h3>
-              <p><em>Recordings uploaded</em></p>
-              <p>Count: 10</p>
+          <div className="achievements">
+            {/* Map through achievements data */}
+            <div className="achievement-card">
+              <img src="https://example.com/icon.png" alt="Achievement Icon" />
+              <div className="achievement-info">
+                <h3>Upload Recordings</h3>
+                <p><em>Recordings uploaded</em></p>
+                <p>Count: 10</p>
+              </div>
             </div>
-          </div>
-          {/* More achievements */}
-        </div></>
+            {/* More achievements */}
+          </div></>
       );
     } else if (userType === "Teacher") {
       return (
@@ -356,6 +365,53 @@ const Profile: React.FC = () => {
               </div>
             </div>
           )}
+          {showTaskModal && (
+            <div className="modal" ref={modalRef} onClick={handleCloseModal}>
+              <div className="modal-content">
+                <span className="close" onClick={() => setShowTaskModal(false)}>&times;</span>
+                Assign Task
+                <form onSubmit={assign}>
+                        <div className="form-group">
+                            <label htmlFor="date">Due Date:</label>
+                            <input
+                                type="date"
+                                id="date"
+                                value={date}
+                                onChange={(e) => setDate(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="title">Title:</label>
+                            <textarea
+                                id="title"
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="text">Text:</label>
+                            <textarea
+                                id="text"
+                                value={text}
+                                onChange={(e) => setText(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="file">Optional File:</label>
+                            <input
+                                type="file"
+                                id="file"
+                                onChange={(e) => setFile(e.target.files[0])}
+                            />
+                        </div>
+                        <button type="submit">Submit</button>
+                    </form>
+              </div>
+            </div>
+          )}
           <div className="pfp">
             {user && <img src={"https://cdn-icons-png.flaticon.com/128/847/847969.png"} alt="Profile" className="profile-icon" />}
           </div>
@@ -384,13 +440,27 @@ const Profile: React.FC = () => {
           <h2>Videos</h2>
           <div className="profile-videos">
             {(videos && videos.length > 0) ? videos.map(qwe => (
-              <VideoCard key={qwe} id={id} fileId={qwe} token={token} handlePress={() => handleThumbnailClick(qwe)} web={true}/>
-            )         
-            ): <p>hi</p>}
+              <VideoCard key={qwe} id={id} fileId={qwe} token={token} handlePress={() => handleThumbnailClick(qwe)} web={true} />
+            )
+            ) : <p>hi</p>}
           </div>
-          
+
         </div>}
+        {user && userType && userType === "Teacher" && user.userType === ("Student" || "Child") &&
+          <div className="profile-extra">
+            <h2>Assigned Tasks</h2>
+            {assignedTasks && assignedTasks.tasks.map((task) => 
+              <div style={{border: '1px solid black'}}>
+                <p>Due: {task.dueDate} Title: {task.title}</p>
+                <p>Comment: {task.text}</p>
+                {task.submitted && <a href={task.submissionLink}>View submission</a>}
+              </div>
+            )}
+          </div>
+
+        }
         
+
       </div>
     </div>
   );

@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import Button from '../../components/Button'
 import * as ImagePicker from "expo-image-picker"
 import { Video } from 'expo-av'
-import { REACT_APP_USERPOOL_ID_MOBILE } from '@env';
 import { useGlobalSearchParams } from "expo-router"
 import { useNavigation } from '@react-navigation/native';
 import { router } from 'expo-router';

@@ -15,6 +15,7 @@ import Notifications from "./(web)/Notifications";
 import ViewMatches from "./(web)/ViewMatches";
 import SheetMusic from "./(web)/SheetMusic";
 import VideoWeb from './(web)/Video';
+import Tasks from "./(web)/Tasks";
 
 const App: React.FC = () => {
 
@@ -39,6 +40,7 @@ const App: React.FC = () => {
             <Route path="/viewmatches/:id" element={<ViewMatches />} />
             <Route path="/video/:id/:fileId" element={<VideoWeb />} />
             <Route path="/sheet-music" element={<SheetMusic />} />
+            <Route path="/tasks" element={<Tasks />} />
           </Routes>
         </Router>
     </>

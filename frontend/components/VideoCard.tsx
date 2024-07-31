@@ -21,35 +21,15 @@ const VideoCard: React.FC<VideoCardProps> = ({ id, fileId, token, handlePress, w
         getThumbnail();
     }, []);
 
-    useEffect(() => {
-        if (thumbnail) {
-            console.log(thumbnail)
-        }
-    }, [thumbnail]);
-
-
     const getThumbnail = async () => {
-        console.log("qwagagaga", id, fileId)
         await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/download?userId=${id}&fileId=${fileId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
             },
         }).then(response => {
-            if (response.status === 204) {
-                console.log('Success: No content returned from the server.');
-                return;
-            }
-            if (!response.ok) {
-                return response.text().then(text => { throw new Error(text) });
-            }
-            else {
-                console.log(response);
-            }
             return response.json();
         }).then(data => {
-
-            console.log("dataasda", data.downloadThumbnailUrl)
             setThumbnail(data.downloadThumbnailUrl);
         }).catch(error => {
             console.error('Error:', error.message, error.code || error);
