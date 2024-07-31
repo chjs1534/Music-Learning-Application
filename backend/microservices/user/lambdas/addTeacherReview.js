@@ -12,17 +12,18 @@ exports.handler = async (event) => {
     let item;
 
     try {
+        let requestJSON = JSON.parse(event.body);
         await dynamo.update(
             {
                 TableName: tableName,
                 Key: {
-                    userId1: event.pathParameters.userId,
+                    userId: requestJSON.userId,
                 },
-                UpdateExpression: 'SET messages = list_append(if_not_exists(messages, :empty_list), :new_message)',
+                UpdateExpression: 'SET teacherReviews = list_append(if_not_exists(teacherReviews, :empty_list), :newReview)',
                 ExpressionAttributeValues: {
                 ':empty_list': [],
-                ':new_message': [
-                    { 'senderId': senderId, 'receiverId': receiverId, 'msg': msg, 'time':new Date().toISOString() }
+                ':newReview': [
+                    { 'rating': requestJSON.rating, 'reviewMsg': requestJSON.reviewMsg }
                 ]
                 }
             }

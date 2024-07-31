@@ -447,6 +447,55 @@ resource "aws_cloudwatch_log_group" "updateUser" {
   retention_in_days = 30
 }
 
+# addTeacherReview lambda
+resource "aws_lambda_function" "addTeacherReview" {
+  function_name = "AddTeacherReview"
+
+  s3_bucket = aws_s3_bucket.lambda_bucket.id
+  s3_key    = aws_s3_object.lambdas.key
+
+  runtime = "nodejs16.x"
+  handler = "addTeacherReview.handler"
+
+  source_code_hash = data.archive_file.lambdas.output_base64sha256
+
+  role = aws_iam_role.lambda_exec.arn
+
+  timeout = 10
+}
+
+resource "aws_apigatewayv2_integration" "addTeacherReview" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  integration_uri    = aws_lambda_function.addTeacherReview.invoke_arn
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_route" "addTeacherReview" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.id
+
+  route_key = "PUT /user/addTeacherReview"
+  target    = "integrations/${aws_apigatewayv2_integration.addTeacherReview.id}"
+  authorization_type = "JWT"
+  authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+}
+
+resource "aws_lambda_permission" "api_gw_addTeacherReview" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.addTeacherReview.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"
+}
+
+resource "aws_cloudwatch_log_group" "addTeacherReview" {
+  name = "/aws/lambda/${aws_lambda_function.addTeacherReview.function_name}"
+
+  retention_in_days = 30
+}
+
 # Outputs
 output "lambda_dynamodb_policy_user" {
   value = aws_iam_policy.lambda_dynamodb_policy_user

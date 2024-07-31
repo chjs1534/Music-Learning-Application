@@ -33,7 +33,7 @@ exports.handler = async (event) => {
             firstName: userAttributes['custom:firstName'],
             lastName: userAttributes['custom:lastName'],
             aboutMe: "",
-            teacherReview: []
+            teacherReviews: []
         };
     
         await dynamo.put(
