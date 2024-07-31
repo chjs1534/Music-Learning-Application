@@ -2,6 +2,7 @@ import { Platform, StyleSheet, Text, View, Image } from 'react-native'
 import React from 'react'
 import { Tabs, Redirect } from 'expo-router'
 import cog from "../assets/cog.png"
+import calendar from "../assets/calendar2.png"
 import home from "../assets/home.png"
 import upload from "../assets/upload.png"
 import profile from "../assets/profile.png"
@@ -79,7 +80,7 @@ const TabsLayout = () => {
               headerShown: false,
               tabBarIcon: ({ color, focused }) => (
                 <TabIcon
-                  icon={cog}
+                  icon={calendar}
                   color={color}
                   name="Tasks"
                   focused={focused}

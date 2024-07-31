@@ -196,7 +196,7 @@ const Calendar = ({ tasks, web, id, token }) => {
                                 <Text style={styles.text}>Task: {item.name}</Text>
 
                             </View>
-                            {!web ?
+                            {!web && !item.submitted ?
                                 <TouchableOpacity style={styles.button2} onPress={() => setStates(item.teacherId, item.taskId)}>
                                     <Text>Submit</Text>
                                 </TouchableOpacity>
