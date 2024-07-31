@@ -222,7 +222,8 @@ resource "aws_iam_role_policy_attachment" "lambda_policy" {
   policy_arn = each.value
 }
 
-# Lambda function
+# Lambda functions
+
 resource "aws_lambda_function" "upload" {
   function_name = "Upload"
 
@@ -237,6 +238,32 @@ resource "aws_lambda_function" "upload" {
   role = aws_iam_role.lambda_exec.arn
 
   timeout = 5
+}
+
+resource "aws_apigatewayv2_integration" "upload" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  integration_uri    = aws_lambda_function.upload.invoke_arn
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_route" "upload" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.id
+
+  route_key = "POST /upload"
+  target    = "integrations/${aws_apigatewayv2_integration.upload.id}"
+  # authorization_type = "JWT"
+  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+}
+
+resource "aws_lambda_permission" "api_gw_upload" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.upload.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"
 }
 
 resource "aws_lambda_function" "download" {
@@ -255,6 +282,32 @@ resource "aws_lambda_function" "download" {
   timeout = 5
 }
 
+resource "aws_apigatewayv2_integration" "download" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  integration_uri    = aws_lambda_function.download.invoke_arn
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_route" "download" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  route_key = "GET /download"
+  target    = "integrations/${aws_apigatewayv2_integration.download.id}"
+  # authorization_type = "JWT"
+  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+}
+
+resource "aws_lambda_permission" "api_gw_download" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.download.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"
+}
+
 resource "aws_lambda_function" "videos" {
   function_name = "Videos"
 
@@ -269,6 +322,32 @@ resource "aws_lambda_function" "videos" {
   role = aws_iam_role.lambda_exec.arn
 
   timeout = 5
+}
+
+resource "aws_apigatewayv2_integration" "videos" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  integration_uri    = aws_lambda_function.videos.invoke_arn
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_route" "videos" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  route_key = "GET /videos"
+  target    = "integrations/${aws_apigatewayv2_integration.videos.id}"
+  authorization_type = "JWT"
+  authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+}
+
+resource "aws_lambda_permission" "api_gw_videos" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.videos.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"
 }
 
 resource "aws_lambda_function" "comment" {
@@ -287,6 +366,32 @@ resource "aws_lambda_function" "comment" {
   timeout = 5
 }
 
+resource "aws_apigatewayv2_integration" "comment" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  integration_uri    = aws_lambda_function.comment.invoke_arn
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_route" "comment" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  route_key = "POST /comment"
+  target    = "integrations/${aws_apigatewayv2_integration.comment.id}"
+  # authorization_type = "JWT"
+  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+}
+
+resource "aws_lambda_permission" "api_gw_comment" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.comment.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"
+}
+
 resource "aws_lambda_function" "comments" {
   function_name = "Comments"
 
@@ -301,6 +406,32 @@ resource "aws_lambda_function" "comments" {
   role = aws_iam_role.lambda_exec.arn
 
   timeout = 5
+}
+
+resource "aws_apigatewayv2_integration" "comments" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  integration_uri    = aws_lambda_function.comments.invoke_arn
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_route" "comments" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  route_key = "GET /comments"
+  target    = "integrations/${aws_apigatewayv2_integration.comments.id}"
+  # authorization_type = "JWT"
+  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+}
+
+resource "aws_lambda_permission" "api_gw_comments" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.comments.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"
 }
 
 resource "aws_lambda_function" "tts" {
@@ -320,99 +451,6 @@ resource "aws_lambda_function" "tts" {
   # memory_size = 512
 }
 
-
-# API Gateway integration
-# Integration of upload lambda
-resource "aws_apigatewayv2_integration" "upload" {
-  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
-
-  integration_uri    = aws_lambda_function.upload.invoke_arn
-  integration_type   = "AWS_PROXY"
-  integration_method = "POST"
-}
-
-resource "aws_apigatewayv2_route" "upload" {
-  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.id
-
-  route_key = "POST /upload"
-  target    = "integrations/${aws_apigatewayv2_integration.upload.id}"
-  # authorization_type = "JWT"
-  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
-}
-
-# Integration of download lambda
-resource "aws_apigatewayv2_integration" "download" {
-  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
-
-  integration_uri    = aws_lambda_function.download.invoke_arn
-  integration_type   = "AWS_PROXY"
-  integration_method = "POST"
-}
-
-resource "aws_apigatewayv2_route" "download" {
-  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
-
-  route_key = "GET /download"
-  target    = "integrations/${aws_apigatewayv2_integration.download.id}"
-  # authorization_type = "JWT"
-  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
-}
-
-# Integration of videos lambda
-resource "aws_apigatewayv2_integration" "videos" {
-  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
-
-  integration_uri    = aws_lambda_function.videos.invoke_arn
-  integration_type   = "AWS_PROXY"
-  integration_method = "POST"
-}
-
-resource "aws_apigatewayv2_route" "videos" {
-  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
-
-  route_key = "GET /videos"
-  target    = "integrations/${aws_apigatewayv2_integration.videos.id}"
-  # authorization_type = "JWT"
-  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
-}
-
-# Integration of comments lambda
-resource "aws_apigatewayv2_integration" "comment" {
-  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
-
-  integration_uri    = aws_lambda_function.comment.invoke_arn
-  integration_type   = "AWS_PROXY"
-  integration_method = "POST"
-}
-
-resource "aws_apigatewayv2_route" "comment" {
-  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
-
-  route_key = "POST /comment"
-  target    = "integrations/${aws_apigatewayv2_integration.comment.id}"
-  # authorization_type = "JWT"
-  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
-}
-
-# Integration of getComments lambda
-resource "aws_apigatewayv2_integration" "comments" {
-  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
-
-  integration_uri    = aws_lambda_function.comments.invoke_arn
-  integration_type   = "AWS_PROXY"
-  integration_method = "POST"
-}
-
-resource "aws_apigatewayv2_route" "comments" {
-  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
-
-  route_key = "GET /comments"
-  target    = "integrations/${aws_apigatewayv2_integration.comments.id}"
-  # authorization_type = "JWT"
-  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
-}
-
-# Integration of Text To Speech lambda
 resource "aws_apigatewayv2_integration" "tts" {
   api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
 
@@ -430,61 +468,52 @@ resource "aws_apigatewayv2_route" "tts" {
   # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
 }
 
-# Permission for upload lambda
-resource "aws_lambda_permission" "api_gw_upload" {
-  statement_id  = "AllowExecutionFromAPIGateway"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.upload.function_name
-  principal     = "apigateway.amazonaws.com"
-
-  source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"
-}
-
-# Permission for download lambda
-resource "aws_lambda_permission" "api_gw_download" {
-  statement_id  = "AllowExecutionFromAPIGateway"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.download.function_name
-  principal     = "apigateway.amazonaws.com"
-
-  source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"
-}
-
-# Permission for videos lambda
-resource "aws_lambda_permission" "api_gw_videos" {
-  statement_id  = "AllowExecutionFromAPIGateway"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.videos.function_name
-  principal     = "apigateway.amazonaws.com"
-
-  source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"
-}
-
-# Permission for comment lambda
-resource "aws_lambda_permission" "api_gw_comment" {
-  statement_id  = "AllowExecutionFromAPIGateway"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.comment.function_name
-  principal     = "apigateway.amazonaws.com"
-
-  source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"
-}
-
-# Permission for comment lambda
-resource "aws_lambda_permission" "api_gw_comments" {
-  statement_id  = "AllowExecutionFromAPIGateway"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.comments.function_name
-  principal     = "apigateway.amazonaws.com"
-
-  source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"
-}
-
-# Permission for Text To Speech lambda
 resource "aws_lambda_permission" "api_gw_tts" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.tts.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"
+}
+
+resource "aws_lambda_function" "getReview" {
+  function_name = "getReview"
+
+  s3_bucket = aws_s3_bucket.lambda_bucket.id
+  s3_key    = aws_s3_object.lambda_upload.key
+
+  runtime = "nodejs18.x"
+  handler = "getReview.handler"
+
+  source_code_hash = data.archive_file.lambda_upload.output_base64sha256
+
+  role = aws_iam_role.lambda_exec.arn
+
+  timeout = 5
+}
+
+resource "aws_apigatewayv2_integration" "getReview" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  integration_uri    = aws_lambda_function.getReview.invoke_arn
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_route" "getReview" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  route_key = "GET /review"
+  target    = "integrations/${aws_apigatewayv2_integration.getReview.id}"
+  # authorization_type = "JWT"
+  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+}
+
+resource "aws_lambda_permission" "api_gw_getReview" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.getReview.function_name
   principal     = "apigateway.amazonaws.com"
 
   source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"

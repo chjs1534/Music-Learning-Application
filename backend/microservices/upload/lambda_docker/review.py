@@ -162,18 +162,19 @@ def handler(event, context):
                 if dist < 2 and dist < min_dist:
                     nearest = chord_change[0]
                     min_dist = dist
-            review.append({'timestamp': round(ref_timestamp, 2), 'chordRef': chord, 'chordMatch': nearest})
+            review.append({'timestamp': str(round(ref_timestamp, 2)), 'chordRef': chord, 'chordMatch': nearest})
             # print(f'{round(ref_timestamp, 2)}: {chord} {nearest}')  
         print(review)
 
         # udpate review in table
-        # table = boto3.resource('dynamodb').Table('Reviews')
-        # table.update_item(
-        #     Key={'UserId': userId, 'FileId': fileId},
-        #     AttributeUpdates={
-        #         'Review': review,
-        #     },
-        # )
+        table = boto3.resource('dynamodb').Table('VideosTable')
+        table.update_item(
+            Key={'userId': userId, 'fileId': fileId},
+            UpdateExpression='SET review = :r',
+            ExpressionAttributeValues={
+                ':r': review
+            }
+        )
 
         return {
             "statusCode": 200,

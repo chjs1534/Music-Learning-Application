@@ -47,7 +47,7 @@ exports.handler = async (event, context, callback) => {
         Item: {
           userId: `${userId}`,
           fileId: `${time}`,
-          review: "Review does not exist.",
+          review: ['empty'],
         }
       }));
     }
