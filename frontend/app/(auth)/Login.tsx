@@ -6,7 +6,6 @@ import Button from '../../components/Button'
 import { router } from 'expo-router'
 import { AuthenticationDetails, CognitoUser, CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
 import { poolData } from '../config/poolData';
-import { StatusBar } from 'expo-status-bar'
 
 const UserPool = new CognitoUserPool(poolData);
 
@@ -123,7 +122,6 @@ const Login = () => {
           />
         </View>
       </ScrollView>
-      <StatusBar backgroundColor='#161622'/>
     </SafeAreaView>
   )
 }
