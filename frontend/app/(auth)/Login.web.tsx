@@ -181,6 +181,14 @@ const Login: React.FC = () => {
             onClick={togglePasswordVisibility}
           />
         </div>
+        <div className="error-message-container">
+          {errorMessage && (
+            <span className="error-message">{"*" + errorMessage}</span>
+          )}
+          <a className="forgot-password-anchor" href="/">
+            Forgot Password?
+          </a>
+        </div>
         <button className="button1" type="submit" onClick={login}>
           Login
         </button>
@@ -208,6 +216,7 @@ const Login: React.FC = () => {
             onClick={() => handleLogoClick('https://www.facebook.com')}
           />
         </div>
+        
         <span className="auth-text">
           Don't have an account?{" "}
           <a className="anchor1" href="/register">

@@ -312,7 +312,11 @@ const Register: React.FC = () => {
         </div>
         <div className="error-message-container">
           {errorMessage && <span className="error-message">{'*' + errorMessage}</span>}
+          <a className="forgot-password-anchor" href="/">
+            Forgot Password?
+          </a>
         </div>
+        
         <button className="button1" type="submit" onClick={register}>Register</button>
         <p className="auth-text">────────── Or Continue With ──────────</p>
         <div className="alternate-auth-options">
