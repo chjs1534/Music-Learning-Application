@@ -151,7 +151,7 @@ const video = () => {
 
     const getGeneratedReview = async () => {
         console.log('generating refview')
-        const res = await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/review?userId=${id}&fileId=${fileId}`, {
+        const res = await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/getReview?userId=${id}&fileId=${fileId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
