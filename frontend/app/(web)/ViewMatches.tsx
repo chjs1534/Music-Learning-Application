@@ -86,8 +86,9 @@ const ViewMatches = () => {
 
     return (
     <div className="homepage">
+      <NavBar />
       <div className="profile">
-        <NavBar />
+        
         <div className="teacher-container">
           {user && <h1 className="teacher-header">Matches for {user.firstName + " " + user.lastName}</h1>}
           <div className="myteachers">

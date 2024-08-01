@@ -45,6 +45,10 @@ const NavBar: React.FC = () => {
     } else if (userType === "Student") {
       return (
         <>
+        <button className="nav-button" onClick={() => handleNavigation('/tasks')}>
+            {/* <img src="https://cdn-icons-png.flaticon.com/128/10455/10455354.png" alt="Teachers" className="nav-icon" /> */}
+            <span className="nav-button-text">Tasks</span>
+          </button>
           <button className="nav-button" onClick={() => handleNavigation('/teachers')}>
             {/* <img src="https://cdn-icons-png.flaticon.com/128/10455/10455354.png" alt="Teachers" className="nav-icon" /> */}
             <span className="nav-button-text">My Teachers</span>
@@ -98,6 +102,7 @@ const NavBar: React.FC = () => {
           <img src="https://cdn-icons-png.flaticon.com/128/2099/2099058.png" alt="Settings" className="nav-icon" />
           {/* <span className="nav-button-text">Settings</span> */}
         </button>
+        {/* <img src="https://cdn-icons-png.flaticon.com/128/2099/2099058.png" alt="Settings" className="nav-icon" onClick={() => handleNavigation('/settings')}/> */}
       </div>
       <div className="hamburger" onClick={toggleMenu}>
         <div className="line"></div>
