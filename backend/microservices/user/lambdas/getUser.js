@@ -1,31 +1,30 @@
 const aws = require('aws-sdk');
-
 const dynamo = new aws.DynamoDB.DocumentClient();
 const tableName = "UserTable";
 
 exports.handler = async (event) => {
-    let body;
-    let statusCode = 200;
-    const headers = {
-        'Access-Control-Allow-Origin': '*',
-    };
-    let item;
+    let userId;
+    // Error checks
+    if (!event.pathParameters || !event.pathParameters.userId) {
+        userId = event.userId
+    } else {
+        userId = event.pathParameters.userId;
+    }
 
+    if (typeof userId !== 'string' || userId.trim() === '') {
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ error: 'Invalid userId' }),
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            }
+        };
+    }
+
+    // Get user
+    let user;
     try {
-        let userId;
-        if (!event.pathParameters || !event.pathParameters.userId) {
-            userId = event.userId
-        } else {
-            userId = event.pathParameters.userId;
-        }
-        
-        if (typeof userId !== 'string' || userId.trim() === '') {
-            const error = new Error('Invalid userId');
-            error.statusCode = 400;
-            throw error;
-        }
-
-        item = await dynamo.get(
+        user = await dynamo.get(
             {
               TableName: tableName,
               Key: {
@@ -33,22 +32,30 @@ exports.handler = async (event) => {
               },
             }
         ).promise();
-
-        if (!item.Item) {
-            const error = new Error('User not found');
-            error.statusCode = 404;
-            throw error;
+        if (!user.Item) {
+            return {
+                statusCode: 404,
+                body: JSON.stringify({ error: 'User not found' }),
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                }
+            };
         }
     } catch (err) {
-        statusCode = err.statusCode || 500;
-        body = err.message;
-    } finally {
-        body = JSON.stringify(item.Item);
+        return {
+            statusCode: err.statusCode,
+            body: JSON.stringify({ error: err.message }),
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            }
+        };
     }
 
     return {
-        statusCode,
-        body,
-        headers,
+        statusCode: 200,
+        body: JSON.stringify(user.Item),
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+        }
     };
 };

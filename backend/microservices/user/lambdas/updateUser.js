@@ -4,72 +4,161 @@ const dynamo = new aws.DynamoDB.DocumentClient();
 const tableName = "UserTable";
 
 exports.handler = async (event) => {
-	let body;
-    let statusCode = 200;
-    const headers = {
-        'Access-Control-Allow-Origin': '*',
-    };
-	let body3;
-
+	const requestJSON = JSON.parse(event.body);
+	const userId = requestJSON.userId;
+	const firstName = requestJSON.firstName;
+	const lastName = requestJSON.lastName;
+	const aboutMe = requestJSON.aboutMe;
+	// Error checks
+	if (typeof userId !== 'string' || userId.trim() === '') {
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ error: 'Invalid userId' }),
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            }
+        };
+    }
+    if (typeof firstName !== 'string' || firstName.trim() === '') {
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ error: 'Invalid firstName' }),
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            }
+        };
+    }
+	if (typeof lastName !== 'string' || lastName.trim() === '') {
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ error: 'Invalid lastName' }),
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            }
+        };
+    }
+    if (typeof aboutMe !== 'string') {
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ error: 'Invalid aboutMe' }),
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            }
+        };
+    }
+	// Check userid
+	let user;
     try {
-		let requestJSON = JSON.parse(event.body);
-		const body1 = await dynamo.update(
+        user = await dynamo.get(
+            {
+              TableName: tableName,
+              Key: {
+                userId: userId
+              },
+            }
+        ).promise();
+        if (!user.Item) {
+            return {
+                statusCode: 404,
+                body: JSON.stringify({ error: 'User not found' }),
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                }
+            };
+        }
+    } catch (err) {
+        return {
+            statusCode: err.statusCode,
+            body: JSON.stringify({ error: err.message }),
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            }
+        };
+    }
+
+	try {
+		await dynamo.update(
 			{
 				TableName: tableName,
 				Key: {
-					userId: requestJSON.userId
+					userId: userId
 				},
 				UpdateExpression: "set #aboutMe = :aboutMe",
 				ExpressionAttributeNames: {
 					"#aboutMe": "aboutMe"
 				},
 				ExpressionAttributeValues: {
-					":aboutMe": requestJSON.aboutMe
+					":aboutMe": aboutMe
 				}
 			}
 		).promise();
+	} catch (err) {
+		return {
+            statusCode: err.statusCode,
+            body: JSON.stringify({ error: err.message }),
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            }
+        };
+	}
 
-		const body2 = await dynamo.update(
+	try {
+		await dynamo.update(
 			{
 				TableName: tableName,
 				Key: {
-					userId: requestJSON.userId
+					userId: userId
 				},
 				UpdateExpression: "set #firstName = :firstName",
 				ExpressionAttributeNames: {
 					"#firstName": "firstName"
 				},
 				ExpressionAttributeValues: {
-					":firstName": requestJSON.firstName
+					":firstName": firstName
 				}
 			}
 		).promise();
+	} catch (err) {
+		return {
+            statusCode: err.statusCode,
+            body: JSON.stringify({ error: err.message }),
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            }
+        };
+	}
 
-		body3 = await dynamo.update(
+	try {
+		await dynamo.update(
 			{
 				TableName: tableName,
 				Key: {
-					userId: requestJSON.userId
+					userId: userId
 				},
 				UpdateExpression: "set #lastName = :lastName",
 				ExpressionAttributeNames: {
 					"#lastName": "lastName"
 				},
 				ExpressionAttributeValues: {
-					":lastName": requestJSON.lastName
+					":lastName": lastName
 				}
 			}
 		).promise();
-    } catch (err) {
-        statusCode = 400;
-        body = err.message;
-    } finally {
-        body = JSON.stringify(body3);
-    }
+	} catch (err) {
+		return {
+            statusCode: err.statusCode,
+            body: JSON.stringify({ error: err.message }),
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            }
+        };
+	}
 
     return {
-        statusCode,
-        body,
-        headers,
+        statusCode: 200,
+        body: JSON.stringify({}),
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+        }
     };
 };

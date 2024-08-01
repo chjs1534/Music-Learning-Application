@@ -169,7 +169,8 @@ resource "aws_iam_policy" "lambda_dynamodb_policy_user" {
           "dynamodb:PutItem",
           "dynamodb:Query",
           "dynamodb:UpdateItem",
-          "dynamodb:DeleteItem"
+          "dynamodb:DeleteItem",
+          "dynamodb:Scan"
         ],
         Resource = [
           aws_dynamodb_table.user-table.arn,
@@ -296,55 +297,6 @@ resource "aws_lambda_permission" "api_gw_getUsersByType" {
 
 resource "aws_cloudwatch_log_group" "getUsersByType" {
   name = "/aws/lambda/${aws_lambda_function.getUsersByType.function_name}"
-
-  retention_in_days = 30
-}
-
-# Get userid lambda
-resource "aws_lambda_function" "getUserId" {
-  function_name = "GetUserId"
-
-  s3_bucket = aws_s3_bucket.lambda_bucket.id
-  s3_key    = aws_s3_object.lambdas.key
-
-  runtime = "nodejs16.x"
-  handler = "getUserId.handler"
-
-  source_code_hash = data.archive_file.lambdas.output_base64sha256
-
-  role = aws_iam_role.lambda_exec.arn
-
-  timeout = 10
-}
-
-resource "aws_apigatewayv2_integration" "getUserId" {
-  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
-
-  integration_uri    = aws_lambda_function.getUserId.invoke_arn
-  integration_type   = "AWS_PROXY"
-  integration_method = "POST"
-}
-
-resource "aws_apigatewayv2_route" "getUserId" {
-  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.id
-
-  route_key = "GET /user/getUserId/{username}"
-  target    = "integrations/${aws_apigatewayv2_integration.getUserId.id}"
-  authorization_type = "JWT"
-  authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
-}
-
-resource "aws_lambda_permission" "api_gw_getUserId" {
-  statement_id  = "AllowExecutionFromAPIGateway"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.getUserId.function_name
-  principal     = "apigateway.amazonaws.com"
-
-  source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"
-}
-
-resource "aws_cloudwatch_log_group" "getUserId" {
-  name = "/aws/lambda/${aws_lambda_function.getUserId.function_name}"
 
   retention_in_days = 30
 }
@@ -507,4 +459,54 @@ output "lambdaGetUser" {
 
 output "lambdaGetFamily" {
   value = aws_lambda_function.getFamily
+}
+
+# For testing
+# Get all users lambda
+resource "aws_lambda_function" "getAllUsers" {
+  function_name = "GetAllUsers"
+
+  s3_bucket = aws_s3_bucket.lambda_bucket.id
+  s3_key    = aws_s3_object.lambdas.key
+
+  runtime = "nodejs16.x"
+  handler = "getAllUsers.handler"
+
+  source_code_hash = data.archive_file.lambdas.output_base64sha256
+
+  role = aws_iam_role.lambda_exec.arn
+
+  timeout = 10
+}
+
+resource "aws_apigatewayv2_integration" "getAllUsers" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  integration_uri    = aws_lambda_function.getAllUsers.invoke_arn
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_route" "getAllUsers" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.id
+
+  route_key = "GET /user/getAllUsers"
+  target    = "integrations/${aws_apigatewayv2_integration.getAllUsers.id}"
+  authorization_type = "JWT"
+  authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+}
+
+resource "aws_lambda_permission" "api_gw_getAllUsers" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.getAllUsers.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"
+}
+
+resource "aws_cloudwatch_log_group" "getAllUsers" {
+  name = "/aws/lambda/${aws_lambda_function.getAllUsers.function_name}"
+
+  retention_in_days = 30
 }

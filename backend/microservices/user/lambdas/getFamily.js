@@ -1,26 +1,30 @@
 const aws = require('aws-sdk');
 const dynamo = new aws.DynamoDB.DocumentClient();
-const crypto = require("crypto");
-
 const tableName = "UserTable";
 
-exports.handler = async (event, context) => {
-    let body;
-    let statusCode = 200;
-    const headers = {
-        'Access-Control-Allow-Origin': '*',
-    };
+exports.handler = async (event) => {
+    let userId;
+    // Error checks
+    if (!event.pathParameters || !event.pathParameters.userId) {
+        userId = event.userId;
+    } else {
+        userId = event.pathParameters.userId;
+    }
 
+    if (typeof userId !== 'string' || userId.trim() === '') {
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ error: 'Invalid userId' }),
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            }
+        };
+    }
+
+    // Get current user
+    let currUser;
     try {
-        let userId;
-        if (!event.pathParameters || !event.pathParameters.userId) {
-            userId = event.userId;
-        } else {
-            userId = event.pathParameters.userId;
-        }
-
-        // Get email of user
-        let currUser = await dynamo.get(
+        currUser = await dynamo.get(
             {
               TableName: tableName,
               Key: {
@@ -28,12 +32,33 @@ exports.handler = async (event, context) => {
               },
             }
         ).promise();
-        let email = currUser.Item.email
-        
-        let params1;
-        if (currUser.Item.userType === "Parent") {
-            // Query for children
-            params1 = {
+        if (!currUser.Item) {
+            return {
+                statusCode: 404,
+                body: JSON.stringify({ error: 'User not found' }),
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                }
+            };
+        }
+    } catch (err) {
+        return {
+            statusCode: err.statusCode,
+            body: JSON.stringify({ error: err.message }),
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            }
+        };
+    }
+
+    const email = currUser.Item.email;
+    const userType = currUser.Item.userType;
+    let users;
+
+    if (userType === "Parent") {
+        // Query for children
+        try {
+            users = await dynamo.query({
                 TableName: tableName,
                 IndexName: "EmailIndex",
                 KeyConditionExpression: "#email = :email",
@@ -46,10 +71,19 @@ exports.handler = async (event, context) => {
                     ":email": email,
                     ":userType": "Child"
                 }
+            }).promise();
+        } catch (err) {
+            return {
+                statusCode: err.statusCode,
+                body: JSON.stringify({ error: err.message }),
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                }
             };
-        } else {
-            // Query for parent
-            params1 = {
+        }
+    } else if (userType === "Child") {
+        try {
+            users = await dynamo.query({
                 TableName: tableName,
                 IndexName: "EmailIndex",
                 KeyConditionExpression: "#email = :email",
@@ -62,20 +96,31 @@ exports.handler = async (event, context) => {
                     ":email": email,
                     ":userType": "Parent"
                 }
+            }).promise();
+        } catch (err) {
+            return {
+                statusCode: err.statusCode,
+                body: JSON.stringify({ error: err.message }),
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                }
             };
         }
-        
-        body =  await dynamo.query(params1).promise();
-    } catch (err) {
-        statusCode = 400;
-        body = err.message;
-    } finally {
-        body = JSON.stringify(body);
+    } else {
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ error: 'Invalid userType' }),
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            }
+        };
     }
 
     return {
-        statusCode,
-        body,
-        headers,
+        statusCode: 200,
+        body: JSON.stringify({users: users.Items}),
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+        }
     };
 };
