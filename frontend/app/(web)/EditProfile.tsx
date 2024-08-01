@@ -1,6 +1,6 @@
 import React, { useEffect, useState, ChangeEvent } from 'react';
 import { useParams } from 'react-router-dom';
-import '../styles/website.css';
+import '../styles/editProfileStyles.css';
 import NavBar from './NavBar';
 
 const EditProfile: React.FC = () => {
@@ -17,11 +17,11 @@ const EditProfile: React.FC = () => {
     useEffect(() => {
         const storedDarkMode = localStorage.getItem('darkMode');
         if (storedDarkMode === 'enabled') {
-          setIsDarkMode(true);
-          document.body.classList.add('dark-mode');
+            setIsDarkMode(true);
+            document.body.classList.add('dark-mode');
         } else {
-          setIsDarkMode(false);
-          document.body.classList.remove('dark-mode');
+            setIsDarkMode(false);
+            document.body.classList.remove('dark-mode');
         }
         setToken(localStorage.getItem('token'));
     }, []);
@@ -105,28 +105,28 @@ const EditProfile: React.FC = () => {
         await fetch(
             `https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/updateUser`,
             {
-              method: "PUT",
-              headers: {
-                Authorization: token,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                firstName: firstName,
-                lastName: lastName,
-                aboutMe: aboutMe,
-                userId: id
-              }),
+                method: "PUT",
+                headers: {
+                    Authorization: token,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    firstName: firstName,
+                    lastName: lastName,
+                    aboutMe: aboutMe,
+                    userId: id
+                }),
             }
-          )
+        )
             .then((response) => {
-              if (!response.ok) {
-                return response.text().then((text) => {
-                  throw new Error(text);
-                });
-              } else {
-                console.log(response);
-              }
-              return response.json();
+                if (!response.ok) {
+                    return response.text().then((text) => {
+                        throw new Error(text);
+                    });
+                } else {
+                    console.log(response);
+                }
+                return response.json();
             })
         const queryParams = new URLSearchParams();
         window.location.href = `/profile/${id}?${queryParams.toString()}`;

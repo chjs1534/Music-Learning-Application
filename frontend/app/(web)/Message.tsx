@@ -93,7 +93,7 @@ const MessageComponent: React.FC = () => {
         try {
           const message = JSON.parse(evt.data);
           console.log(message);
-            getMessages();
+          getMessages();
         } catch {
           console.log('error in parsing');
         }
@@ -277,12 +277,14 @@ const MessageComponent: React.FC = () => {
                 <div className="message-container">
                   {friends.find(friend => friend.id === selectedFriendId)?.messages.map((message, index) => (
                     <div key={index} className={`message ${message.senderId === userId ? 'my-message' : 'their-message'}`}>
-                      <img src={friends.find(friend => friend.id === (message.senderId === userId ? selectedFriendId : message.senderId))?.profilePic} alt="Profile" className="profile-pic" />
                       <div className="message-content">
-                        <span className="message-sender">{message.senderId === userId ? 'You' : friends.find(friend => friend.id === message.senderId)?.name}</span>
-                        <p className="message-text">{message.content}</p>
-                        <span className="message-time">{new Date(message.time).toLocaleTimeString()}</span>
+                        <img src={friends.find(friend => friend.id === (message.senderId === userId ? selectedFriendId : message.senderId))?.profilePic} alt="Profile" className="profile-pic" />
+                        <div className="message-words">
+                          <span className="message-sender">{message.senderId === userId ? 'You' : friends.find(friend => friend.id === message.senderId)?.name}</span>
+                          <p className="message-text">{message.content}</p>
+                        </div>
                       </div>
+                      <span className="message-time">{new Date(message.time).toLocaleTimeString()}</span>
                     </div>
                   ))}
                   <div ref={messageEndRef} />
@@ -308,4 +310,3 @@ const MessageComponent: React.FC = () => {
 };
 
 export default MessageComponent;
-
