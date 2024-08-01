@@ -1,4 +1,14 @@
 @font-face {
+  font-family: 'Bogam';
+  src: url('./app/fonts/Bogam.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Aeroport';
+  src: url('./app/fonts/Aeroport.ttf') format('truetype');
+}
+
+@font-face {
     font-family: 'Cat';
     src: url('./app/fonts/cats.otf') format('opentype');
     font-weight: normal;
@@ -13,5 +23,5 @@
 }
 
 * {
-    font-family: 'Helvetica';
+    font-family: 'Aeroport';
 }

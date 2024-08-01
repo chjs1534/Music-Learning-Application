@@ -1,27 +1,19 @@
 /* Light mode variables */
 :root {
-    --text-color: #555;
-    --background-color: rgb(255, 255, 255);
-    --header-logo-color: black;
-    --auth-header-color: black;
+    --auth-header-color: #ff6631;
     --border-color: #8a8a8a;
     --box-shadow-color: rgb(106, 106, 106);
-    --input-border-color: #ccc;
-    --input-focus-border-color: #0004ff;
-    --label-color: #8a8a8a;
-    --label-focus-color: #555;
-    --button1-bg-color: rgb(150, 153, 255);
-    --button1-hover-bg-color: #cdceff;
-    --button2-bg-color: rgb(255, 255, 255);
-    --button2-border-color: rgb(78, 84, 255);
-    --button2-selected-bg-color: rgb(150, 153, 255);
-    --button2-hover-bg-color: #cdceff;
+    --input-border-color: #201e1b6b;
+    --input-focus-border-color: #ff6631;
+    --label-color: #201e1b51;
+    --label-focus-color: #201e1b;
+    --button1-bg-color: #ff6631;
+    --button1-hover-bg-color: #ff6431e3;
     --company-button-hover-bg-color: #dbdbdb;
-    --anchor1-color: #000dff;
-    --anchor1-hover-color: #cdceff;
+    --anchor1-color: #ff6431e3;
+    --anchor1-hover-color: #ff6431e3;
     --error-message-color: red;
-    --forgot-password-anchor-color: #000dff;
-    --auth-text-color: #555;
+    --auth-text-color: #201e1b6b;
 }
 
 /* Dark mode variables */
@@ -38,10 +30,6 @@ body.dark-mode {
     --label-focus-color: #eeeeee;
     --button1-bg-color: rgb(150, 153, 255);
     --button1-hover-bg-color: #cdceff;
-    --button2-bg-color: rgb(255, 255, 255);
-    --button2-border-color: rgb(78, 84, 255);
-    --button2-selected-bg-color: rgb(150, 153, 255);
-    --button2-hover-bg-color: #cdceff;
     --company-button-hover-bg-color: #555;
     --anchor1-color: #000dff;
     --anchor1-hover-color: #cdceff;
@@ -50,21 +38,17 @@ body.dark-mode {
     --auth-text-color: #eeeeee;
 }
 
-.header-logo {
-    font-family: 'Music';
-    margin-top: 12px;
-    margin-bottom: 12px;
-    padding: 0 0;
-    font-size: 72px;
-    font-weight: 700;
-    color: var(--header-logo-color);
+
+.auth-header-subtext {
+    font-size: 2rem;
+    font-family: Aeroport;
+    font-weight: 600;
 }
 
 .auth-header {
-    font-size: 32px;
+    font-size: 96px;
     margin: 0px 0px 0px 0px;
     padding: 0 0;
-    font-weight: 400;
     align-self: flex-start;
     color: var(--auth-header-color);
 }
@@ -133,7 +117,7 @@ body.dark-mode {
     border: 1px solid var(--input-border-color);
     border-radius: 8px;
     box-sizing: border-box;
-    transition: border-color 1s;
+    transition: border-color 0.3s;
 }
 
 .form-inputs:focus {
@@ -142,13 +126,14 @@ body.dark-mode {
 }
 
 .input-container label {
+    font-family: Aeroport;
     position: absolute;
     font-size: 16px;
     left: 8px;
     top: 50%;
     transform: translateY(-50%);
     color: var(--label-color);
-    transition: top 0.5s, font-size 0.5s, color 0.5s;
+    transition: top 0.1s, font-size 0.1s, color 0.1s;
     pointer-events: none;
     z-index: 1;
 }
@@ -176,50 +161,20 @@ body.dark-mode {
 
 .button1 {
     width: 100%;
-    margin-bottom: 8px;
+    margin: 8px 0px;
     padding: 12px 24px;
     font-size: 18px;
-    color: var(--text-color);
+    color: #f7e7d6;
     background-color: var(--button1-bg-color);
     border: none;
     border-radius: 8px;
     cursor: pointer;
     text-align: center;
+    transition: background-color 0.2s ease-out;
 }
 
 .button1:hover {
     background-color: var(--button1-hover-bg-color);
-}
-
-.button2 {
-    width: 100%;
-    margin: 8px;
-    padding: 12px 24px;
-    font-size: 18px;
-    color: var(--text-color);
-    background-color: var(--button2-bg-color);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    border: 1px solid var(--button2-border-color);
-    text-align: center;
-}
-
-.button2.selected {
-    width: 100%;
-    margin: 8px;
-    padding: 12px 24px;
-    font-size: 18px;
-    color: var(--text-color);
-    background-color: var(--button2-selected-bg-color);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-.button2.hovered:not(.selected) {
-    background-color: var(--button2-hover-bg-color);
-    color: var(--text-color);
 }
 
 .alternate-auth-options {
@@ -276,35 +231,8 @@ body.dark-mode {
     text-decoration-line: none;
 }
 
-.error-message-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: right;
-    width: 100%;
-    height: 24px;
-    margin-top: 8px;
-}
-
-.forgot-password-anchor {
-    color: var(--forgot-password-anchor-color);
-    font-size: 12px;
-    display: flex;
-    width: 50%;
-    height: 24px;
-    justify-content: right;
-}
-
-.error-message {
-    display: flex;
-    width: 100%;
-    height: 24px;
-    color: var(--error-message-color);
-    font-size: 12px;
-    justify-content: left;
-}
-
 .auth-text {
+    font-family: Aeroport;
     font-size: 12px;
     margin: 12px;
     color: var(--auth-text-color);

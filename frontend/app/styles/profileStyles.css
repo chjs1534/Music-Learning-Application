@@ -1,6 +1,9 @@
 /* Light Mode Variables */
 :root {
-    --profile-background: #f0f2f5;
+    --secondary: #1c8e41;
+    --primary-light: #fd885e;
+    --background-color-subtle: #f7e7d6;
+    --background-color-dark: #f8cab2;
     --profile-text-color: #333333;
     --profile-header-background: #ffffff;
     --profile-icon-box-shadow: rgba(0, 0, 0, 0.1);
@@ -26,7 +29,6 @@
 
 /* Dark Mode Variables */
 [data-theme="dark"] {
-    --profile-background: #18191a;
     --profile-text-color: #e4e6eb;
     --profile-header-background: #242526;
     --profile-icon-box-shadow: rgba(255, 255, 255, 0.1);
@@ -52,27 +54,33 @@
 
 /* Profile CSS */
 .profile {
-    width: 100vw;
-    height: 100vh;
-    background-color: var(--profile-background);
+    padding: 3rem 0;
+    width: 100%;
+    flex-grow: 1;
     display: flex;
+    gap: 2rem;
     flex-direction: column;
     justify-content: top;
     align-items: center;
 }
 
+.profile-bg {
+    background-color: var(--secondary)
+}
+
 .profile-details {
-    background-color: var(--profile-details-background);
-    border-radius: 10px;
+    background-color: var(--background-color-subtle);
+    border-radius: 2rem;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
     color: var(--profile-text-color);
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-width: 40vw;
-    padding-top: 12px;
-    height: auto;
+    padding: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 800px;
 }
 
 .profile-header {
@@ -100,15 +108,12 @@
 .profile-videos {
     display: flex;
     align-items: center;
-    border: 1px solid var(--profile-videos-border-color);
     width: 50vw;
 }
 
-.profile-details {
-    flex: 1;
-    text-align: center;
-    color: var(--profile-text-color);
-    width: 100vw;
+.video-header {
+    font-family: Bogam;
+    font-size: 3rem;
 }
 
 .profile-info {
@@ -169,32 +174,44 @@
 }
 
 .request-button {
-    background-color: var(--profile-request-button-background);
+    background-color: var(--secondary);
     color: var(--profile-request-button-text);
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
+    text-transform: uppercase;
 }
 
 .request-button:hover {
-    background-color: var(--profile-request-button-hover);
+    scale: 1.03;
+    transition: 0.3s all;
+}
+
+.request-button-container {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    gap: 1rem;
+}
+
+.request-button-container > :first-child {
+    background-color: var(--primary-light);
+}
+.request-button-container > :nth-child(2) {
+    background-color: var(--primary-light);
 }
 
 .profile-extra {
-    border-top: 1px solid var(--profile-extra-border-color);
-    padding-top: 20px;
-    margin-top: 20px;
-    width: 100vw;
+    background-color: var(--background-color-subtle);
+    border-radius: 2rem;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.profile-extra {
-    margin-top: 30px;
-}
 
 .achievements,
 .teacher-details {
@@ -336,34 +353,6 @@
     --profile-submit-review-hover: #444444;
 }
 
-/* Profile CSS */
-.profile {
-    width: 100vw;
-    height: 100vh;
-    background-color: var(--profile-background);
-    display: flex;
-    flex-direction: column;
-    justify-content: top;
-    align-items: center;
-    padding: 20px;
-    overflow-y: auto;
-}
-
-.profile-details {
-    background-color: var(--profile-details-background);
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    color: var(--profile-text-color);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    margin-bottom: 20px;
-    width: 100%;
-    max-width: 800px;
-}
-
 .profile .profile-icon {
     width: 100px;
     height: 100px;
@@ -403,15 +392,6 @@
     transform: scale(1.1);
 }
 
-.profile-extra {
-    background-color: var(--profile-card-background);
-    border: 1px solid var(--profile-card-border-color);
-    border-radius: 10px;
-    padding: 20px;
-    margin-top: 20px;
-    width: 100%;
-    max-width: 800px;
-}
 
 .profile-extra h2 {
     color: var(--profile-heading-color);
@@ -427,7 +407,6 @@
 
 .profile-videos .video-card {
     background-color: var(--profile-card-background);
-    border: 1px solid var(--profile-videos-border-color);
     border-radius: 10px;
     padding: 10px;
     text-align: center;
@@ -508,20 +487,6 @@
     background-color: var(--profile-submit-review-hover);
 }
 
-.request-button {
-    background-color: var(--profile-request-button-background);
-    color: var(--profile-request-button-text);
-    padding: 10px 20px;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-top: 10px;
-}
-
-.request-button:hover {
-    background-color: var(--profile-request-button-hover);
-}
 
 /* Modal Styles */
 .modal {

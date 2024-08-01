@@ -14,35 +14,37 @@ import Teachers from "./(web)/Teachers";
 import Notifications from "./(web)/Notifications";
 import ViewMatches from "./(web)/ViewMatches";
 import SheetMusic from "./(web)/SheetMusic";
-import VideoWeb from './(web)/Video';
+import VideoWeb from "./(web)/Video";
 import Tasks from "./(web)/Tasks";
+import "./styles/global.css";
+import "./styles/fonts.css";
+import "./styles/profileStyles.css";
 
 const App: React.FC = () => {
-
   return (
     <>
       {/* <RouterProvider router={router} /> */}
-        <Router>
-          <Routes>
-            <Route path="/" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/verification" element={<Verification />} />
-            <Route path="/homepage" element={<Homepage />} />
-            <Route path="/profile/:id" element={<Profile />} />
-            <Route path="/edit-profile/:id" element={<EditProfile />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/my-accounts" element={<MyAccounts />} />
-            <Route path="/message" element={<MessageScreen />} />
-            <Route path="/students" element={<Students />} />
-            <Route path="/teachers" element={<Teachers />} />
-            <Route path="/notifications" element={<Notifications />} />
-            <Route path="/viewmatches/:id" element={<ViewMatches />} />
-            <Route path="/video/:id/:fileId" element={<VideoWeb />} />
-            <Route path="/sheet-music" element={<SheetMusic />} />
-            <Route path="/tasks" element={<Tasks />} />
-          </Routes>
-        </Router>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/verification" element={<Verification />} />
+          <Route path="/homepage" element={<Homepage />} />
+          <Route path="/profile/:id" element={<Profile />} />
+          <Route path="/edit-profile/:id" element={<EditProfile />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/my-accounts" element={<MyAccounts />} />
+          <Route path="/message" element={<MessageScreen />} />
+          <Route path="/students" element={<Students />} />
+          <Route path="/teachers" element={<Teachers />} />
+          <Route path="/notifications" element={<Notifications />} />
+          <Route path="/viewmatches/:id" element={<ViewMatches />} />
+          <Route path="/video/:id/:fileId" element={<VideoWeb />} />
+          <Route path="/sheet-music" element={<SheetMusic />} />
+          <Route path="/tasks" element={<Tasks />} />
+        </Routes>
+      </Router>
     </>
   );
 };
