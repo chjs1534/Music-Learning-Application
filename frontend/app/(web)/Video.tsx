@@ -51,7 +51,7 @@ const VideoWeb: React.FC = () => {
             },
         }).then((res) => {
             return res.json();
-        }). then((json) => {
+        }).then((json) => {
             setReference(json.downloadVideoUrl);
         }).catch((error) => {
             setReference(null)
@@ -143,7 +143,7 @@ const VideoWeb: React.FC = () => {
         player.pause()
     }
 
-    const seek =  (time) => {
+    const seek = (time) => {
         player.replay()
         player.seekBy(time)
         console.log(time)
@@ -151,8 +151,8 @@ const VideoWeb: React.FC = () => {
 
     return (
         <div className="homepage">
+            <NavBar />
             <div className="profile">
-                <NavBar />
                 <div style={styles.container}>
                     {showModal && (
                         <div className="modal" ref={modalRef} onClick={handleCloseModal}>
@@ -182,16 +182,16 @@ const VideoWeb: React.FC = () => {
                         allowsPictureInPicture
                         style={styles.video}
                     /> : <h3>Add a reference to get AI feedback</h3>}
-                    
+
                 </div>
                 <div className="profile-extra">
                     <h3>Feedback</h3>
-                    {reviews && (reviews.map((comment) => 
+                    {reviews && (reviews.map((comment) =>
                         <div onClick={() => seek(comment.videoTime)} style={styles.div2}>
                             <p>{comment.videoTime}</p>
                             <p>{comment.commentText}</p>
                         </div>
-                        
+
                     ))}
                 </div>
                 {userType === "Teacher" ? <button onClick={handleButton}>Add a review</button> : <p>not teahcer</p>}

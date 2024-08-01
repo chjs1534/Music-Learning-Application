@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom';
-import '../styles/website.css';
+import '../styles/profileStyles.css';
 import NavBar from './NavBar';
 import StudentCard from '../../components/StudentCard';
 import VideoCard from '../../components/VideoCard';
@@ -21,6 +21,11 @@ const Profile: React.FC = () => {
   const [title, setTitle] = useState('');
   const [file, setFile] = useState(null);
   const [assignedTasks, setAssignedTasks] = useState();
+  const [thumbnail, setThumbnail] = useState();
+  const [loggedInUserId, setLoggedInUserId] = useState<string>();
+  const [reviewText, setReviewText] = useState("");
+  const [rating, setRating] = useState(0);
+
 
   const { id } = useParams();
 
@@ -31,6 +36,7 @@ const Profile: React.FC = () => {
   // use effect that calls when id is changed
   useEffect(() => {
     setToken(localStorage.getItem('token'));
+    setLoggedInUserId(localStorage.getItem('id'));
     setUserType(localStorage.getItem('userType'));
     const storedDarkMode = localStorage.getItem('darkMode');
     if (storedDarkMode === 'enabled') {
@@ -69,8 +75,6 @@ const Profile: React.FC = () => {
   useEffect(() => {
     getVideos();
   }, [user]);
-
-
 
   const viewMatch = () => {
     navigate(`/viewmatches/${id}`);
@@ -341,10 +345,40 @@ const Profile: React.FC = () => {
     }
   }
 
+  const handleSubmitReview = async () => {
+    await fetch(
+      `https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/addTeacherReview`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: user.userId,
+          rating: rating,
+          reviewMsg: reviewText
+        }),
+      }
+    )
+      .then((response) => {
+        if (!response.ok) {
+          return response.text().then((text) => {
+            throw new Error(text);
+          });
+        } else {
+          console.log(response);
+        }
+        return response.json();
+      })
+    const queryParams = new URLSearchParams();
+    window.location.href = `/profile/${id}?${queryParams.toString()}`;
+  };
+
   return (
-    <div className="homepage">
+    <div className={`homepage ${isDarkMode ? 'dark-mode' : ''}`}>
+      <NavBar />
       <div className="profile">
-        <NavBar />
         <div className="profile-details">
           {showModal && (
             <div className="modal" ref={modalRef} onClick={handleCloseModal}>
@@ -427,15 +461,6 @@ const Profile: React.FC = () => {
           </div>}
         </div>
 
-        {/* {user &&
-          <div className="profile-extra">
-            {renderExtraContent()}
-          </div>
-        )} */}
-        {/* <div className="profile-extra">
-          <h2>Extra Details</h2>
-          <p>Details here...</p>
-        </div> */}
         {user && user.userType === "Student" && <div className="profile-extra">
           <h2>Videos</h2>
           <div className="profile-videos">
@@ -460,6 +485,42 @@ const Profile: React.FC = () => {
 
         }
         
+
+        {user && user.userType === "Teacher" && (
+          <div className="profile-extra">
+            Reviews:
+            {user.teacherReviews.map((review, index) => (
+              <div key={index} className="review-item">
+                <div className="review-rating">Rating: {review.rating} ★</div>
+                <div className="review-message">{review.reviewMsg}</div>
+              </div>
+            ))}
+            {loggedInUserId !== user.userId && (
+              <div className="write-review">
+                <textarea
+                  className="review-input"
+                  placeholder="Write your review here..."
+                  value={reviewText}
+                  onChange={(e) => setReviewText(e.target.value)}
+                />
+                <div className="star-rating">
+                  {[...Array(5)].map((_, index) => (
+                    <span
+                      key={index}
+                      className={index < rating ? "star selected" : "star"}
+                      onClick={() => setRating(index + 1)}
+                    >
+                      ★
+                    </span>
+                  ))}
+                </div>
+                <button className="submit-review" onClick={handleSubmitReview}>
+                  Submit Review
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
       </div>
     </div>

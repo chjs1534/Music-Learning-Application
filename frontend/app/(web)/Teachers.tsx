@@ -8,8 +8,7 @@ const Teachers: React.FC = () => {
   const [myTeachers, setMyTeachers] = useState([]);
   const [id, setId] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [loading2, setLoading2] = useState(true);
+
   useEffect(() => {
     setId(localStorage.getItem('id'));
     setToken(localStorage.getItem('token'));
@@ -49,7 +48,6 @@ const Teachers: React.FC = () => {
         } else {
           setTeachers(data.users);
         }
-        setLoading2(false)
       })
       .catch(error => {
         console.error('Error:', error.message, error.code || error);
@@ -78,7 +76,6 @@ const Teachers: React.FC = () => {
       .then(data => {
         console.log('Success:', data);
         setMyTeachers(data.matches);
-        setLoading(false)
       })
       .catch(error => {
         console.error('Error:', error.message, error.code || error);
@@ -92,27 +89,15 @@ const Teachers: React.FC = () => {
         <div className="teacher-container">
           <h1 className="teacher-header">My Teachers</h1>
           <div className="teachers-list">
-            {!loading ?
-              (myTeachers.length > 0) ? myTeachers.map((teacher: any) => (
-                <TeacherCard key={teacher.userId} id={teacher.userId} token={token || ''} />
-               )) : <p>No teachers found</p>
-              : <p>Loading...</p>
-            }
-            {/* {(myTeachers.length > 0) ? myTeachers.map((teacher: any) => (
-                <TeacherCard key={teacher.userId} id={teacher.userId} token={token || ''} />
-               )) : <p>No teachers found</p>} */}
-            
+            {myTeachers.length > 0 ? myTeachers.map((teacher: any) => (
+              <TeacherCard key={teacher.userId} id={teacher.userId} token={token || ''} />
+            )) : <p>No teachers found</p>}
           </div>
           <h1 className="teacher-header">Recommended Teachers</h1>
           <div className="teachers-list">
-
-            {!loading2 ?
-              teachers.length > 0 ? teachers.map((teacher: any) => (
-                <TeacherCard key={teacher.userId} id={teacher.userId} token={token || ''} />
-              )) : <p>No recommended teachers found</p>
-              : <p>Loading...</p>
-            }
-            
+            {teachers.length > 0 ? teachers.map((teacher: any) => (
+              <TeacherCard key={teacher.userId} id={teacher.userId} token={token || ''} />
+            )) : <p>No recommended teachers found</p>}
           </div>
         </div>
       </div>
