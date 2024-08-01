@@ -355,7 +355,7 @@ body {
 }
 
 
-/* edit profile styles */
+/* edit profile styles
 .edit-profile {
     width: 100vw;
     height: 100vh;
@@ -446,7 +446,7 @@ body {
 
 .save-button:hover {
     background-color: var(--save-button-hover);
-}
+} */
 
 /* teacher styles */
 .teacher-container,
@@ -575,160 +575,6 @@ body {
 
 .request-button {}
 
-/* Settings Styles */
-.settings {
-    width: 100vw;
-    height: 100vh;
-    background-color: var(--settings-background);
-    display: flex;
-    flex-direction: column;
-    justify-content: top;
-    align-items: center;
-}
-
-.settings-container {
-    background: var(--input-background);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 400px;
-    max-width: 90%;
-}
-
-.settings h2 {
-    margin-bottom: 10px;
-    font-size: 1.5rem;
-    color: var(--text-color);
-}
-
-.settings-profile,
-.settings-theme,
-.settings-account {
-    margin-bottom: 20px;
-}
-
-.edit-profile-button,
-.logout-button,
-.delete-account-button,
-input[type="checkbox"] {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    cursor: pointer;
-    height: 32px;
-    transition: background-color 0.3s ease;
-    background-color: var(--button-bg-color);
-    color: var(--button-text-color);
-}
-
-.edit-profile-button img,
-.logout-button img,
-.delete-account-button img {
-    margin-left: 10px;
-    height: 20px;
-    width: 20px;
-}
-
-button:hover {
-    background-color: var(--button-hover-bg-color);
-}
-
-input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    margin-left: 10px;
-}
-
-label {
-    cursor: pointer;
-}
-
-.dark-mode-toggle {
-    display: flex;
-    align-items: center;
-}
-
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 34px;
-}
-
-.switch input {
-    opacity: 0;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    cursor: pointer;
-    z-index: 1;
-}
-
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgb(206, 206, 206);
-    transition: .4s;
-    border-radius: 34px;
-    z-index: 0;
-}
-
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    border-radius: 50%;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: .4s;
-}
-
-input:checked+.slider {
-    background-color: rgb(54, 54, 54);
-}
-
-input:checked+.slider:before {
-    transform: translateX(26px);
-}
-
-label {
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    margin-left: 10px;
-}
-
-.edit-profile-button,
-.logout-button,
-.delete-account-button {
-    width: 100%;
-    margin-top: 10px;
-}
-
-.edit-profile-button {
-    color: var(--button-text-color);
-}
-
-.edit-profile-button:hover {
-    background-color: var(--button-hover-bg-color);
-}
-
-.delete-account-button {
-    color: var(--button-text-color);
-}
-
-.delete-account-button:hover {
-    background-color: var(--button-hover-bg-color);
-}
 
 .my-teachers {
     width: 100vw;

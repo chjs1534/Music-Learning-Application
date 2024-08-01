@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../styles/website.css';
+import '../styles/settingStyles.css';
 import NavBar from './NavBar';
 import { CognitoUserPool, CognitoUser } from 'amazon-cognito-identity-js';
 import { poolData } from '../config/poolData';
@@ -32,7 +32,7 @@ const Settings: React.FC = () => {
     }
     window.location.href = '/login';
   };
-  
+
   const deleteAccount = async () => {
     logout();
     await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/deleteUser/${userId}`, {
@@ -48,7 +48,7 @@ const Settings: React.FC = () => {
       return response.json();
     }).catch(error => {
       console.error('Error:', error.message, error.code || error);
-    });  
+    });
   };
 
   const toggleDarkMode = () => {
@@ -69,12 +69,12 @@ const Settings: React.FC = () => {
 
   return (
     <div className={`homepage ${isDarkMode ? 'dark-mode' : ''}`}>
+      <NavBar />
       <div className="settings">
-        <NavBar />
         <div className="settings-container">
           <div className="settings-profile">
             <h2>Profile</h2>
-            <button className="edit-profile-button" onClick={handleEditProfile}>
+            <button className="settings-button edit-profile-button" onClick={handleEditProfile}>
               <span>Edit Profile</span>
               <img src={"https://cdn-icons-png.flaticon.com/128/860/860814.png"} alt="Edit Profile" className="nav-icon" />
             </button>
@@ -98,11 +98,11 @@ const Settings: React.FC = () => {
 
           <div className="settings-account">
             <h2>Account</h2>
-            <button className="logout-button" onClick={logout}>
+            <button className="settings-button logout-button" onClick={logout}>
               <span>Log Out</span>
               <img src={"https://cdn-icons-png.flaticon.com/128/1828/1828427.png"} alt="Log Out" className="nav-icon" />
             </button>
-            <button className="delete-account-button" onClick={deleteAccount}>
+            <button className="settings-button delete-account-button" onClick={deleteAccount}>
               <span>Delete Account</span>
               <img src={"https://cdn-icons-png.flaticon.com/128/14360/14360493.png"} alt="Delete Account" className="nav-icon" />
             </button>
@@ -110,7 +110,7 @@ const Settings: React.FC = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Settings;

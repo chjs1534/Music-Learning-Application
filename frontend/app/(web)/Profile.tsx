@@ -363,9 +363,9 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <div className="homepage">
+    <div className={`homepage ${isDarkMode ? 'dark-mode' : ''}`}>
+      <NavBar />
       <div className="profile">
-        <NavBar />
         <div className="profile-details">
           {showModal && (
             <div className="modal" ref={modalRef} onClick={handleCloseModal}>
