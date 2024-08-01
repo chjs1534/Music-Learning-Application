@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     itemContainer2: {
-        backgroundColor: 'green',
+        backgroundColor: '#8bca84',
         padding: 10,
         marginVertical: 40,
         marginHorizontal: 10,

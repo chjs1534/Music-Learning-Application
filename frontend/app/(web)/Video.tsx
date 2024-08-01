@@ -28,7 +28,7 @@ const VideoWeb: React.FC = () => {
         setUserType(localStorage.getItem('userType'))
         setAuthorId(localStorage.getItem('id'))
         getComments();
-        // getGeneratedReview();
+        getGeneratedReview();
     }, [])
 
     useEffect(() => {
@@ -152,8 +152,14 @@ const VideoWeb: React.FC = () => {
         player.seekBy(time)
     }
 
+    const seek2 = (time) => {
+        player2.replay()
+        player2.seekBy(time)
+    }
+
     const getGeneratedReview = async () => {
-        const res = await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/review?userId=${id}&fileId=${fileId}`, {
+        console.log(id, fileId)
+        const res = await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/getReview?userId=${id}&fileId=${fileId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -164,7 +170,6 @@ const VideoWeb: React.FC = () => {
         setSync(json.downloadSyncUrl)
         setTempo(json.downloadTempoUrl)
         setChord(json.chords)
-        console.log(json.chords, json.downloadTempoUrl, json.downloadSyncUrl)
     }
 
     return (
@@ -184,35 +189,71 @@ const VideoWeb: React.FC = () => {
                             </div>
                         </div>
                     )}
-                    <VideoView
-                        ref={ref}
-                        player={player}
-                        allowsFullscreen
-                        allowsPictureInPicture
-                        style={styles.video}
-                    />
-
-                    {reference ? <VideoView
-                        ref={ref}
-                        player={player2}
-                        allowsFullscreen
-                        allowsPictureInPicture
-                        style={styles.video}
-                    /> : <h3>Add a reference to get AI feedback</h3>}
-
-                </div>
-                <div className="profile-extra">
-                    <h3>Feedback</h3>
-                    {reviews && (reviews.map((comment) =>
-                        <div onClick={() => seek(comment.videoTime)} style={{ display:'flex', flexDirection: 'column', width: 300, margin: 10, border: '1px solid black'}}>
-                            <p style={{  }}>Posted on: {comment.timestamp}</p>
-                            <p style={{ color:'red', }}>At {Math.round(comment.videoTime)}s</p>
-                            <p style={{ flex: 1 }}>{comment.commentText}</p>
+                    <div style={{ display: 'flex', flexDirection: 'row', width: '100vw', justifyContent: 'space-evenly' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                            <p style={{ marginTop: 50, fontFamily: 'sans-serif', fontSize:'1.5rem', fontWeight: 600}}>Your upload:</p>
+                            <VideoView
+                                ref={ref}
+                                player={player}
+                                allowsFullscreen
+                                allowsPictureInPicture
+                                style={styles.video}
+                            />
+                            <p style={{ marginTop: 50, fontFamily: 'sans-serif', fontSize:'1.5rem', fontWeight: 600}}>Your reference:</p>
+                            {reference ? <VideoView
+                                ref={ref}
+                                player={player2}
+                                allowsFullscreen
+                                allowsPictureInPicture
+                                style={styles.video}
+                            /> : <h3>Add a reference to get AI feedback</h3>}
                         </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', padding: 20}}>
+                            <Text style={{fontFamily: 'sans-serif', fontSize:'1.25rem', fontWeight: 600}}>Teacher Feedback:</Text>
+                            <div style={{ overflow: 'scroll', height:'75vh', backgroundColor: '#eeeeee', border: '2px solid orange' }}>
+                                {reviews && (reviews.map((comment) =>
+                                    <div onClick={() => seek(comment.videoTime)} style={{ display:'flex', flexDirection: 'column', width: 300, margin: 10, border: '1px solid black'}}>
+                                        <p style={{  }}>Posted on: {comment.timestamp}</p>
+                                        <p style={{ color:'red', }}>At {Math.round(comment.videoTime)}s</p>
+                                        <p style={{ flex: 1 }}>{comment.commentText}</p>
+                                    </div>
+                                ))}
+                            {userType === "Teacher" ? <button style={{margin: 10, fontFamily: 'sans-serif', fontWeight: 600}} onClick={handleButton}>Add a review</button> : null}
+                            </div>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', padding: 20 , }}>
+                            <Text style={{fontFamily: 'sans-serif', fontSize:'1.25rem', fontWeight: 600}}>Chords:</Text>
+                            <div style={{overflow: 'scroll', height:'75vh', backgroundColor: '#eeeeee', border: '2px solid orange', padding:20}} >
+                                {chord && chord.map((chord) => 
+                                    <TouchableOpacity key={chord.timestamp} className="mb-5" onPress={() => seek2(chord.timestamp)}>
+                                        <div style={{display: 'flex', flexDirection: 'row'}}>
+                                            <Text>At {Math.round(chord.timestamp)}s you should play a </Text><Text style={{fontWeight: 800, marginLeft: 2}}>{chord.chordRef}</Text>
+                                        </div>
+                                        <div style={{display: 'flex', flexDirection: 'row'}}>
+                                            <Text>Chord you played:</Text><Text style={{fontWeight: 800, marginLeft: 2}}>{chord.chordMatch}</Text>
+                                        </div>
+                                        
+                                    </TouchableOpacity>
+                                )}
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                    
 
-                    ))}
                 </div>
-                {userType === "Teacher" ? <button onClick={handleButton}>Add a review</button> : <p>not teahcer</p>}
+                
+                
+                {(sync && tempo && chord) && 
+                    <>
+                        <h1 style={{ fontSize: '1.5rem', fontWeight: 700, fontFamily: 'sans-serif' }}>Machine Generated Feedback</h1>
+                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', width: '100vw', height: 500 }}>
+                            <Image style={{width: 800, height: 450, margin: 20}} source={{ uri: sync }} alt="hello" />
+                            <Image style={{width: 700, height: 550, margin: 20}} source={{ uri: tempo }} alt="hello" />                            
+                        </div>
+                    </>
+                }
             </div>
         </div>
     )
@@ -225,9 +266,9 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
     },
     video: {
-        width: 400,
-        height: 200,
-        margin: 50,
+        width: 600,
+        height: 300,
+        // marginTop: 50,
     },
     timeText: {
         marginTop: 20,
