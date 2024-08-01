@@ -222,7 +222,7 @@ const VideoWeb: React.FC = () => {
                                 allowsPictureInPicture
                                 style={styles.video}
                             />
-                            <p style={{ marginTop: 50, fontFamily: 'sans-serif', fontSize:'1.5rem', fontWeight: 600}}>Your reference:</p>
+                            <p style={{ marginTop: 50, fontFamily: 'sans-serif', fontSize: '1.5rem', fontWeight: 600 }}>Your reference:</p>
                             {reference ? <VideoView
                                 ref={ref}
                                 player={player2}
@@ -231,49 +231,54 @@ const VideoWeb: React.FC = () => {
                                 style={styles.video}
                             /> : <h3>Add a reference to get AI feedback</h3>}
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', padding: 20}}>
-                            <Text style={{fontFamily: 'sans-serif', fontSize:'1.25rem', fontWeight: 600}}>Teacher Feedback:</Text>
-                            <div style={{ overflow: 'scroll', height:'75vh', backgroundColor: '#eeeeee', border: '2px solid orange' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', padding: 20 }}>
+                            <Text style={{ fontFamily: 'sans-serif', fontSize: '1.25rem', fontWeight: 600 }}>Teacher Feedback:</Text>
+                            <div style={{ overflow: 'scroll', height: '75vh', backgroundColor: '#eeeeee', border: '2px solid orange' }}>
                                 {reviews && (reviews.map((comment) =>
-                                    <div onClick={() => seek(comment.videoTime)} style={{ display:'flex', flexDirection: 'column', width: 300, margin: 10, border: '1px solid black'}}>
-                                        <p style={{  }}>Posted on: {comment.timestamp}</p>
-                                        <p style={{ color:'red', }}>At {Math.round(comment.videoTime)}s</p>
-                                        <p style={{ flex: 1 }}>{comment.commentText}</p>
+                                    <div className="feedback-contents" style={{border: '1px solid black'}}>
+                                        <div onClick={() => seek(comment.videoTime)} style={{ display: 'flex', flexDirection: 'column', width: 300, margin: 10 }}>
+                                            <p style={{}}>Posted on: {comment.timestamp}</p>
+                                            <p style={{ color: 'red', }}>At {Math.round(comment.videoTime)}s</p>
+                                            <p style={{ flex: 1 }}>{comment.commentText}</p>
+                                        </div>
+                                        <button>
+                                            <img style={{width:50}}src="https://cdn-icons-png.flaticon.com/128/6996/6996058.png" onClick={() => fetchTTS(comment.commentText)} />
+                                        </button>
                                     </div>
                                 ))}
-                            {userType === "Teacher" ? <button style={{margin: 10, fontFamily: 'sans-serif', fontWeight: 600}} onClick={handleButton}>Add a review</button> : null}
+                                {userType === "Teacher" ? <button style={{ margin: 10, fontFamily: 'sans-serif', fontWeight: 600 }} onClick={handleButton}>Add a review</button> : null}
                             </div>
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', padding: 20 , }}>
-                            <Text style={{fontFamily: 'sans-serif', fontSize:'1.25rem', fontWeight: 600}}>Chords:</Text>
-                            <div style={{overflow: 'scroll', height:'75vh', backgroundColor: '#eeeeee', border: '2px solid orange', padding:20}} >
-                                {chord && chord.map((chord) => 
+                        <div style={{ display: 'flex', flexDirection: 'column', padding: 20, }}>
+                            <Text style={{ fontFamily: 'sans-serif', fontSize: '1.25rem', fontWeight: 600 }}>Chords:</Text>
+                            <div style={{ overflow: 'scroll', height: '75vh', backgroundColor: '#eeeeee', border: '2px solid orange', padding: 20 }} >
+                                {chord && chord.map((chord) =>
                                     <TouchableOpacity key={chord.timestamp} className="mb-5" onPress={() => seek2(chord.timestamp)}>
-                                        <div style={{display: 'flex', flexDirection: 'row'}}>
-                                            <Text>At {Math.round(chord.timestamp)}s you should play a </Text><Text style={{fontWeight: 800, marginLeft: 2}}>{chord.chordRef}</Text>
+                                        <div style={{ display: 'flex', flexDirection: 'row' }}>
+                                            <Text>At {Math.round(chord.timestamp)}s you should play a </Text><Text style={{ fontWeight: 800, marginLeft: 2 }}>{chord.chordRef}</Text>
                                         </div>
-                                        <div style={{display: 'flex', flexDirection: 'row'}}>
-                                            <Text>Chord you played:</Text><Text style={{fontWeight: 800, marginLeft: 2}}>{chord.chordMatch}</Text>
+                                        <div style={{ display: 'flex', flexDirection: 'row' }}>
+                                            <Text>Chord you played:</Text><Text style={{ fontWeight: 800, marginLeft: 2 }}>{chord.chordMatch}</Text>
                                         </div>
-                                        
+
                                     </TouchableOpacity>
                                 )}
                             </div>
-                            
+
                         </div>
                     </div>
-                    
-                    
+
+
 
                 </div>
-                
-                
-                {(sync && tempo && chord) && 
+
+
+                {(sync && tempo && chord) &&
                     <>
                         <h1 style={{ fontSize: '1.5rem', fontWeight: 700, fontFamily: 'sans-serif' }}>Machine Generated Feedback</h1>
                         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', width: '100vw', height: 500 }}>
-                            <Image style={{width: 800, height: 450, margin: 20}} source={{ uri: sync }} alt="hello" />
-                            <Image style={{width: 700, height: 550, margin: 20}} source={{ uri: tempo }} alt="hello" />                            
+                            <Image style={{ width: 800, height: 450, margin: 20 }} source={{ uri: sync }} alt="hello" />
+                            <Image style={{ width: 700, height: 550, margin: 20 }} source={{ uri: tempo }} alt="hello" />
                         </div>
                     </>
                 }
