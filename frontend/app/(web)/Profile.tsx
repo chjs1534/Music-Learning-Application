@@ -555,7 +555,7 @@ const Profile: React.FC = () => {
                   />
                 ))
               ) : (
-                <p>hi</p>
+                null
               )}
             </div>
           </div>

@@ -40,9 +40,6 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // console.log(USERPOOL_ID)
-  // console.log(CLIENT_ID)
-
   const login = async () => {
     // Input error checking
     setIsSubmitting(true);
@@ -75,16 +72,14 @@ const Login = () => {
         }
       })
       .then((authToken :string) => 
-        {console.log(authToken); 
-          const jwtPayload = JSON.parse(atob(authToken.split('.')[1]));
-          let userId = jwtPayload.sub;
-          console.log(userId)
+        {
+        const jwtPayload = JSON.parse(atob(authToken.split('.')[1]));
+        let userId = jwtPayload.sub;
         router.replace({ pathname: '/Home', params: { authToken, userId } })
       })
     })
     .catch((err) => {
       alert(err);
-      console.log(err);
       // wrong account details
     });
 

@@ -65,7 +65,7 @@ const video = () => {
     const pickVideo = async () => {
         console.log("clicked button");
 
-        let result = await ImagePicker.launchCameraAsync({
+        let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Videos,
             allowsEditing: true,
             aspect: [3, 4],
