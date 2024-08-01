@@ -188,7 +188,7 @@ const Profile: React.FC = () => {
     }).then(response => {
       return response.json();
     }).then(data => {
-      setSubAccounts(data.Items);
+      setSubAccounts(data.users);
     })
       .catch(error => {
         console.error('Error:', error.message, error.code || error);
@@ -294,7 +294,7 @@ const Profile: React.FC = () => {
       } else if (userType === "Parent" && user.userType === "Child") {
         // navigate view matches/ id
         return (<button onClick={viewMatch}>view matches</button>);
-      } else if (userType === "Teacher" && user.userType === ("Student" || "Child")) {
+      } else if (userType === "Teacher" && (user.userType === "Child" || user.userType === "Student") ) {
         return (<button onClick={() => setShowTaskModal(true)}>Assign task</button>);
       }
     }

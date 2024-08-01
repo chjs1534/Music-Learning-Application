@@ -69,7 +69,7 @@ const Profile = () => {
       {user && <View className="m-5">
         <Text className='text-black'>About me: </Text>
         <View className="border-gray-400 border-2">
-          <Text className="text-gray-400 m-3">{user.aboutme}</Text>
+          <Text className="text-gray-400 m-3">{user.aboutMe}</Text>
         </View>
       </View>}
       <TouchableOpacity onPress={logout} className="m-5">

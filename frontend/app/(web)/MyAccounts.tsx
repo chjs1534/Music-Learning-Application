@@ -234,8 +234,7 @@ const MyAccounts: React.FC = () => {
             }
             return response.json();
         }).then(data => {
-            console.log("oo", data.Items, data);
-            setSubAccounts(data.Items);
+            setSubAccounts(data.users);
         })
             .catch(error => {
                 console.error('Error:', error.message, error.code || error);
