@@ -1,14 +1,33 @@
 const aws = require('aws-sdk');
 const dynamo = new aws.DynamoDB.DocumentClient();
-
 const tableName = "MatchTable";
 
 exports.handler = async (event) => {
-    const userId = event.pathParameters.userId;
+    let userId;
+    // Error checks
+    if (!event.pathParameters || !event.pathParameters.userId) {
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ error: 'Invalid input' }),
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            }
+        };
+    }
+    userId = event.pathParameters.userId;
+    if (typeof userId !== 'string' || userId.trim() === '') {
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ error: 'Invalid userId' }),
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            }
+        };
+    }
 
-    let requests = [];
+    let requests;
     try {
-        const requests1 = await dynamo.query({
+        requests = await dynamo.query({
             TableName: tableName,
             IndexName: "UserId2Index",
             KeyConditionExpression: "#uid2 = :userId",
@@ -22,11 +41,16 @@ exports.handler = async (event) => {
                 ":request": true
             }
         }).promise();
-        requests = requests1.Items;
     } catch (err) {
-        console.err("Failed to get requests");
+        return {
+            statusCode: err.statusCode,
+            body: JSON.stringify({ error: err.message }),
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            }
+        };
     }
-    const newBody = requests.map(item => ({ userId: item.userId1 }));
+    const newBody = requests.Items.map(item => ({ userId: item.userId1 }));
     
     return {
         statusCode: 200,

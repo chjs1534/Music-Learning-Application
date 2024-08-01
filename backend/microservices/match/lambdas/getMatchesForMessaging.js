@@ -1,5 +1,4 @@
 const aws = require('aws-sdk');
-const sns = new aws.SNS();
 const lambda = new aws.Lambda();
 const lambdaGetUser = "GetUser"
 const lambdaGetMatches = "GetMatches"
@@ -56,9 +55,9 @@ exports.handler = async (event, context) => {
                         Payload: JSON.stringify({ userId: matchUserId })
                     }).promise();
                     const getFamilyPayload = JSON.parse(getFamily.Payload);
-                    matchUserForMessaging = JSON.parse(getFamilyPayload.body).Items[0];
+                    matchUserForMessaging = JSON.parse(getFamilyPayload.body).users[0];
                 } 
-                newBody.push(matchUserForMessaging);
+                newBody.push({userId: matchUserForMessaging.userId});
             } 
         } else if (userType === "Parent") {
             // Get child accounts
@@ -67,7 +66,7 @@ exports.handler = async (event, context) => {
                 Payload: JSON.stringify({ userId: userId })
             }).promise();
             const getFamilyPayload = JSON.parse(getFamily.Payload);
-            const childrenUsers = JSON.parse(getFamilyPayload.body).Items;
+            const childrenUsers = JSON.parse(getFamilyPayload.body).users;
 
             // Get children user matches 
             for (let child of childrenUsers) {

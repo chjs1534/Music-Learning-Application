@@ -6,21 +6,21 @@ exports.handler = async (event) => {
     let lastEvaluatedKey = null;
     const items = [];
     const headers = {
-        'Access-Control-Allow-Origin': '*', // If you need CORS headers
+        'Access-Control-Allow-Origin': '*',
     };
 
     try {
         do {
             const params = {
                 TableName: tableName,
-                ExclusiveStartKey: lastEvaluatedKey,  // For pagination, if necessary
+                ExclusiveStartKey: lastEvaluatedKey,
             };
 
             const data = await dynamo.scan(params).promise();
-            items.push(...data.Items);  // Add the scanned items to the array
-            lastEvaluatedKey = data.LastEvaluatedKey;  // Get the last evaluated key for pagination
+            items.push(...data.Items);
+            lastEvaluatedKey = data.LastEvaluatedKey;
 
-        } while (lastEvaluatedKey);  // Continue scanning if there are more items
+        } while (lastEvaluatedKey);
 
         return {
             statusCode: 200,
