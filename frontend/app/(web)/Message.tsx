@@ -218,7 +218,7 @@ const MessageComponent: React.FC = () => {
           {
             id: data.userId,
             name: data.firstName + ' ' + data.lastName,
-            profilePic: 'https://via.placeholder.com/50',
+            profilePic: 'https://cdn-icons-png.flaticon.com/128/3870/3870822.png',
             messages: [],
           },
         ]);
@@ -253,13 +253,13 @@ const MessageComponent: React.FC = () => {
         <NavBar />
         <div className="message-screen">
           <div className="friend-list">
-            <h2>Friends</h2>
+            <h2 className="friends-text">Friends</h2>
             {friends.map(friend => (
               <div key={friend.id} className="friend" onClick={() => setFriendId(friend.id)}>
                 <img src={friend.profilePic} alt="Profile" className="profile-pic" />
                 <div className="friend-info">
                   <span className="friend-name">{friend.name}</span>
-                  <span className="friend-id">{friend.id}</span>
+                  {/* <span className="friend-id">{friend.id}</span> */}
                 </div>
               </div>
             ))}
@@ -271,7 +271,7 @@ const MessageComponent: React.FC = () => {
                   <img src={friends.find(friend => friend.id === selectedFriendId)?.profilePic} alt="Profile" className="profile-pic-large" />
                   <div className="user-info">
                     <span className="user-name">{friends.find(friend => friend.id === selectedFriendId)?.name}</span>
-                    <span className="user-id">{selectedFriendId}</span>
+                    {/* <span className="user-id">{selectedFriendId}</span> */}
                   </div>
                 </div>
                 <div className="message-container">

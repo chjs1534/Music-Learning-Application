@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import Match from '../../components/Match';
 import NavBar from './NavBar';
-import '../styles/website.css';
+import '../styles/viewMatchStyles.css';
 import TeacherCard from '../../components/TeacherCard';
 
 const ViewMatches = () => {
@@ -89,9 +89,9 @@ const ViewMatches = () => {
       <NavBar />
       <div className="profile">
         
-        <div className="teacher-container">
-          {user && <h1 className="teacher-header">Matches for {user.firstName + " " + user.lastName}</h1>}
-          <div className="myteachers">
+        <div className="view-matches-page">
+          {user && <h1 className="view-matches-for">Matches for {user.firstName + " " + user.lastName}</h1>}
+          <div className="matches-list">
             {teachers && teachers.matches.length > 0 ? (teachers.matches.map(teacher => (
               <Match
                 childId={id}
@@ -99,7 +99,7 @@ const ViewMatches = () => {
                 token={token}
                 onAction={onAction}
               />
-            ))) : <p>No matches</p>}
+            ))) : <p className="matches-text">No matches</p>}
           </div>
         </div>
       </div>

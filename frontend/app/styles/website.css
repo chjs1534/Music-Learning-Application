@@ -5,7 +5,7 @@
     --secondary: #1c8e41;
     /* General */
     --background-color-dark: #f8cab2;
-    --background-color-subtle: #f7e7d6;
+    --background-color-subtle: #fff1e2;
     --dashboard-background: #ffffff;
     --button-bg-color: #ff6631;
     --button-hover-bg-color: #cdceff;
@@ -53,29 +53,38 @@
 }
 
 body.dark-mode {
-    /* General */
-    --background-color: #181818;
     --text-color: #ffffff;
-    --dashboard-background: rgba(30, 30, 30);
-    --button-bg-color: rgb(75, 78, 128);
-    /* A darker shade of the light mode color */
-    --button-hover-bg-color: #6e70b1;
-    /* Nav */
-    --navbar-background: rgba(30, 30, 30);
-    --nav-button-background: #303030;
-    --nav-button-hover: #505050;
+    --primary: #ff5733; /* A slightly darker shade of orange */
+    --primary-light: #ff6b4a;
+    --secondary: #28a745; /* Slightly darker green */
+    /* General */
+    --background-color-dark: #2c2c2c;
+    --background-color-subtle: #393939;
+    --dashboard-background: #484848;
+    --button-bg-color: #ff5733;
+    --button-hover-bg-color: #ff7a5c;
+    /* Navbar */
+    --navbar-background: #4f4f4f;
+    --nav-button-background: #676767;
+    --nav-button-hover: #989898;
     /* Profile */
-    --profile-background: #181818;
     --profile-header-background: #242424;
-    --profile-icon-box-shadow: rgba(255, 255, 255, 0.5);
+    --profile-icon-box-shadow: rgba(255, 255, 255, 0.3);
     --profile-details-text-color: #bbb;
+    --editprofile-button-hover: #555;
     --request-button-background: #1e90ff;
     --request-button-hover: #104e8b;
-    --modal-background: rgba(255, 255, 255, 0.4);
+    --cancel-button: #555;
+    --cancel-button-hover: #777;
+    --save-button-hover: #104e8b;
+    --save-button: #1e90ff;
+    /* MyAccounts */
+    --accounts-background: #181818;
+    --modal-background: rgba(255, 255, 255, 0.1);
     --modal-content-background: #333333;
-    --close-color: #ddd;
+    --close-color: #ccc;
     --close-hover-color: white;
-    --account-details-border: #888;
+    --account-details-border: #555;
     /* Message */
     --message-background: #2c2f33;
     --friend-list-background: #303030;
@@ -89,14 +98,13 @@ body.dark-mode {
     --message-sender-color: #ffffff;
     --send-button-background: none;
     --send-button-color: #ffffff;
-    /* Teacher */
+    /* Teachers */
     --teacher-card-background: #303030;
     --teacher-card-hover: scale(1.05);
     --teacher-rating-color: #ffd700;
     --request-container-border: #ffffff;
-    --settings-background: rgba(30, 30, 30);
+    --settings-background: #303030;
 }
-
 body {
     margin: 0;
     padding: 0;
@@ -113,6 +121,7 @@ body {
     align-items: center;
     z-index: 1;
     overflow-y: auto;
+    background-color: var(--background-color-subtle);
 }
 
 .dashboard {
@@ -384,106 +393,13 @@ body {
     border: 1px solid var(--account-details-border);
 }
 
-
-/* edit profile styles
-.edit-profile {
-    width: 100vw;
-    height: 100vh;
-    background-color: var(--profile-background);
-    display: flex;
-    flex-direction: column;
-    justify-content: top;
-    align-items: center;
-}
-
-.profile-header {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-
-.profile-image-container {
-    position: relative;
-    cursor: pointer;
-}
-
-.profile-icon {
-    width: 128px;
-    height: 128px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.profile-image-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 50%;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.profile-image-container:hover .profile-image-overlay {
-    opacity: 1;
-}
-
-.camera-icon {
-    width: 40px;
-    height: 40px;
-}
-
-.profile-image-input {
-    display: none;
-}
-
-.profile-content {
-    margin-bottom: 20px;
-}
-
-.button-container {
-    display: flex;
-    justify-content: space-between;
-}
-
-.cancel-button,
-.save-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.cancel-button {
-    background-color: var(--cancel-button)
-}
-
-.save-button {
-    background-color: var(--save-button);
-    color: var(--text-color);
-}
-
-.cancel-button:hover {
-    background-color: var(--cancel-button-hover);
-}
-
-.save-button:hover {
-    background-color: var(--save-button-hover);
-} */
-
 /* teacher styles */
 .teacher-container,
 .student-container {
     width: 90%;
     margin: 0 auto;
     padding: 20px 0;
+    background-color: var(--background-color-subtle);
 }
 
 /* Headers */
@@ -491,16 +407,19 @@ body {
 .student-header {
     font-size: 24px;
     font-weight: bold;
-    margin-bottom: 20px;
+    margin: 24px;
     text-align: center;
+    color: var(--text-color);
 }
 
 /* Teachers List */
 .teachers-list,
-.student-list {
+.student-list,
+.my-accounts {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 20px;
+    background-color: var(--background-color-subtle);
 }
 
 /* Teacher Card */
@@ -590,7 +509,7 @@ body {
 
 .request-container {
     font-family: Aeroport;
-    background: var(--primary);
+    background: var(--background-color-dark);
     padding: 1rem 2rem;
     border-radius: 1rem;
     width: 40vw;
@@ -606,14 +525,17 @@ body {
 
 .notifications-title {
     font-size: 6rem;
-    color: var(--secondary)
+    color: var(--text-color)
 }
 
+.no-requests-text {
+    color: var(--text-color)
+}
 
 .my-teachers {
     width: 100vw;
     height: 100vh;
-    background-color: var(--settings-background);
+    background-color: var(--background-color-subtle);
     display: flex;
     flex-direction: column;
     justify-content: top;

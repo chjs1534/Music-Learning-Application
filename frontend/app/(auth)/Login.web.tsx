@@ -140,7 +140,7 @@ const Login: React.FC = () => {
     <div className="auth-screen">
       <div className="auth-container">
         <div>
-          <span className="auth-header-subtext">Welcome to</span>
+          <span className="auth-header-subtext">Login to</span>
           <h1 className="auth-header header">Mewsic</h1>
         </div>
         <div className="input-container">
@@ -184,6 +184,30 @@ const Login: React.FC = () => {
         <button className="button1" type="submit" onClick={login}>
           Login
         </button>
+        <p className="auth-text">────────── Or Continue With ──────────</p>
+        <div className="alternate-auth-options">
+          <img
+            src="https://cdn-icons-png.flaticon.com/128/300/300221.png"
+            alt="Google"
+            className="company-button"
+            data-text="Register with Google"
+            onClick={() => handleLogoClick('https://www.google.com')}
+          />
+          <img
+            src="https://cdn-icons-png.flaticon.com/128/731/731985.png"
+            alt="Apple"
+            className="company-button"
+            data-text="Register with Apple"
+            onClick={() => handleLogoClick('https://www.apple.com')}
+          />
+          <img
+            src="https://cdn-icons-png.flaticon.com/128/5968/5968764.png"
+            alt="Facebook"
+            className="company-button"
+            data-text="Register with Facebook"
+            onClick={() => handleLogoClick('https://www.facebook.com')}
+          />
+        </div>
         <span className="auth-text">
           Don't have an account?{" "}
           <a className="anchor1" href="/register">
