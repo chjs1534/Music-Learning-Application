@@ -4,6 +4,7 @@ import subprocess
 import numpy as np
 import matplotlib.pyplot as plt
 import json
+import os
 from chord_extractor.extractors import Chordino
 
 BUCKET_NAME = "truly-entirely-hip-raccoon"
@@ -22,6 +23,10 @@ def handler(event, context):
         userId = body['userId']
         fileId = body['fileId']
 
+        print('input', userId, fileId)
+
+
+
         key = f'{userId}/{fileId}/upload.mp4'
         key_ref = f'{userId}/{fileId}/reference.mp4'
 
@@ -31,16 +36,21 @@ def handler(event, context):
         video_path_ref = f'/tmp/reference.mp4'
         audio_path_ref = f'/tmp/reference.mp3'
         
+        if os.path.exists(video_path):
+            os.remove(video_path)
+        if os.path.exists(video_path_ref):
+            os.remove(video_path_ref)
+
         # download video from s3 and convert it to audio
         s3 = boto3.client('s3')
 
         s3.download_file(BUCKET_NAME, key, video_path)
         cmd = f'/var/task/ffmpeg -i {video_path} -q:a 0 -map a {audio_path}'
-        subprocess.run(['/var/task/ffmpeg', '-i', video_path, '-q:a', '0', '-map', 'a', audio_path], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+        subprocess.run(['/var/task/ffmpeg', '-i', video_path, '-q:a', '0', '-map', 'a', audio_path])
 
         s3.download_file(BUCKET_NAME, key_ref, video_path_ref)
         cmd = f'/var/task/ffmpeg -i {video_path_ref} -q:a 0 -map a {audio_path_ref}'
-        subprocess.run(['/var/task/ffmpeg', '-i', video_path_ref, '-q:a', '0', '-map', 'a', audio_path_ref], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+        subprocess.run(['/var/task/ffmpeg', '-i', video_path_ref, '-q:a', '0', '-map', 'a', audio_path_ref])
 
         # extract audio from video
         # video_path = f'IMG-3754_2_Trim.mp4'
@@ -62,15 +72,26 @@ def handler(event, context):
         
         # dynamic tempo
         # useful for isolated instruments or drums
-        tempo_dynamic = librosa.feature.tempo(y=y, sr=sr, aggregate=None, std_bpm=4, ac_size=8)
-        tempo_dynamic_ref = librosa.feature.tempo(y=y_ref, sr=sr_ref, aggregate=None, std_bpm=4, ac_size=8)
+        tempo_dynamic = librosa.feature.tempo(y=y, sr=sr_ref, aggregate=None, std_bpm=1, ac_size=20)
+        tempo_dynamic_ref = librosa.feature.tempo(y=y_ref, sr=sr_ref, aggregate=None, std_bpm=1, ac_size=20)
         # print('Tempos: ', tempo_dynamic, tempo_dynamic_ref)
+
 
         fig, ax = plt.subplots()
         times_ref = librosa.times_like(tempo_dynamic_ref, sr=sr_ref)
         times = librosa.times_like(tempo_dynamic, sr=sr)
-        ax.plot(times_ref, tempo_dynamic_ref, label='Reference tempo estimate')
-        ax.plot(times, tempo_dynamic, label='Cover tempo estimate')
+        
+        from scipy.interpolate import make_interp_spline
+        X_Y_Spline_ref = make_interp_spline(times_ref, tempo_dynamic_ref)
+        X_Y_Spline = make_interp_spline(times, tempo_dynamic)
+        X_ref = np.linspace(times_ref.min(), times_ref.max(), 500)
+        Y_ref = X_Y_Spline_ref(X_ref)
+
+        X_ = np.linspace(times.min(), times.max(), 500)
+        Y_ = X_Y_Spline(X_)
+
+        ax.plot(X_ref, Y_ref, label='Reference tempo estimate')
+        ax.plot(X_, Y_, label='Your Upload tempo estimate')
         ax.legend()
         ax.set(xlabel='Time (s)', ylabel='Tempo (BPM)')
         plt.savefig('/tmp/tempo.png')
@@ -107,13 +128,16 @@ def handler(event, context):
         fig, (ax1, ax2) = plt.subplots(nrows=2, sharex=True, sharey=True, figsize=(8,4))
 
         # Plot x_2
-        librosa.display.waveshow(y, sr=sr, ax=ax2)
-        ax2.set(title='cover')
+        librosa.display.waveshow(y, sr=sr, ax=ax2, axis='s')
+        ax2.set(title='Your Upload')
 
         # Plot x_1
-        librosa.display.waveshow(y_ref, sr=sr_ref, ax=ax1)
-        ax1.set(title='reference')
+        librosa.display.waveshow(y_ref, sr=sr_ref, ax=ax1, axis='s')
+        ax1.set(title='Reference')
         ax1.label_outer()
+
+        ax1.set_yticks([])
+        ax2.set_yticks([])
 
         n_arrows = 20
         for tp1, tp2 in wp_s[::len(wp_s)//n_arrows]:
@@ -142,8 +166,6 @@ def handler(event, context):
 
         review = []
         for chord_change_ref in chords[1]:
-            print('hi')
-
             chord = chord_change_ref[0]
             ref_timestamp = chord_change_ref[1]
             # print(f'old {ref_timestamp}')
