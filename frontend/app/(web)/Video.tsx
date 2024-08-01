@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { useVideoPlayer, VideoView } from 'expo-video';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
 import NavBar from './NavBar';
 import '../styles/website.css';
 
@@ -15,6 +15,9 @@ const VideoWeb: React.FC = () => {
     const [showModal, setShowModal] = useState(false);
     const [commentText, setCommentText] = useState<string>();
     const [reset, setReset] = useState()
+    const [sync, setSync] = useState()
+    const [tempo, setTempo] = useState()
+    const [chord, setChord] = useState()
 
     const { id, fileId } = useParams();
 
@@ -25,6 +28,7 @@ const VideoWeb: React.FC = () => {
         setUserType(localStorage.getItem('userType'))
         setAuthorId(localStorage.getItem('id'))
         getComments();
+        // getGeneratedReview();
     }, [])
 
     useEffect(() => {
@@ -146,7 +150,21 @@ const VideoWeb: React.FC = () => {
     const seek = (time) => {
         player.replay()
         player.seekBy(time)
-        console.log(time)
+    }
+
+    const getGeneratedReview = async () => {
+        const res = await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/review?userId=${id}&fileId=${fileId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        const json = await res.json();
+        setSync(json.downloadSyncUrl)
+        setTempo(json.downloadTempoUrl)
+        setChord(json.chords)
+        console.log(json.chords, json.downloadTempoUrl, json.downloadSyncUrl)
     }
 
     return (
@@ -166,7 +184,6 @@ const VideoWeb: React.FC = () => {
                             </div>
                         </div>
                     )}
-                    <p>{id}</p>
                     <VideoView
                         ref={ref}
                         player={player}
@@ -187,16 +204,16 @@ const VideoWeb: React.FC = () => {
                 <div className="profile-extra">
                     <h3>Feedback</h3>
                     {reviews && (reviews.map((comment) =>
-                        <div onClick={() => seek(comment.videoTime)} style={styles.div2}>
-                            <p>{comment.videoTime}</p>
-                            <p>{comment.commentText}</p>
+                        <div onClick={() => seek(comment.videoTime)} style={{ display:'flex', flexDirection: 'column', width: 300, margin: 10, border: '1px solid black'}}>
+                            <p style={{  }}>Posted on: {comment.timestamp}</p>
+                            <p style={{ color:'red', }}>At {Math.round(comment.videoTime)}s</p>
+                            <p style={{ flex: 1 }}>{comment.commentText}</p>
                         </div>
 
                     ))}
                 </div>
                 {userType === "Teacher" ? <button onClick={handleButton}>Add a review</button> : <p>not teahcer</p>}
             </div>
-
         </div>
     )
 }

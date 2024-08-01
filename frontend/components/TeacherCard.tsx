@@ -62,7 +62,6 @@ const TeacherCard: React.FC<TeacherCardProps> = ({ name, pfp, rating, reviews, s
         <img src={"https://cdn-icons-png.flaticon.com/128/2354/2354280.png"} alt={`${name}'s profile`} className="teacher-pfp" />
         <p className="teacher-name">Name : {user.firstName} {user.lastName}</p>
         <p className="teacher-aboutme">About Me : {user.aboutMe}</p>
-        <p className="teacher-rating">Rating: {rating} ({reviews})</p>
       </div>}
     </div >
   )
