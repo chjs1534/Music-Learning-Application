@@ -308,16 +308,6 @@ const Profile: React.FC = () => {
       });
   };
 
-  // cases
-
-  // teacher view own, student
-
-  // parent views own, child, teacher
-  // child will have button to view their matches
-  // teacher willl have button to request a match
-  // student views own, teacher
-  // teacher will have requst match button
-
   const renderContent = () => {
     if (id === localStorage.getItem("id")) {
       return (
@@ -338,18 +328,18 @@ const Profile: React.FC = () => {
           );
         } else {
           // unmatch student and teacher if already matched
-          return <button onClick={unmatch}>unmatch</button>;
+          return <button className="request-button" onClick={unmatch}>Unmatch</button>;
         }
       } else if (userType === "Parent" && user.userType === "Teacher") {
         // request match have modal for kids
         return (
           <button className="request-button" onClick={() => setShowModal(true)}>
-            request match
+            Request Match
           </button>
         );
       } else if (userType === "Parent" && user.userType === "Child") {
         // navigate view matches/ id
-        return <button onClick={viewMatch}>view matches</button>;
+        return <button className="request-button"onClick={viewMatch}>View matches</button>;
       } else if (
         userType === "Teacher" &&
         (user.userType === "Child" || user.userType === "Student")
@@ -389,7 +379,7 @@ const Profile: React.FC = () => {
     } else if (userType === "Teacher") {
       return (
         <div className="teacher-details">
-          <h2>Certifications & Experience</h2>
+          <h2 className="profile-text">Certifications & Experience</h2>
           {/* Map through certifications data */}
           <div className="certification-card">
             <h3>Certification Name</h3>
@@ -450,16 +440,16 @@ const Profile: React.FC = () => {
                 <span className="close" onClick={() => setShowModal(false)}>
                   &times;
                 </span>
-                For which Child?
+                <p className="profile-text">For which Child?</p>
                 <div className="modal-accounts-div">
                   {subAccounts && subAccounts.length > 0
                     ? subAccounts.map((acc) => (
-                        <StudentCard
-                          id={acc.userId}
-                          token={token}
-                          handleClick={handleRequest}
-                        />
-                      ))
+                      <StudentCard
+                        id={acc.userId}
+                        token={token}
+                        handleClick={handleRequest}
+                      />
+                    ))
                     : null}
                 </div>
               </div>
@@ -471,7 +461,7 @@ const Profile: React.FC = () => {
                 <span className="close" onClick={() => setShowTaskModal(false)}>
                   &times;
                 </span>
-                Assign Task
+                <p className="profile-text">Assign Task</p>
                 <form onSubmit={assign}>
                   <div className="form-group">
                     <label htmlFor="date">Due Date:</label>
@@ -565,14 +555,14 @@ const Profile: React.FC = () => {
           userType === "Teacher" &&
           user.userType === ("Student" || "Child") && (
             <div className="profile-extra">
-              <h2>Assigned Tasks</h2>
+              <h2 className="profile-text">Assigned Tasks</h2>
               {assignedTasks &&
                 assignedTasks.tasks.map((task) => (
                   <div style={{ border: "1px solid black" }}>
-                    <p>
+                    <p className="profile-text">
                       Due: {task.dueDate} Title: {task.title}
                     </p>
-                    <p>Comment: {task.text}</p>
+                    <p className="profile-text">Comment: {task.text}</p>
                     {task.submitted && (
                       <a href={task.submissionLink}>View submission</a>
                     )}
@@ -583,13 +573,6 @@ const Profile: React.FC = () => {
 
         {user && user.userType === "Teacher" && (
           <div className="profile-extra">
-            Reviews:
-            {user.teacherReviews.map((review, index) => (
-              <div key={index} className="review-item">
-                <div className="review-rating">Rating: {review.rating} ★</div>
-                <div className="review-message">{review.reviewMsg}</div>
-              </div>
-            ))}
             {loggedInUserId !== user.userId && (
               <div className="write-review">
                 <textarea
@@ -610,10 +593,19 @@ const Profile: React.FC = () => {
                   ))}
                 </div>
                 <button className="submit-review" onClick={handleSubmitReview}>
-                  Submit Review
+                  <p className="profile-text submit-review-text">Submit Review</p>
                 </button>
               </div>
             )}
+
+            <p className="profile-text profile-header">Reviews</p>
+            {user.teacherReviews.map((review, index) => (
+              <div key={index} className="review-item">
+                <div className="review-rating">Rating: {review.rating} ★</div>
+                <div className="review-message">{review.reviewMsg}</div>
+              </div>
+            ))}
+
           </div>
         )}
       </div>

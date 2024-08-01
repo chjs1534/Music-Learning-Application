@@ -70,14 +70,14 @@ const Notifications = () => {
     <div className="homepage">
       <NavBar />
       <div className="profile">
-        <h1 className="header notifications-title">Notifications</h1>
+        <h1 className="notifications-title">Notifications</h1>
         <div className="all-requests">
           {requests && requests.requests.length > 0 ? (
             requests.requests.map((request) => (
               <Request id={request.userId} token={token} onAction={onAction} />
             ))
           ) : (
-            <p>No requests...</p>
+            <p className="no-requests-text">No requests...</p>
           )}
         </div>
       </div>

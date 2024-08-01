@@ -87,19 +87,20 @@ const NavBar: React.FC = () => {
           <span className="nav-button-text">Sheet Music</span>
         </button>
         <button title="Messages" className="nav-button" onClick={() => handleNavigation('/message')}>
-          <img src="https://cdn-icons-png.flaticon.com/128/542/542638.png" alt="Message" className="nav-icon" />
+          {/* <img src="https://cdn-icons-png.flaticon.com/128/542/542638.png" alt="Message" className="nav-icon" /> */}
+          <img src="https://cdn-icons-png.flaticon.com/128/11765/11765265.png" alt="Message" className="nav-icon" />
           {/* <span className="nav-button-text">Message</span> */}
         </button>
         <button title="Notifications" className="nav-button" onClick={() => handleNavigation('/notifications')}>
-          <img src="https://cdn-icons-png.flaticon.com/128/2529/2529521.png" alt="Notifications" className="nav-icon" />
+          <img src="https://cdn-icons-png.flaticon.com/128/10175/10175334.png" alt="Notifications" className="nav-icon" />
           {/* <span className="nav-button-text">Notifications</span> */}
         </button>
         <button title="My Profile" className="nav-button" onClick={() => handleNavigation(`/profile/${id}`)}>
-          <img src="https://cdn-icons-png.flaticon.com/128/1144/1144760.png" alt="Profile" className="nav-icon" />
+          <img src="https://cdn-icons-png.flaticon.com/128/3870/3870822.png" alt="Profile" className="nav-icon" />
           {/* <span className="nav-button-text">Profile</span> */}
         </button>
         <button title="Settings" className="nav-button" onClick={() => handleNavigation('/settings')}>
-          <img src="https://cdn-icons-png.flaticon.com/128/2099/2099058.png" alt="Settings" className="nav-icon" />
+          <img src="https://cdn-icons-png.flaticon.com/128/738/738853.png" alt="Settings" className="nav-icon" />
           {/* <span className="nav-button-text">Settings</span> */}
         </button>
         {/* <img src="https://cdn-icons-png.flaticon.com/128/2099/2099058.png" alt="Settings" className="nav-icon" onClick={() => handleNavigation('/settings')}/> */}

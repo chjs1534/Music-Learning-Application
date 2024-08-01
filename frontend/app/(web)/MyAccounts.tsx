@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent, useRef, useEffect } from 'react';
 import { AuthenticationDetails, CognitoUser, CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
-import '../styles/website.css';
+import '../styles/myAccountStyles.css';
 import NavBar from './NavBar';
 import { poolData } from '../config/poolData';
 import StudentCard from '../../components/StudentCard';
@@ -249,7 +249,7 @@ const MyAccounts: React.FC = () => {
         <div className="homepage">
             <NavBar />
             <div className="my-accounts">
-                <button className="button1" onClick={() => setShowModal(true)}>Create Account</button>
+                <h2>My Accounts</h2>
                 {showModal && (
                     <div className="modal" ref={modalRef} onClick={handleCloseModal}>
                         <div className="modal-content">
@@ -339,8 +339,7 @@ const MyAccounts: React.FC = () => {
                         </div>
                     </div>
                 )}
-                <div className="myteachers">
-                    <h2>My Accounts</h2>
+                <div className="accounts">
                     {subAccounts && subAccounts.length > 0 ? (subAccounts.map(acc => (
                         <StudentCard
                             id={acc.userId}
@@ -350,6 +349,7 @@ const MyAccounts: React.FC = () => {
                     ))) : null}
                 </div>
             </div>
+            <button className="create-account-button" onClick={() => setShowModal(true)}>Create Account</button>
         </div>
     );
 };

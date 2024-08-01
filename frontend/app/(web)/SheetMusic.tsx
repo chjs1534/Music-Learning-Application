@@ -75,7 +75,7 @@ const SheetMusic: React.FC = () => {
     return (
         <div className="homepage">
           <NavBar />
-          <h2>Practice With Our Music Sheets!</h2>
+          <h1 className="sheet-text">Practice With Our Music Sheets!</h1>
           <div className="filter-container">
             <input
               type="text"

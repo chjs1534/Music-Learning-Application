@@ -201,12 +201,11 @@ const Register: React.FC = () => {
 
   return (
     <div className="auth-screen">
-      <div className="auth-banner">
-        <h1 className="header-logo">Mewsic</h1>
-        <img className="gif" src="https://media0.giphy.com/media/CPWmNCzfMFgC8QUAbp/giphy.gif?cid=6c09b952s5rjd6w005v10j0yd1movcoho6iaixxs3pdguhig&ep=v1_internal_gif_by_id&rid=giphy.gif&ct=s" />
-      </div>
       <div className="auth-container">
-        <h2 className="auth-header">Register</h2>
+        <div>
+          <span className="auth-header-subtext">Register to</span>
+          <h1 className="auth-header header">Mewsic</h1>
+        </div>
         <div className="input-container user-type">
           {['Student', 'Parent', 'Teacher'].map((type) => (
             <button
@@ -313,7 +312,11 @@ const Register: React.FC = () => {
         </div>
         <div className="error-message-container">
           {errorMessage && <span className="error-message">{'*' + errorMessage}</span>}
+          <a className="forgot-password-anchor" href="/">
+            Forgot Password?
+          </a>
         </div>
+        
         <button className="button1" type="submit" onClick={register}>Register</button>
         <p className="auth-text">────────── Or Continue With ──────────</p>
         <div className="alternate-auth-options">

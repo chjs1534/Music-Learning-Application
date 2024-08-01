@@ -4,6 +4,7 @@ import { useVideoPlayer, VideoView } from 'expo-video';
 import { StyleSheet, ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
 import NavBar from './NavBar';
 import '../styles/website.css';
+import axios from "axios";
 
 const VideoWeb: React.FC = () => {
     const [video, setVideo] = useState();
@@ -172,6 +173,28 @@ const VideoWeb: React.FC = () => {
         setChord(json.chords)
     }
 
+    const fetchTTS = async (text: string) => {
+        try {
+            const response = await axios.get(
+                `https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/tts?text=${encodeURIComponent(
+                    text
+                )}`,
+                {
+                    responseType: "arraybuffer",
+                }
+            );
+            const audioContext = new (window.AudioContext ||
+                window.webkitAudioContext)();
+            const audioBuffer = await audioContext.decodeAudioData(response.data);
+            const source = audioContext.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(audioContext.destination);
+            source.start();
+        } catch (error) {
+            console.error("Error fetching TTS:", error);
+        }
+    };
+
     return (
         <div className="homepage">
             <NavBar />
@@ -190,8 +213,8 @@ const VideoWeb: React.FC = () => {
                         </div>
                     )}
                     <div style={{ display: 'flex', flexDirection: 'row', width: '100vw', justifyContent: 'space-evenly' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                            <p style={{ marginTop: 50, fontFamily: 'sans-serif', fontSize:'1.5rem', fontWeight: 600}}>Your upload:</p>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                            <p style={{ marginTop: 50, fontFamily: 'sans-serif', fontSize: '1.5rem', fontWeight: 600 }}>Your upload:</p>
                             <VideoView
                                 ref={ref}
                                 player={player}

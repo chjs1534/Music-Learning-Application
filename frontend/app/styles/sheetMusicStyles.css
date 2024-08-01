@@ -169,3 +169,9 @@ body.dark-mode {
     border-radius: 4px;
     border: 1px solid var(--sheet-border-color);
 }
+
+.sheet-text {
+    font-size: 3rem;
+    margin: 24px;
+    color: var(--sheet-text-color);
+}

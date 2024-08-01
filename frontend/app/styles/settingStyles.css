@@ -12,7 +12,7 @@
 body.dark-mode {
     --settings-background: #212529;
     --settings-text-color: #f8f9fa;
-    --settings-input-background: #343a40;
+    --settings-input-background: #343a40; 
     --settings-button-bg-color: #495057;
     --settings-button-hover-bg-color: #6c757d;
     --settings-button-text-color: #f8f9fa;
