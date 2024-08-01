@@ -55,32 +55,26 @@ const Profile = () => {
   };
 
   return (
-    <SafeAreaView className="bg-black h-full">
-      <Text className="text-3xl font-semibold text-white m-5">Profile</Text>
+    <SafeAreaView className='bg-gray-100 h-full'>
+      <Text className='text-3xl font-semibold m-5 text-black'>Profile</Text>
       <View className="display-flex flex-row">
-        <Image source={require('../assets/profile.png')} style={[styles.image, {tintColor: 'gray'}]} className="m-5"/>
+        <Image source={require('../assets/profile.png')} style={[styles.image, { tintColor: 'gray' }]} className="m-5" />
         {user &&
           <View className="flex-col mt-6">
-            <Text className="text-white text-2xl">{user.firstName} {user.lastName}</Text>
-            <Text className="text-gray-500 text-1.5xl">@{user.username}</Text>
+            <Text className='text-black text-2xl'>{user.firstName} {user.lastName}</Text>
+            <Text className='text-gray-500 text-1.5xl'>@{user.username}</Text>
           </View>
-          }
+        }
       </View>
-      <View className="m-5">
-        <Text className="text-white">About me:</Text>
-        <View className="border-white border-2">
-          <Text className="text-gray-300 m-3">about me text</Text>
+      {user && <View className="m-5">
+        <Text className='text-black'>About me: </Text>
+        <View className="border-gray-400 border-2">
+          <Text className="text-gray-400 m-3">{user.aboutme}</Text>
         </View>
-      </View>
-      <View className="m-5">
-        <Text className="text-white">User Statistics</Text>
-        <View className="border-white border-2">
-          <Text className="text-gray-300 m-3">Graph</Text>
-        </View>
-      </View>
+      </View>}
       <TouchableOpacity onPress={logout} className="m-5">
-        <Text className="text-blue-400">Logout</Text>
-      </TouchableOpacity>
+          <Text className="text-blue-400">Logout</Text>
+        </TouchableOpacity>
     </SafeAreaView>
   )
 }

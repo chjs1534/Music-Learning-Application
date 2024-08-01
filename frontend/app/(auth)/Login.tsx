@@ -95,31 +95,34 @@ const Login = () => {
   // make an option to show password
 
   return (
-    <SafeAreaView className="h-full bg-black">
+    <SafeAreaView className="h-full bg-gray-200">
       <ScrollView>
         <View className="w-full justify-center min-h-[85vh] px-4 my-6">
-          <Text className="text-4xl font-semibold text-white">Log in to Mewsic</Text>
+        <Text className="text-4xl font-semibold text-blue-500">Log in to Mewsic</Text>
+        <View className="bg-white pl-5 pr-5 pb-5 mt-5 rounded-2xl">
           <FormField 
-            title="Username"
-            value={username}
-            handleChangeText={(e) => setUsername(e)}
-            otherStyles="mt-7"
-            placeholder="Your username"
-          />
-          <FormField 
-            title="Password"
-            value={password}
-            handleChangeText={(e) => setPassword(e)}
-            otherStyles="mt-7"
-            placeholder="Your password"
-          />
-          <Button
-            title="Login"
-            handlePress={login}
-            containerStyles="mt-10 bg-white"
-            isLoading={isSubmitting}
-            textStyles="text-lg font-semibold"
-          />
+              title="Username"
+              value={username}
+              handleChangeText={(e) => setUsername(e)}
+              otherStyles="mt-7 bg-white"
+              placeholder="Your username"
+            />
+            <FormField 
+              title="Password"
+              value={password}
+              handleChangeText={(e) => setPassword(e)}
+              otherStyles="mt-7 bg-white"
+              placeholder="Your password"
+            />
+            <Button
+              title="Log in"
+              handlePress={login}
+              containerStyles="mt-10"
+              isLoading={isSubmitting}
+              textStyles="text-lg font-semibold text-white"
+            />
+        </View>
+          
         </View>
       </ScrollView>
     </SafeAreaView>

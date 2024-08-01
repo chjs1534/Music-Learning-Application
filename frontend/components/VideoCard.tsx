@@ -39,7 +39,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ id, fileId, token, handlePress, w
 
     return (
         <>
-            {thumbnail && (<TouchableOpacity onPress={handlePress} className="justify-center items-center m-5 border-2 border-white">
+            {thumbnail && (<TouchableOpacity onPress={handlePress} className="justify-center items-center m-5 border-2 border-blue-500">
                 <StyledImage style={web ? styles.web : styles.mobile} source={{ uri: thumbnail }} alt="hello" />
             </TouchableOpacity>)}
         </>

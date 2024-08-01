@@ -9,7 +9,8 @@ const Tasks = () => {
   const [tasks, setTasks] = useState([]);
 
   const params = useGlobalSearchParams();
-  const { authToken, userId } = params;
+  const { authToken, userId } = params; 
+  
 
   useEffect(() => {
     getTasks()
@@ -34,11 +35,11 @@ const Tasks = () => {
   }
 
   return (
-    <SafeAreaView className="bg-black h-full">
-      <Text className="text-3xl font-semibold text-white m-5">Tasks</Text>
+    <SafeAreaView className='bg-gray-100 h-full'>
+      <Text className='text-black text-3xl font-semibold m-5'>Tasks</Text>
       <View className="justify-center items-center h-5/6">
         {
-          tasks && <Calendar tasks={tasks} web={false} id={userId} token={authToken}/>
+          tasks && <View className="border-2 border-gray-400"><Calendar tasks={tasks} web={false} id={userId} token={authToken}/></View>
         }
       </View>
 

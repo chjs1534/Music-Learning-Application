@@ -1,25 +1,32 @@
-import { StyleSheet, Text, View, BackHandler, Alert, SafeAreaView , TouchableOpacity, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, BackHandler, Alert, SafeAreaView , TouchableOpacity, ScrollView, Image } from 'react-native'
 import React, { useState, useEffect, useRef } from 'react'
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Video } from 'expo-av';
 import * as ImagePicker from "expo-image-picker"
 import * as VideoThumbnails from 'expo-video-thumbnails'
-import Button from '../components/Button';
 
 const video = () => {
     const [video, setVideo] = useState();
     const [reference, setReference] = useState();
     const [reviews, setReviews] = useState();
+    const [vidSwitch, setVidSwitch] = useState(true);
+    const [tempo, setTempo] = useState();
+    const [sync, setSync] = useState();
+    const [chords, setChords] = useState();
 
     const route = useRoute();
     const { id, fileId, token } = route.params;
     const ref = useRef(null);
+    const ref2 = useRef(null);
 
     useEffect(() => {
-        getVideo()
-        getReference()
-        getComments()
+        getVideo();
+        getReference();
+        getComments();
+        getGeneratedReview();
     }, []);
+
+
 
     useEffect(() => {
         if (video != null) {
@@ -96,10 +103,31 @@ const video = () => {
                 return response.json()
             })
             .then(json => {
-                fetch(json.uploadVideoUrl, { method: 'PUT', body: videoBlob });
+                fetch(json.uploadVideoUrl, { method: 'PUT', body: videoBlob }).then(() => {
+                    getReference().then(() => {
+                        generateReview().then(() => {
+                            getGeneratedReview()
+                        })
+                    })
+                });
                 fetch(json.uploadThumbnailUrl, { method: 'PUT', body: thumbnailBlob });
             })
     };
+
+    const generateReview = async () => {
+        fetch("https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/review", {
+            method: 'PUT',
+            headers: {
+                Authorization: token as string,
+            },
+            body: JSON.stringify({
+                userId: id,
+                fileId: fileId
+            }),
+        }).catch(error => {
+            console.log(error)
+        })
+    }
 
     const getComments = async () => {
         const res = await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/comments?userId=${id}&fileId=${fileId}`, {
@@ -110,21 +138,38 @@ const video = () => {
         });
 
         const json = await res.json();
-        console.log(json)
         setReviews(json.comments);
     }
+
     const handleTimestampClick = async (timestamp) => {
         const seconds = timestamp * 1000
         if (ref.current) {
             await ref.current.setPositionAsync(seconds);
-            console.log("set position to"+ {timestamp})
+            await ref.current.playAsync();
         }
     };
 
+    const getGeneratedReview = async () => {
+        console.log('generating refview')
+        const res = await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/review?userId=${id}&fileId=${fileId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        const json = await res.json();
+        setSync(json.downloadSyncUrl)
+        setTempo(json.downloadTempoUrl)
+        setChords(json.chords)
+        console.log(json.chords)
+    }
+
+
     return (
         <View>
-            <SafeAreaView className="bg-black h-full">
-                <View className="m-1 border-white border-2 p-1">
+            <SafeAreaView className="bg-gray-100 h-full">
+                {vidSwitch ? <View className="m-1 border-blue-500 border-2 p-1">
                     <Video
                         ref={ref}
                         source={{ uri: video }}
@@ -136,9 +181,9 @@ const video = () => {
                         useNativeControls
                     />
                 </View>
-                {reference ?
-                    <View className="m-1 border-white border-2 p-1">
+                : <View className="m-1 border-purple-500 border-2 p-1">
                     <Video
+                        ref={ref2}
                         source={{ uri: reference }}
                         rate={1.0}
                         volume={1.0}
@@ -148,23 +193,49 @@ const video = () => {
                         useNativeControls
                     />
                 </View>
-                    : <Button
-                        title="Upload reference Video"
-                        containerStyles="bg-green-400 m-5 pt-5 pb-5 pl-7 pr-7"
-                        textStyles="text-lg font-semibold"
-                        handlePress={pickVideo}
-                    />}
-                <Text></Text>
-                {reviews ? 
-                    <ScrollView>
-                        {reviews.map((review) => (
-                            <TouchableOpacity className="border-gray border-2 mt-2" onPress={() => handleTimestampClick(review.videoTime)}>
-                                <Text className="text-gray-300">At {Math.round(review.videoTime)}s Posted on {review.timestamp}</Text>
-                                <Text className="text-gray-300">{review.commentText}</Text>
+                }
+                <View className="display-flex flex-row justify-around">
+                    <TouchableOpacity className="bg-blue-500 m-5 p-3" onPress={() => setVidSwitch(!vidSwitch)}>
+                        {vidSwitch ? <Text className="text-white">View reference</Text> : <Text className="text-white">View upload</Text>}
+                    </TouchableOpacity>
+                    <TouchableOpacity className="bg-blue-500 m-5 p-3" onPress={pickVideo}>
+                        <Text className="text-pink-100">Upload reference</Text>
+                    </TouchableOpacity>
+                </View>
+                
+                <View className="mt-5 ml-5 mr-5">
+                    <Text className="">Teacher reviews:</Text>
+                    {reviews ? 
+                        <ScrollView>
+                            {reviews.map((review) => (
+                                <TouchableOpacity key={review.videoTime} className="border-gray border-2 mt-2" onPress={() => handleTimestampClick(review.videoTime)}>
+                                    <Text className="">Posted on {review.timestamp}</Text>
+                                    <Text className="">(At {Math.round(review.videoTime)}s) {review.commentText}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
+                        : <Text className="text-gray-500 self-center">No teacher reviews yet</Text>
+                    }
+                </View>
+                
+                {(sync && tempo && chords) && 
+                    <ScrollView className="m-5">
+                        <Text className="text-black mt-5">Graphs:</Text>
+                        <ScrollView>
+                            <View className="m-5 justify-center items-center">
+                                <Image style={{width: 350, height: 200, margin: 20}} source={{ uri: sync }} alt="hello" />
+                                <Image style={{width: 350, height: 250, margin: 20}} source={{ uri: tempo }} alt="hello" />
+                                
+                            </View>
+                        </ScrollView>
+                        <Text className="text-black mt-5 mb-5">Chords:</Text>
+                        {chords.map((chord) => 
+                            <TouchableOpacity key={chord.timestamp} className="mb-5" onPress={() => handleTimestampClick(chord.timestamp)}>
+                                <Text>At {Math.round(chord.timestamp)}s you should play a {chord.chordRef}</Text>
+                                <Text>Chord you played: {chord.chordMatch}</Text>
                             </TouchableOpacity>
-                        ))}
+                        )}
                     </ScrollView>
-                    : <Text className="text-gray-500 self-center">No reviews yet</Text>
                 }
             </SafeAreaView>
         </View>

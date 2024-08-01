@@ -9,6 +9,7 @@ import profile from "../assets/profile.png"
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const TabIcon = ({ icon, color, name, focused }) => {
+  
   return (
     <View className={`flex items-center justify-center gap-2 ${(Platform.OS === 'ios') ? "pt-10" : ""}`}>
       <Image
@@ -33,14 +34,11 @@ const TabsLayout = () => {
       <SafeAreaView style={styles.container}>
         <Tabs
           screenOptions={{
-            tabBarActiveTintColor: "#1e88e5",
-            tabBarInactiveTintColor: "#9e9e9e",
+            tabBarActiveTintColor: 'white',
+            tabBarInactiveTintColor:'#a9a9a9',
             tabBarShowLabel: false,
             tabBarStyle: {
-              backgroundColor: "#202020",
-              borderTopWidth: 0,
-              borderBottomWidth: 0,
-              borderTopColor: "#4059AD",
+              backgroundColor: '#3B82F6',
               height: 80,
             },
           }}
@@ -109,7 +107,7 @@ const TabsLayout = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#202020",
+    backgroundColor: "#DDD6FE",
   },
 });
 
