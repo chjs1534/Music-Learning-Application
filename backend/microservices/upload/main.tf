@@ -102,6 +102,7 @@ resource "aws_s3_bucket_cors_configuration" "video_storage" {
   }
 
   cors_rule {
+    allowed_headers = ["*"]
     allowed_methods = ["GET"]
     allowed_origins = ["*"]
   }
@@ -504,7 +505,7 @@ resource "aws_apigatewayv2_integration" "getReview" {
 resource "aws_apigatewayv2_route" "getReview" {
   api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
 
-  route_key = "GET /review"
+  route_key = "GET /getReview"
   target    = "integrations/${aws_apigatewayv2_integration.getReview.id}"
   # authorization_type = "JWT"
   # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id

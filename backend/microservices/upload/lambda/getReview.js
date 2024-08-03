@@ -14,7 +14,11 @@ exports.handler = async (event, context, callback) => {
   try {
     const userId = event.queryStringParameters.userId;
     const fileId = event.queryStringParameters.fileId;
- 
+    
+    if (!userId || !fileId) {
+      throw new Error('Missing query string parameters.');
+    }
+
     const response = await docClient.send(new GetCommand({
       TableName: 'VideosTable',
       Key: {
@@ -22,11 +26,9 @@ exports.handler = async (event, context, callback) => {
         fileId: `${fileId}`,
       },
     }));
-    console.log(response);
-    console.log(response.Item)
-    console.log(response.Item.review)
-    if (response.Item.review == ['empty']) {
-      throw new Error('Review does not exist.');
+
+    if (!response.Item || response.Item.review == ['empty']) {
+      throw new Error('Review does not exist in database.');
     }
 
     const tempoParams = {
@@ -44,15 +46,7 @@ exports.handler = async (event, context, callback) => {
       await s3Client.send(new HeadObjectCommand(syncParams));  
     } catch (e) {
       if (e.name === 'NotFound') {
-        return {
-          statusCode: 422,
-          body: JSON.stringify({
-            error: 'Object does not exist in S3.'
-          }),
-          headers: {
-              'Access-Control-Allow-Origin': '*',
-          },
-        };
+        throw new Error('Review does not exist in S3.');
       }
     }
 
@@ -68,7 +62,6 @@ exports.handler = async (event, context, callback) => {
       { expiresIn: 600 },
     );
 
-
     callback(null, {
       statusCode: 200,
       body: JSON.stringify({
@@ -81,12 +74,23 @@ exports.handler = async (event, context, callback) => {
       },
     });
   } catch (e) {
-    console.log(e)
+    let statusCode = 400;
+    let message = e.message;
+
+    if (message.includes('Missing query string parameters.')) {
+      statusCode = 400;
+    } else if (message.includes('Review does not exist')) {
+      statusCode = 422;
+    } else {
+      statusCode = 500;
+      message = 'Internal Server Error';
+    }
+    
     callback(null, {
-      statusCode: 400,
-      body: {
-        res: e
-      },
+      statusCode: statusCode,
+      body: JSON.stringify({
+        error: message,
+      }),
       headers: {
           'Access-Control-Allow-Origin': '*',
       },

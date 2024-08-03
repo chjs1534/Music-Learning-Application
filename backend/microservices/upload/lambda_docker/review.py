@@ -18,14 +18,9 @@ def convert_timestamp(timestamp_ref, wp_s):
 
 def handler(event, context):
     try:
-        print('1')
         body = json.loads(event['body'])
         userId = body['userId']
         fileId = body['fileId']
-
-        print('input', userId, fileId)
-
-
 
         key = f'{userId}/{fileId}/upload.mp4'
         key_ref = f'{userId}/{fileId}/reference.mp4'
@@ -52,41 +47,24 @@ def handler(event, context):
         cmd = f'/var/task/ffmpeg -i {video_path_ref} -q:a 0 -map a {audio_path_ref}'
         subprocess.run(['/var/task/ffmpeg', '-i', video_path_ref, '-q:a', '0', '-map', 'a', audio_path_ref])
 
-        # extract audio from video
-        # video_path = f'IMG-3754_2_Trim.mp4'
-        # audio_path = f'audio.mp3'
-        print('2')
-
-        # subprocess.run(['ffmpeg', '-i', video_path, '-q:a', '0', '-map', 'a', audio_path])
 
         y, sr = librosa.load(audio_path)
         y_ref, sr_ref = librosa.load(audio_path_ref)
-        
-        tempo, beat_frames = librosa.beat.beat_track(y=y, sr=sr)
-        tempo_ref, beat_frames_ref = librosa.beat.beat_track(y=y_ref, sr=sr_ref)
 
-        # print("Tempo: ", tempo, tempo_ref)
-        # print("Beat Frames: ", beat_frames, beat_frames_ref)
-        #print("Beat diffs: ", [ beat_frames[i] - beat_frames_ref[i] for i in range(min(len(beat_frames), len(beat_frames_ref))) ])
-        print('3')
-        
-        # dynamic tempo
-        # useful for isolated instruments or drums
+        # dynamic tempo and save plot to s3
         tempo_dynamic = librosa.feature.tempo(y=y, sr=sr_ref, aggregate=None, std_bpm=1, ac_size=20)
         tempo_dynamic_ref = librosa.feature.tempo(y=y_ref, sr=sr_ref, aggregate=None, std_bpm=1, ac_size=20)
-        # print('Tempos: ', tempo_dynamic, tempo_dynamic_ref)
-
 
         fig, ax = plt.subplots()
         times_ref = librosa.times_like(tempo_dynamic_ref, sr=sr_ref)
         times = librosa.times_like(tempo_dynamic, sr=sr)
         
+        # smoothing for the plot
         from scipy.interpolate import make_interp_spline
         X_Y_Spline_ref = make_interp_spline(times_ref, tempo_dynamic_ref)
         X_Y_Spline = make_interp_spline(times, tempo_dynamic)
         X_ref = np.linspace(times_ref.min(), times_ref.max(), 500)
         Y_ref = X_Y_Spline_ref(X_ref)
-
         X_ = np.linspace(times.min(), times.max(), 500)
         Y_ = X_Y_Spline(X_)
 
@@ -97,41 +75,19 @@ def handler(event, context):
         plt.savefig('/tmp/tempo.png')
         s3.upload_file('/tmp/tempo.png', BUCKET_NAME, f'{userId}/{fileId}/tempo.png')
 
-
-        # o_env = librosa.onset.onset_strength(y=y, sr=sr)
-        # o_env_ref = librosa.onset.onset_strength(y=y_ref, sr=sr_ref)
-
-        # times = librosa.times_like(o_env, sr=sr)
-
-        # onset_frames = librosa.onset.onset_detect(onset_envelope=o_env, sr=sr)
-        # onset_frames_ref = librosa.onset.onset_detect(onset_envelope=o_env_ref, sr=sr_ref)
-
-        # onset_times = librosa.frames_to_time(onset_frames, sr=sr)
-        # onset_times_ref = librosa.frames_to_time(onset_frames_ref, sr=sr_ref)
-        # onset_diff = [onset_times[i] - onset_times_ref[i] for i in range(min(len(onset_times), len(onset_times_ref)))]
-
-        # mean_diff = np.mean(np.abs(onset_diff))
-        # max_diff = np.max(np.abs(onset_diff))
-        # min_diff = np.min(np.abs(onset_diff))
-        # print(f'mean: {mean_diff}, max: {max_diff}, min: {min_diff}')
-
-        # dtw syncing
+        # dtw syncing and save plot to s3
         Y = librosa.feature.chroma_cqt(y=y, sr=sr)
         X = librosa.feature.chroma_cqt(y=y_ref, sr=sr_ref)
         D, wp = librosa.sequence.dtw(X, Y)
         hop_length = 1024
         wp_s = librosa.frames_to_time(wp, sr=sr_ref, hop_length=hop_length)
-        # print("wps", wp_s)
-        # print(convert_timestamp(1, wp_s))
-        # print(convert_timestamp(140, wp_s))
+
         from matplotlib.patches import ConnectionPatch
         fig, (ax1, ax2) = plt.subplots(nrows=2, sharex=True, sharey=True, figsize=(8,4))
 
-        # Plot x_2
         librosa.display.waveshow(y, sr=sr, ax=ax2, axis='s')
         ax2.set(title='Your Upload')
 
-        # Plot x_1
         librosa.display.waveshow(y_ref, sr=sr_ref, ax=ax1, axis='s')
         ax1.set(title='Reference')
         ax1.label_outer()
@@ -153,24 +109,18 @@ def handler(event, context):
         plt.savefig('/tmp/sync.png')
         s3.upload_file('/tmp/sync.png', BUCKET_NAME, f'{userId}/{fileId}/sync.png')
 
-        chordino = Chordino(roll_on=1)
-
-        chords = [chordino.extract(audio_path), chordino.extract(audio_path_ref)]
-
-
         # Compares chord closest in time to reference chord
         # whenever there is a chord change.
-        # Works best when tempo matches 
-        # e.g. short clips so timestamp offsets don't increase too much
-        # limitation: rapid chord changes
+        # uses dtw syncing to match up times
+
+        chordino = Chordino(roll_on=1)
+        chords = [chordino.extract(audio_path), chordino.extract(audio_path_ref)]
 
         review = []
         for chord_change_ref in chords[1]:
             chord = chord_change_ref[0]
             ref_timestamp = chord_change_ref[1]
-            # print(f'old {ref_timestamp}')
             timestamp = convert_timestamp(ref_timestamp, wp_s)
-            # print(timestamp)
             nearest = '-'
             min_dist = 5
             for chord_change in chords[0]:
@@ -179,8 +129,6 @@ def handler(event, context):
                     nearest = chord_change[0]
                     min_dist = dist
             review.append({'timestamp': str(round(ref_timestamp, 2)), 'chordRef': chord, 'chordMatch': nearest})
-            # print(f'{round(ref_timestamp, 2)}: {chord} {nearest}')  
-        print(review)
 
         # udpate review in table
         table = boto3.resource('dynamodb').Table('VideosTable')
