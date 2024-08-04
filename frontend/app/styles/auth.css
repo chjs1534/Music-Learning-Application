@@ -1,27 +1,22 @@
 /* Light mode variables */
 :root {
-    --text-color: #555;
-    --background-color: rgb(255, 255, 255);
-    --header-logo-color: black;
-    --auth-header-color: black;
+    --auth-header-color: #ff6631;
     --border-color: #8a8a8a;
     --box-shadow-color: rgb(106, 106, 106);
-    --input-border-color: #ccc;
-    --input-focus-border-color: #0004ff;
-    --label-color: #8a8a8a;
-    --label-focus-color: #555;
-    --button1-bg-color: rgb(150, 153, 255);
-    --button1-hover-bg-color: #cdceff;
-    --button2-bg-color: rgb(255, 255, 255);
-    --button2-border-color: rgb(78, 84, 255);
-    --button2-selected-bg-color: rgb(150, 153, 255);
-    --button2-hover-bg-color: #cdceff;
+    --input-border-color: #201e1b6b;
+    --input-focus-border-color: #ff6631;
+    --label-color: #201e1b51;
+    --label-focus-color: #201e1b;
+    --button1-bg-color: #ff6631;
+    --button1-hover-bg-color: #ff936ee3;
     --company-button-hover-bg-color: #dbdbdb;
-    --anchor1-color: #000dff;
-    --anchor1-hover-color: #cdceff;
+    --anchor1-color: #ff6431e3;
+    --anchor1-hover-color: #ff6431e3;
     --error-message-color: red;
-    --forgot-password-anchor-color: #000dff;
-    --auth-text-color: #555;
+    --auth-text-color: #201e1b6b;
+    --button2-bg-color: #ff6431e3;
+    --button2-border-color: #ff6431e3;;
+    --button2-selected-bg-color: #ffcab8e3;
 }
 
 /* Dark mode variables */
@@ -38,10 +33,6 @@ body.dark-mode {
     --label-focus-color: #eeeeee;
     --button1-bg-color: rgb(150, 153, 255);
     --button1-hover-bg-color: #cdceff;
-    --button2-bg-color: rgb(255, 255, 255);
-    --button2-border-color: rgb(78, 84, 255);
-    --button2-selected-bg-color: rgb(150, 153, 255);
-    --button2-hover-bg-color: #cdceff;
     --company-button-hover-bg-color: #555;
     --anchor1-color: #000dff;
     --anchor1-hover-color: #cdceff;
@@ -50,21 +41,16 @@ body.dark-mode {
     --auth-text-color: #eeeeee;
 }
 
-.header-logo {
-    font-family: 'Music';
-    margin-top: 12px;
-    margin-bottom: 12px;
-    padding: 0 0;
-    font-size: 72px;
-    font-weight: 700;
-    color: var(--header-logo-color);
+.auth-header-subtext {
+    font-size: 2rem;
+    font-family: Aeroport;
+    font-weight: 600;
 }
 
 .auth-header {
-    font-size: 32px;
+    font-size: 96px;
     margin: 0px 0px 0px 0px;
     padding: 0 0;
-    font-weight: 400;
     align-self: flex-start;
     color: var(--auth-header-color);
 }
@@ -83,38 +69,13 @@ body.dark-mode {
 
 .auth-container {
     width: 40vw;
-    height: 85vh;
+    height: 80vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 0 0 0 0;
     margin: 0 0 0 0;
-    /* border: 2px solid var(--border-color);
-    border-radius: 4px;
-    padding: 24px 64px 24px 64px;
-    box-shadow: 2px 2px 4px 0px var(--box-shadow-color); */
-}
-
-.auth-banner {
-    width: 40vw;
-    height: 85vh;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: 0 0 0 0;
-    margin: 0 0 0 0;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 24px 64px 24px 64px;
-}
-
-.gif {
-    width: 200px;
-    height: 200px;
-    margin: 0px;
-    padding: 0px;
 }
 
 .input-container {
@@ -124,16 +85,16 @@ body.dark-mode {
     justify-content: center;
     width: 100%;
     position: relative;
-    margin-top: 16px;
+    margin-top: 8px;
 }
 
 .form-inputs {
     width: 100%;
-    padding: 12px;
+    padding: 16px;
     border: 1px solid var(--input-border-color);
     border-radius: 8px;
     box-sizing: border-box;
-    transition: border-color 1s;
+    transition: border-color 0.3s;
 }
 
 .form-inputs:focus {
@@ -142,13 +103,14 @@ body.dark-mode {
 }
 
 .input-container label {
+    font-family: Aeroport;
     position: absolute;
     font-size: 16px;
     left: 8px;
     top: 50%;
     transform: translateY(-50%);
     color: var(--label-color);
-    transition: top 0.5s, font-size 0.5s, color 0.5s;
+    transition: top 0.1s, font-size 0.1s, color 0.1s;
     pointer-events: none;
     z-index: 1;
 }
@@ -176,18 +138,81 @@ body.dark-mode {
 
 .button1 {
     width: 100%;
-    margin-bottom: 8px;
+    margin: 8px 0px;
     padding: 12px 24px;
     font-size: 18px;
-    color: var(--text-color);
+    color: #f7e7d6;
     background-color: var(--button1-bg-color);
     border: none;
     border-radius: 8px;
     cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s ease-out;
 }
 
 .button1:hover {
     background-color: var(--button1-hover-bg-color);
+}
+
+.alternate-auth-options {
+    display: flex;
+    flex-direction: horizontal;
+    align-items: center;
+    justify-content: space-around;
+    width: 75%;
+    margin: 0px;
+}
+
+.company-button {
+    position: relative; /* Necessary for positioning the ::after element */
+    padding: 12px;
+    width: 36px;
+    height: 36px;
+    border: 1px transparent;
+    border-radius: 10000px;
+    transition: background-color 0.3s ease-out, transform 0.2s ease-out;
+}
+
+.company-button:hover {
+    transform: scale(1.1);
+}
+
+.company-button::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background-color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    white-space: nowrap; /* Prevent text from wrapping */
+    z-index: 1; /* Ensure the tooltip is above other content */
+    opacity: 0; /* Start hidden */
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out; /* Smooth transition */
+}
+
+.company-button:hover::after {
+    opacity: 1; /* Show on hover */
+    transform: translateX(-50%) translateY(0); /* Slight upward movement */
+}
+
+.anchor1 {
+    color: var(--anchor1-color);
+    font-size: 12px;
+}
+
+.anchor1:hover {
+    color: var(--anchor1-hover-color);
+    text-decoration-line: none;
+}
+
+.auth-text {
+    font-family: Aeroport;
+    font-size: 12px;
+    margin: 12px;
+    color: var(--auth-text-color);
 }
 
 .button2 {
@@ -201,6 +226,7 @@ body.dark-mode {
     border-radius: 8px;
     cursor: pointer;
     border: 1px solid var(--button2-border-color);
+    text-align: center;
 }
 
 .button2.selected {
@@ -218,39 +244,6 @@ body.dark-mode {
 .button2.hovered:not(.selected) {
     background-color: var(--button2-hover-bg-color);
     color: var(--text-color);
-}
-
-.alternate-auth-options {
-    display: flex;
-    flex-direction: horizontal;
-    align-items: center;
-    justify-content: space-around;
-    width: 75%;
-    margin: 0px;
-}
-
-.company-button {
-    padding: 12px;
-    width: 36px;
-    height: 36px;
-    border: 1px transparent;
-    border-radius: 10000px;
-    transition: background-color 0.3s ease-out;
-}
-
-.company-button:hover {
-    background-color: var(--company-button-hover-bg-color);
-    color: var(--text-color);
-}
-
-.anchor1 {
-    color: var(--anchor1-color);
-    font-size: 12px;
-}
-
-.anchor1:hover {
-    color: var(--anchor1-hover-color);
-    text-decoration-line: none;
 }
 
 .error-message-container {
@@ -279,10 +272,4 @@ body.dark-mode {
     color: var(--error-message-color);
     font-size: 12px;
     justify-content: left;
-}
-
-.auth-text {
-    font-size: 12px;
-    margin: 12px;
-    color: var(--auth-text-color);
 }

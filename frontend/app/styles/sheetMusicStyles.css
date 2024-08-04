@@ -1,0 +1,177 @@
+:root {
+    --sheet-background-color: #fafafa;
+    --sheet-text-color: #333;
+    --sheet-border-color: #ddd;
+    --sheet-thumbnail-bg: rgba(255, 255, 255, 0.9);
+    --sheet-thumbnail-bg-dark: rgba(0, 0, 0, 0.1);
+    --sheet-box-shadow: rgba(0, 0, 0, 0.2);
+    --sheet-hover-shadow: rgba(0, 0, 0, 0.3);
+    --sheet-pdf-bg: #fff;
+    --sheet-pdf-modal-bg: rgba(0, 0, 0, 0.8);
+    --sheet-close-button-bg: #ff0000;
+    --sheet-close-button-color: #fff;
+}
+
+body.dark-mode {
+    --sheet-background-color: #333;
+    --sheet-text-color: #fafafa;
+    --sheet-border-color: #555;
+    --sheet-thumbnail-bg: rgba(0, 0, 0, 0.9);
+    --sheet-thumbnail-bg-dark: rgba(255, 255, 255, 0.1);
+    --sheet-box-shadow: rgba(255, 255, 255, 0.2);
+    --sheet-hover-shadow: rgba(255, 255, 255, 0.3);
+    --sheet-pdf-bg: #222;
+    --sheet-pdf-modal-bg: rgba(255, 255, 255, 0.8);
+    --sheet-close-button-bg: #ff3333;
+    --sheet-close-button-color: #333;
+}
+
+/* Sheet Music */
+.music-sheets {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    width: 80%;
+    margin: 20px 0;
+}
+
+.sheet-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid var(--sheet-border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+    background-color: var(--sheet-background-color);
+    box-shadow: 0 4px 8px var(--sheet-box-shadow);
+}
+
+.sheet-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px var(--sheet-hover-shadow);
+}
+
+.sheet-thumbnail {
+    width: 100%;
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+    border-bottom: 2px solid var(--sheet-border-color);
+    background: linear-gradient(to bottom, var(--sheet-thumbnail-bg), var(--sheet-thumbnail-bg-dark));
+}
+
+.sheet-thumbnail img {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: auto;
+    min-height: 100%;
+    object-fit: cover;
+}
+
+.sheet-info {
+    padding: 15px;
+    text-align: center;
+    background-color: var(--sheet-background-color);
+    width: 100%;
+}
+
+.sheet-info p {
+    margin: 5px 0;
+    font-family: 'Arial', sans-serif;
+    font-size: 16px;
+    color: var(--sheet-text-color);
+    text-transform: capitalize;
+}
+
+.sheet-info p.name {
+    font-weight: bold;
+    font-size: 18px;
+    color: var(--sheet-text-color);
+}
+
+.sheet-info p.instrument {
+    font-style: italic;
+    color: var(--sheet-text-color);
+}
+
+.pdf-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--sheet-pdf-modal-bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.pdf-content {
+    position: relative;
+    width: 80%;
+    height: 80%;
+    background: var(--sheet-pdf-bg);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px var(--sheet-box-shadow);
+}
+
+.pdf-content iframe {
+    width: 100%;
+    height: 100%;
+}
+
+.pdf-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--sheet-close-button-bg);
+    color: var(--sheet-close-button-color);
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.filter-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.search-bar {
+    flex: 1;
+    padding: 8px;
+    margin-right: 10px;
+    border-radius: 4px;
+    border: 1px solid var(--sheet-border-color);
+}
+
+.instrument-filter {
+    flex: 1;
+    padding: 8px;
+    margin-left: 10px;
+    border-radius: 4px;
+    border: 1px solid var(--sheet-border-color);
+}
+
+.sheet-text {
+    font-size: 3rem;
+    margin: 24px;
+    color: var(--sheet-text-color);
+}

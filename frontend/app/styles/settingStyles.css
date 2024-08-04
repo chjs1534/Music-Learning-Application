@@ -1,0 +1,146 @@
+:root {
+    --settings-background: #f0f2f5;
+    --settings-text-color: #333;
+    --settings-input-background: #fff;
+    --settings-button-bg-color: #cdcdcd;
+    --settings-button-hover-bg-color: #a2a2a2;
+    --settings-button-text-color: #fff;
+    --settings-dark-mode-bg-color: #212529;
+    --settings-dark-mode-text-color: #f8f9fa;
+}
+
+body.dark-mode {
+    --settings-background: #212529;
+    --settings-text-color: #f8f9fa;
+    --settings-input-background: #343a40; 
+    --settings-button-bg-color: #495057;
+    --settings-button-hover-bg-color: #6c757d;
+    --settings-button-text-color: #f8f9fa;
+}
+
+.settings {
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--settings-background);
+    display: flex;
+    flex-direction: column;
+    justify-content: top;
+    align-items: center;
+}
+
+.settings-container {
+    background: var(--settings-input-background);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    width: 400px;
+    max-width: 90%;
+    transition: all 0.3s ease;
+    margin-top: 24px;
+}
+
+.settings h2 {
+    padding: 0px;
+    margin-bottom: 15px;
+    font-size: 1.6rem;
+    color: var(--settings-text-color);
+}
+
+.settings-profile,
+.settings-theme,
+.settings-account {
+    margin-bottom: 25px;
+}
+
+.settings-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    background-color: var(--settings-button-bg-color);
+    color: var(--settings-button-text-color);
+    font-size: 1rem;
+}
+
+.settings-button img {
+    margin-left: 10px;
+    height: 24px;
+    width: 24px;
+}
+
+.settings-button:hover {
+    background-color: var(--settings-button-hover-bg-color);
+}
+
+.dark-mode-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+    z-index: 0;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    border-radius: 50%;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: #495057;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+label {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    color: var(--settings-text-color);
+    font-size: 1rem;
+}
+
+.settings-button {
+    width: 100%;
+    margin-top: 15px;
+}

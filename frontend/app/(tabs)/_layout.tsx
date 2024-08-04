@@ -2,12 +2,14 @@ import { Platform, StyleSheet, Text, View, Image } from 'react-native'
 import React from 'react'
 import { Tabs, Redirect } from 'expo-router'
 import cog from "../assets/cog.png"
+import calendar from "../assets/calendar2.png"
 import home from "../assets/home.png"
 import upload from "../assets/upload.png"
 import profile from "../assets/profile.png"
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const TabIcon = ({ icon, color, name, focused }) => {
+  
   return (
     <View className={`flex items-center justify-center gap-2 ${(Platform.OS === 'ios') ? "pt-10" : ""}`}>
       <Image
@@ -32,14 +34,11 @@ const TabsLayout = () => {
       <SafeAreaView style={styles.container}>
         <Tabs
           screenOptions={{
-            tabBarActiveTintColor: "#DC7F2E",
-            tabBarInactiveTintColor: "#4059AD",
+            tabBarActiveTintColor: 'white',
+            tabBarInactiveTintColor:'#a9a9a9',
             tabBarShowLabel: false,
             tabBarStyle: {
-              backgroundColor: "#C9DDFF",
-              borderTopWidth: 0,
-              borderBottomWidth: 0,
-              borderTopColor: "#4059AD",
+              backgroundColor: '#3B82F6',
               height: 80,
             },
           }}
@@ -73,6 +72,20 @@ const TabsLayout = () => {
               ),
             }}/>
             <Tabs.Screen 
+              name="Tasks" 
+              options={{
+              title: 'Tasks',
+              headerShown: false,
+              tabBarIcon: ({ color, focused }) => (
+                <TabIcon
+                  icon={calendar}
+                  color={color}
+                  name="Tasks"
+                  focused={focused}
+                />
+              ),
+            }}/>
+            <Tabs.Screen 
               name="Profile" 
               options={{
               title: 'Profile',
@@ -86,20 +99,6 @@ const TabsLayout = () => {
                 />
               ),
             }}/>
-            <Tabs.Screen 
-              name="Settings" 
-              options={{
-              title: 'Settings',
-              headerShown: false,
-              tabBarIcon: ({ color, focused }) => (
-                <TabIcon
-                  icon={cog}
-                  color={color}
-                  name="Settings"
-                  focused={focused}
-                />
-              ),
-            }}/>
         </Tabs>
       </SafeAreaView>
   )
@@ -108,7 +107,7 @@ const TabsLayout = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#C9DDFF",
+    backgroundColor: "#DDD6FE",
   },
 });
 

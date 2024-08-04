@@ -1,0 +1,47 @@
+/* styles/viewMatchStyles.css */
+
+:root {
+    --view-matches-background-color: #f8f9fa;
+    --view-matches-text-color: #343a40;
+    --view-matches-header-color: #495057;
+    --view-matches-card-background-color: #ffffff;
+    --view-matches-card-border-color: #ced4da;
+    --view-matches-no-matches-text-color: #6c757d;
+}
+
+.view-matches-page {
+    margin-top: 20px;
+}
+
+.view-matches-for {
+    color: var(--view-matches-header-color);
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.matches-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.match-card {
+    background-color: var(--view-matches-card-background-color);
+    border: 1px solid var(--view-matches-card-border-color);
+    padding: 20px;
+    border-radius: 8px;
+    transition: transform 0.2s;
+}
+
+.match-card:hover {
+    transform: scale(1.02);
+}
+
+.matches-text {
+    color: var(--view-matches-no-matches-text-color);
+    font-size: 18px;
+    text-align: center;
+    margin-top: 20px;
+}

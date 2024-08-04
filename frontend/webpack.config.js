@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 const path = require('path');
+=======
+const path = require("path");
+>>>>>>> frontend_sprint3_web
 
 module.exports = {
   entry: './app/index.web.tsx',

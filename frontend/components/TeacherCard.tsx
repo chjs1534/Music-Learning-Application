@@ -56,20 +56,14 @@ const TeacherCard: React.FC<TeacherCardProps> = ({ name, pfp, rating, reviews, s
   return (
     <div className="teacher-card" onClick={handleClick}>
       <div className="teacher-ad">
-        <img src={ad} alt={"teacher ad"} />
+        <img src={"https://cdn-icons-png.flaticon.com/128/651/651717.png"} alt={"teacher ad"} />
       </div>
       {user && <div className="teacher-detail">
-        <img src={pfp} alt={`${name}'s profile`} className="teacher-pfp" />
-        <p className="teacher-name">{user.firstName}</p>
+        <img src={"https://cdn-icons-png.flaticon.com/128/2354/2354280.png"} alt={`${name}'s profile`} className="teacher-pfp" />
+        <p className="teacher-name">Name : {user.firstName} {user.lastName}</p>
+        <p className="teacher-aboutme">About Me : {user.aboutMe}</p>
       </div>}
-      
-      <div className="teacher-info">
-        <div className="teacher-aboutme">
-          <p>{aboutme}</p>
-        </div>
-        <p className="teacher-rating">Rating: {rating} ({reviews})</p>
-      </div>
-    </div>
+    </div >
   )
 }
 

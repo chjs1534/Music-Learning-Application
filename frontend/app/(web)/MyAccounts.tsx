@@ -1,12 +1,12 @@
 import React, { useState, ChangeEvent, useRef, useEffect } from 'react';
-import { CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
-import '../styles/website.css';
+import { AuthenticationDetails, CognitoUser, CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
+import '../styles/myAccountStyles.css';
 import NavBar from './NavBar';
-import { mobilePoolData } from '../config/poolData';
+import { poolData } from '../config/poolData';
 import StudentCard from '../../components/StudentCard';
 import { useNavigate } from 'react-router-dom';
 
-const UserPool = new CognitoUserPool(mobilePoolData);
+const UserPool = new CognitoUserPool(poolData);
 
 interface AccountDetails {
     username: string;
@@ -14,7 +14,9 @@ interface AccountDetails {
 
 
 const MyAccounts: React.FC = () => {
+    const [userType, setUserType] = useState<string>();
     const [username, setUsername] = useState<string>('');
+    const [email, setEmail] = useState<string>('');
     const [firstname, setFirstname] = useState<string>('');
     const [lastname, setLastname] = useState<string>('');
     const [password, setPassword] = useState<string>('');
@@ -27,9 +29,35 @@ const MyAccounts: React.FC = () => {
     const [subAccounts, setSubAccounts] = useState();
     const [token, setToken] = useState<string>();
     const [id, setId] = useState<string>();
+    const [isDarkMode, setIsDarkMode] = useState(false);
+    const [initialized, setInitialized] = useState(false);  // New state to control execution order
 
     const modalRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        // Retrieve data from localStorage and set initial states
+        setToken(localStorage.getItem('token'));
+        setId(localStorage.getItem('id'));
+        setUserType(localStorage.getItem('userType'));
+        const storedDarkMode = localStorage.getItem('darkMode');
+        if (storedDarkMode === 'enabled') {
+            setIsDarkMode(true);
+            document.body.classList.add('dark-mode');
+        } else {
+            setIsDarkMode(false);
+            document.body.classList.remove('dark-mode');
+        }
+        setInitialized(true);
+    }, []);
+
+    useEffect(() => {
+        if (initialized) {
+            console.log(token);
+            getEmail();
+            getMyAccounts();
+        }
+    }, [initialized, id, token]);
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
@@ -64,6 +92,64 @@ const MyAccounts: React.FC = () => {
         setConfirmPasswordVisible(!confirmPasswordVisible);
     };
 
+    const authenticate = async () => {
+        let jwtToken;
+        let userId;
+        const authenticationDetails = new AuthenticationDetails({
+            Username: username,
+            Password: password,
+        });
+        const userData = {
+            Username: username,
+            Pool: UserPool
+        };
+        const cognitoUser = new CognitoUser(userData);
+        await new Promise((resolve, reject) => {
+            cognitoUser.authenticateUser(authenticationDetails, {
+                onSuccess: function (result) {
+                    jwtToken = result.idToken.jwtToken;
+                    const jwtPayload = JSON.parse(atob(jwtToken.split('.')[1]));
+                    userId = jwtPayload.sub;
+                    setAccounts(prevAccounts => [...prevAccounts, { username }]);
+                    setUsername('');
+                    setFirstname('');
+                    setLastname('');
+                    setPassword('');
+                    setConfirmPassword('');
+                    setShowModal(false);
+                    setErrorMessage('');
+                    resolve();
+                },
+                onFailure: function (err) {
+                    reject(err);
+                },
+            });
+        });
+    }
+
+    const getEmail = async () => {
+        await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getUser/${id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': token,
+                'Content-Type': 'application/json'
+            },
+        }).then(response => {
+            if (!response.ok) {
+                console.log(id)
+                return response.text().then(text => { throw new Error(text) });
+            }
+            else {
+                console.log(response);
+            }
+            return response.json();
+        })
+            .then(data => {
+                setEmail(data.email);
+                console.log(data.email);
+            })
+    }
+
     const registerMobile = async () => {
         if (username.length < 3) {
             setErrorMessage("Username must be longer than 3 characters");
@@ -78,55 +164,48 @@ const MyAccounts: React.FC = () => {
             return;
         }
 
-        const attributeList: CognitoUserAttribute[] = [];
-        const dataUsername = { Name: 'username', Value: username };
-        const attributeUsername = new CognitoUserAttribute(dataUsername);
+        console.log(email, "hi")
 
-        attributeList.push(attributeUsername);
-
-        UserPool.signUp(username, password, attributeList, null, (err, result) => {
-            if (err) {
-                setErrorMessage(err.message || JSON.stringify(err));
-                return;
-            } else {
-                setAccounts(prevAccounts => [...prevAccounts, { username }]);
-                setUsername('');
-                setPassword('');
-                setConfirmPassword('');
-                setShowModal(false);
-                setErrorMessage('');
-            }
+        const attributeList = [];
+        const attributeEmail = new CognitoUserAttribute({
+            Name: 'email',
+            Value: email
+        });
+        const attributeUsername = new CognitoUserAttribute({
+            Name: 'custom:username',
+            Value: username
+        });
+        const attributeUserType = new CognitoUserAttribute({
+            Name: 'custom:userType',
+            Value: 'Child'
+        });
+        const attributeFirstName = new CognitoUserAttribute({
+            Name: 'custom:firstName',
+            Value: firstname
+        });
+        const attributeLastName = new CognitoUserAttribute({
+            Name: 'custom:lastName',
+            Value: lastname
         });
 
-        await fetch('https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/addUser', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              userId: id,
-              email: "",
-              username: username,
-              userType: "Child",
-              firstName: firstname,
-              lastName: lastname
-            }),
-          })
-            .then(response => {
-              if (!response.ok) {
-                return response.text().then(text => { throw new Error(text) });
-              }
-              else {
-                console.log(response);
-              }
-              return response.json();
-            })
-            .then(data => {
-              console.log('Success:', data);
-            })
-            .catch(error => {
-              console.error('Error:', error.message, error.code || error);
+        attributeList.push(attributeEmail);
+        attributeList.push(attributeUsername);
+        attributeList.push(attributeUserType);
+        attributeList.push(attributeFirstName);
+        attributeList.push(attributeLastName);
+
+        const result = await new Promise((resolve, reject) => {
+            UserPool.signUp(username, password, attributeList, null, (err, result) => {
+                if (err) {
+                    console.error(err);
+                }
+                else {
+                    authenticate();
+                    window.location.reload();
+                }
+                resolve(result);
             });
+        });
     };
 
     const handleCloseModal = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -134,31 +213,6 @@ const MyAccounts: React.FC = () => {
             setShowModal(false);
         }
     };
-
-    const handleViewProfile = (username: string) => {
-        console.log(`View profile for ${username}`);
-    };
-
-    const handleEditProfile = (username: string) => {
-        console.log(`Edit profile for ${username}`);
-    };
-
-    const handleDeleteProfile = (username: string) => {
-        console.log(`Delete profile for ${username}`);
-    };
-
-    useEffect(() => {
-        setToken(localStorage.getItem('token'));
-        setId(localStorage.getItem('id'));
-    }, []);
-
-    useEffect(() => {
-        getMyAccounts();
-    }, [id, token]);
-
-    useEffect(() => {
-        console.log(subAccounts)
-    }, [subAccounts]);
 
     const getMyAccounts = async () => {
         await fetch(`https://ld2bemqp44.execute-api.ap-southeast-2.amazonaws.com/mewsic_stage/user/getFamily/${id}`, {
@@ -180,12 +234,11 @@ const MyAccounts: React.FC = () => {
             }
             return response.json();
         }).then(data => {
-            console.log("oo", data.Items);
-            setSubAccounts(data.Items);
+            setSubAccounts(data.users);
         })
-        .catch(error => {
-            console.error('Error:', error.message, error.code || error);
-        });
+            .catch(error => {
+                console.error('Error:', error.message, error.code || error);
+            });
     }
 
     const handleClick = (accountId) => {
@@ -196,7 +249,7 @@ const MyAccounts: React.FC = () => {
         <div className="homepage">
             <NavBar />
             <div className="my-accounts">
-                <button className="button1" onClick={() => setShowModal(true)}>Create Account</button>
+                <h2>My Accounts</h2>
                 {showModal && (
                     <div className="modal" ref={modalRef} onClick={handleCloseModal}>
                         <div className="modal-content">
@@ -286,26 +339,17 @@ const MyAccounts: React.FC = () => {
                         </div>
                     </div>
                 )}
-                {accounts.map((account, index) => (
-                    <div key={index} className="account-details">
-                        <p>Username: {account.username}</p>
-                        <div>
-                            <button className="button1" onClick={() => handleViewProfile(account.username)}>View Profile</button>
-                            <button className="button1" onClick={() => handleEditProfile(account.username)}>Edit Profile</button>
-                            <button className="button1" onClick={() => handleDeleteProfile(account.username)}>Delete Profile</button>
-                        </div>
-                    </div>
-                ))}
-                <div className="myteachers">
-            {subAccounts && subAccounts.length > 0 ? (subAccounts.map(acc => (
-              <StudentCard
-                id={acc.userId}
-                token={token}
-                handleClick={handleClick}
-              />
-            ))) : null}
-          </div>
+                <div className="accounts">
+                    {subAccounts && subAccounts.length > 0 ? (subAccounts.map(acc => (
+                        <StudentCard
+                            id={acc.userId}
+                            token={token}
+                            handleClick={handleClick}
+                        />
+                    ))) : null}
+                </div>
             </div>
+            <button className="create-account-button" onClick={() => setShowModal(true)}>Create Account</button>
         </div>
     );
 };
