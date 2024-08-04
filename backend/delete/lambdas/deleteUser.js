@@ -10,7 +10,7 @@
  * - USERPOOL_ID: The ID of the Cognito User Pool from which the user will be deleted
  * 
  * @param {Object} event - The event object
- * @param {Object} event.pathParameters - The path parameters from the API Gateway request
+ * @param {Object} event.pathParameters - The path parameters
  * @param {string} event.pathParameters.userId - The Id of the user to be deleted
  * 
  * @returns {Object} response - The HTTP response object

@@ -1,3 +1,23 @@
+/**
+ * AWS Lambda function to retrieve all match requests for a given user from the "MatchTable".
+ * 
+ * - Fetches match requests.
+ * 
+ * @param {Object} event - The event object.
+ * @param {Object} event.pathParameters - The path parameters.
+ * @param {string} [event.pathParameters.userId] - The ID of the user whose matches are to be retrieved.
+ * 
+ * @returns {Object} response - The HTTP response object.
+ * @returns {number} response.statusCode - The HTTP status code.
+ * @returns {Object} response.body - The JSON-encoded response body containing an array of user IDs involved in the matches.
+ * @returns {Object} response.headers - The HTTP response headers, including CORS settings.
+ * 
+ * Error Handling:
+ * - Returns HTTP 400 if the userId is missing or invalid.
+ * - Returns HTTP 500 if there is an issue querying the match table.
+ */
+
+
 const aws = require('aws-sdk');
 const dynamo = new aws.DynamoDB.DocumentClient();
 const tableName = "MatchTable";

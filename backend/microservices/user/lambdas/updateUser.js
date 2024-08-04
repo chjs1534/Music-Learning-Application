@@ -1,3 +1,22 @@
+/**
+ * AWS Lambda function to update a user's profile information in the "UserTable".
+ * 
+ * - Updates the user's first name, last name, and "about me" section in the user table.
+ * 
+ * @param {Object} event - The event object.
+ * @param {string} event.body - The JSON-encoded request body containing the user's data to update.
+ * 
+ * @returns {Object} response - The HTTP response object.
+ * @returns {number} response.statusCode - The HTTP status code.
+ * @returns {Object} response.body - The JSON-encoded response body, empty on success or containing an error message.
+ * @returns {Object} response.headers - The HTTP response headers, including CORS settings.
+ * 
+ * Error Handling:
+ * - Returns HTTP 400 if the userId, firstName, lastName, or aboutMe fields are missing or invalid.
+ * - Returns HTTP 404 if the user is not found in the database.
+ * - Returns the appropriate HTTP status code and error message if there is an issue accessing or updating the user table.
+ */
+
 const aws = require('aws-sdk');
 const dynamo = new aws.DynamoDB.DocumentClient();
 

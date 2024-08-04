@@ -1,3 +1,26 @@
+/**
+ * AWS Lambda function to add a review for a teacher in the "UserTable".
+ * 
+ * - Adds a review with a rating and message to the "teacherReviews" list of the specified teacher.
+ * 
+ * @param {Object} event - The event object.
+ * @param {Object} event.body - The request body as a JSON string.
+ * @param {string} event.body.userId - The ID of the teacher to whom the review will be added.
+ * @param {number} event.body.rating - The rating given to the teacher (0-5).
+ * @param {string} event.body.reviewMsg - The review message.
+ * 
+ * @returns {Object} response - The HTTP response object.
+ * @returns {number} response.statusCode - The HTTP status code.
+ * @returns {Object} response.body - The JSON-encoded response body containing the updated user data or an error message.
+ * @returns {Object} response.headers - The HTTP response headers, including CORS settings.
+ * 
+ * Error Handling:
+ * - Returns HTTP 400 if the userId, rating, or reviewMsg is missing or invalid.
+ * - Returns HTTP 404 if the user is not found in the database.
+ * - Returns HTTP 400 if the user is not a teacher.
+ * - Returns the appropriate HTTP status code and error message if there is an issue updating the user table.
+ */
+
 const aws = require('aws-sdk');
 const dynamo = new aws.DynamoDB.DocumentClient();
 const tableName = "UserTable";

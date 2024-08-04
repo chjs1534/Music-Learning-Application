@@ -1,3 +1,23 @@
+/**
+ * AWS Lambda function to retrieve matches for a given user based on their type.
+ * 
+ *   - Teacher: Retrieves matches and shows the parent account instead of the child.
+ *   - Parent: Retrieves matches for all children accounts.
+ *   - Other Users: Retrieves their own matches.
+ * 
+ * @param {Object} event - The event object.
+ * @param {Object} event.pathParameters - The path parameters.
+ * @param {string} event.pathParameters.userId - The ID of the user whose matches are to be retrieved.
+ * 
+ * @returns {Object} response - The HTTP response object.
+ * @returns {number} response.statusCode - The HTTP status code.
+ * @returns {Object} response.body - The JSON-encoded response body containing the matches for the user.
+ * @returns {Object} response.headers - The HTTP response headers, including CORS settings.
+ * 
+ * Error Handling:
+ * - Returns HTTP 400 if there is an issue fetching data or processing the request.
+ */
+
 const aws = require('aws-sdk');
 const lambda = new aws.Lambda();
 const lambdaGetUser = "GetUser"

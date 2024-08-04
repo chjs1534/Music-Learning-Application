@@ -1,3 +1,25 @@
+/**
+ * AWS Lambda function to retrieve a user's related data (children for a parent user or parent for a child user).
+ * 
+ * - Fetches a user's data from the "UserTable" based on the provided userId.
+ * - If the user is a parent, retrieves all associated child users.
+ * - If the user is a child, retrieves the associated parent user.
+ * 
+ * @param {Object} event - The event object.
+ * @param {Object} event.pathParameters - The path parameters.
+ * @param {string} [event.pathParameters.userId] - The ID of the user whose related data is to be retrieved.
+ * 
+ * @returns {Object} response - The HTTP response object.
+ * @returns {number} response.statusCode - The HTTP status code. 
+ * @returns {Object} response.body - The JSON-encoded response body containing the related users' data or an error message.
+ * @returns {Object} response.headers - The HTTP response headers, including CORS settings.
+ * 
+ * Error Handling:
+ * - Returns HTTP 400 if the userId is missing, invalid, or if the userType is invalid.
+ * - Returns HTTP 404 if the user is not found in the database.
+ * - Returns the appropriate HTTP status code and error message if there is an issue accessing the user table or querying related users.
+ */
+
 const aws = require('aws-sdk');
 const dynamo = new aws.DynamoDB.DocumentClient();
 const tableName = "UserTable";

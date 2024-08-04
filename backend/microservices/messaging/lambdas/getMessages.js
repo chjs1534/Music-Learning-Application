@@ -1,3 +1,22 @@
+/**
+ * AWS Lambda function to retrieve messages between two users from DynamoDB.
+ * 
+ * - Retrieves messages stored in the `MessagesTable` for the given user IDs.
+ * 
+ * @param {Object} event - The event object containing details for retrieving messages.
+ * @param {Object} event.pathParameters - The parameters in the URL path.
+ * @param {string} event.pathParameters.userId1 - The ID of the first user.
+ * @param {string} event.pathParameters.userId2 - The ID of the second user.
+ * 
+ * @returns {Object} response - The HTTP response object.
+ * @returns {number} response.statusCode - The HTTP status code (200 if successful, or error code if an error occurs).
+ * @returns {Object} response.body - The JSON-encoded response body containing the messages between the two users.
+ * @returns {Object} response.headers - The HTTP response headers, including CORS settings.
+ * 
+ * Error Handling:
+ * - Returns HTTP 500 if there is an issue with retrieving data from DynamoDB.
+*/
+
 const aws = require('aws-sdk');
 
 const dynamo = new aws.DynamoDB.DocumentClient();

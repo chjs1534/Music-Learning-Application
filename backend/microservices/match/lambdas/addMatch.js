@@ -1,3 +1,24 @@
+/**
+ * AWS Lambda function to add a match between two users in the "MatchTable".
+ * 
+ * - Adds a match between `userId1` and `userId2` if it does not already exist.
+ * 
+ * @param {Object} event - The event object.
+ * @param {Object} event.body - The request body as a JSON string.
+ * @param {string} event.body.userId1 - The ID of the first user in the match.
+ * @param {string} event.body.userId2 - The ID of the second user in the match.
+ * 
+ * @returns {Object} response - The HTTP response object.
+ * @returns {number} response.statusCode - The HTTP status code.
+ * @returns {Object} response.body - The JSON-encoded response body, empty if successful or containing an error message.
+ * @returns {Object} response.headers - The HTTP response headers, including CORS settings.
+ * 
+ * Error Handling:
+ * - Returns HTTP 400 if either userId1 or userId2 is missing or invalid.
+ * - Returns HTTP 409 if the match already exists.
+ * - Returns the appropriate HTTP status code and error message if there is an issue querying or updating the match table.
+ */
+
 const aws = require('aws-sdk');
 const dynamo = new aws.DynamoDB.DocumentClient();
 
