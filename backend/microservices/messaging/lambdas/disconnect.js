@@ -4,12 +4,6 @@ const dynamo = new aws.DynamoDB.DocumentClient();
 const tableName = "MessagingTable";
 
 exports.handler = async (event) => {
-    let body;
-    let statusCode = 200;
-    const headers = {
-        'Access-Control-Allow-Origin': '*',
-    };
-
     const connectionId = event.requestContext.connectionId;
 
     try {
@@ -22,16 +16,20 @@ exports.handler = async (event) => {
             }
         ).promise();
     } catch (err) {
-        statusCode = 400;
-        body = err.message;
-    } finally {
-        body = {connectionId: connectionId};
-        body = JSON.stringify(body);
+        return {
+            statusCode: err.statusCode,
+            body: JSON.stringify({ error: err.message }),
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            }
+        };
     }
 
     return {
-        statusCode,
-        body,
-        headers,
+        statusCode: 200,
+        body: JSON.stringify({}),
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+        }
     };
 };

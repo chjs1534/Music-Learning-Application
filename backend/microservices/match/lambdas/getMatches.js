@@ -4,10 +4,20 @@ const tableName = "MatchTable";
 
 exports.handler = async (event) => {
     let userId;
+    // Error checks
     if (!event.pathParameters || !event.pathParameters.userId) {
         userId = event.userId;
     } else {
         userId = event.pathParameters.userId;
+    }
+    if (typeof userId !== 'string' || userId.trim() === '') {
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ error: 'Invalid userId' }),
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            }
+        };
     }
 
     let matches = [];
