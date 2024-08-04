@@ -135,7 +135,6 @@ resource "aws_apigatewayv2_stage" "mewsic_stage_websocket" {
 # resource "aws_apigatewayv2_authorizer" "mewsic_gateway_auth_websocket" {
 #   api_id           = aws_apigatewayv2_api.mewsic_api_websocket.id
 #   authorizer_type  = "REQUEST"
-#   authorizer_uri = 
 #   identity_sources = ["$request.header.Authorization"]
 #   name             = "Mewsic-cognito-authorizer"
 # }

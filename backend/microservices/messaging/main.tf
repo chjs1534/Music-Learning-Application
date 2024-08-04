@@ -44,6 +44,31 @@ resource "aws_dynamodb_table" "messaging-table" {
   }
 }
 
+# Messages table
+resource "aws_dynamodb_table" "messages-table" {
+  name           = "MessagesTable"
+  billing_mode   = "PROVISIONED"
+  read_capacity  = 1
+  write_capacity = 1
+  hash_key       = "userId1"
+  range_key      = "userId2"
+
+  attribute {
+    name = "userId1"
+    type = "S"
+  }
+
+  attribute {
+    name = "userId2"
+    type = "S"
+  }
+
+  ttl {
+    attribute_name = "TimeToExist"
+    enabled        = true
+  }
+}
+
 # Lambdas
 # Generate s3 bucket name
 resource "random_pet" "lambda_bucket_name" {
@@ -114,12 +139,16 @@ resource "aws_iam_policy" "lambda_dynamodb_policy_messaging" {
       {
         Effect = "Allow",
         Action = [
-          "dynamodb:DeleteItem",
+          "dynamodb:GetItem",
           "dynamodb:PutItem",
+          "dynamodb:Query",
+          "dynamodb:UpdateItem",
+          "dynamodb:DeleteItem",
           "dynamodb:Scan"
         ],
         Resource = [
-          aws_dynamodb_table.messaging-table.arn
+          aws_dynamodb_table.messaging-table.arn,
+          aws_dynamodb_table.messages-table.arn
         ],
       },
     ],
@@ -185,8 +214,8 @@ resource "aws_apigatewayv2_route" "sendMessage" {
 
   route_key = "sendMessage"
   target    = "integrations/${aws_apigatewayv2_integration.sendMessage.id}"
-#   authorization_type = "REQUEST"
-#   authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id_websocket
+  # authorization_type = "JWT"
+  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id_websocket
 }
 
 resource "aws_lambda_permission" "api_gw_sendMessage" {
@@ -208,6 +237,55 @@ resource "aws_lambda_permission" "api_gw_sendMessage_manage_connections" {
 
 resource "aws_cloudwatch_log_group" "sendMessage" {
   name = "/aws/lambda/${aws_lambda_function.sendMessage.function_name}"
+
+  retention_in_days = 30
+}
+
+# Get messages lambda
+resource "aws_lambda_function" "getMessages" {
+  function_name = "GetMessages"
+
+  s3_bucket = aws_s3_bucket.lambda_bucket.id
+  s3_key    = aws_s3_object.lambdas.key
+
+  runtime = "nodejs16.x"
+  handler = "getMessages.handler"
+
+  source_code_hash = data.archive_file.lambdas.output_base64sha256
+
+  role = aws_iam_role.lambda_exec.arn
+
+  timeout = 10
+}
+
+resource "aws_apigatewayv2_integration" "getMessages" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api_id
+
+  integration_uri    = aws_lambda_function.getMessages.invoke_arn
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_route" "getMessages" {
+  api_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.id
+
+  route_key = "GET /messaging/getMessages/{userId1}/{userId2}"
+  target    = "integrations/${aws_apigatewayv2_integration.getMessages.id}"
+  # authorization_type = "JWT"
+  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id_websocket
+}
+
+resource "aws_lambda_permission" "api_gw_getMessages" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.getMessages.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_api.execution_arn}/*/*"
+}
+
+resource "aws_cloudwatch_log_group" "getMessages" {
+  name = "/aws/lambda/${aws_lambda_function.getMessages.function_name}"
 
   retention_in_days = 30
 }
@@ -242,8 +320,8 @@ resource "aws_apigatewayv2_route" "connect" {
 
   route_key = "$connect"
   target    = "integrations/${aws_apigatewayv2_integration.connect.id}"
-#   authorization_type = "REQUEST"
-#   authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id_websocket
+  # authorization_type = "JWT"
+  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id_websocket
 }
 
 resource "aws_lambda_permission" "api_gw_connect" {
@@ -291,8 +369,8 @@ resource "aws_apigatewayv2_route" "disconnect" {
 
   route_key = "$disconnect"
   target    = "integrations/${aws_apigatewayv2_integration.disconnect.id}"
-#   authorization_type = "REQUEST"
-#   authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id_websocket
+  # authorization_type = "JWT"
+  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id_websocket
 }
 
 resource "aws_lambda_permission" "api_gw_disconnect" {
@@ -340,8 +418,8 @@ resource "aws_apigatewayv2_route" "default" {
 
   route_key = "$default"
   target    = "integrations/${aws_apigatewayv2_integration.default.id}"
-#   authorization_type = "REQUEST"
-#   authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id_websocket
+  # authorization_type = "JWT"
+  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id_websocket
 }
 
 resource "aws_lambda_permission" "api_gw_default" {
