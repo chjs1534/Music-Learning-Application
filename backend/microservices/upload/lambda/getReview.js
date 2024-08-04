@@ -10,6 +10,22 @@ const docClient = DynamoDBDocumentClient.from(DDBclient);
 
 const s3Client = new S3Client({});
 
+/**
+ * AWS Lambda handler to get the audio comparison review of an uploaded video.
+ *
+ * @param {object} event - The event object containing request parameters.
+ * @param {object} context - The context object containing runtime information.
+ * @param {function} callback - The callback function to send the response.
+ * 
+ * Event parameters:
+ * @param {string} userId             The ID of the user whose uploaded the video.
+ * @param {string} fileId             The ID of the video.
+ * 
+ * Response body:
+ * @param {list} chords               A list of chord objects that contain timestamps and chords from the videos.
+ * @param {string} downloadTempoUrl   A S3 presigned URL. Use a GET request to download plot.
+ * @param {string} downloadSyncUrl    A S3 presigned URL. Use a GET request to download plot.
+ */
 exports.handler = async (event, context, callback) => {
   try {
     const userId = event.queryStringParameters.userId;

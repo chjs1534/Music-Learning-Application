@@ -9,6 +9,7 @@ from chord_extractor.extractors import Chordino
 
 BUCKET_NAME = "truly-entirely-hip-raccoon"
 
+# helper function to convert a timestamp to its dynamic time warping mapping
 def convert_timestamp(timestamp_ref, wp_s):
     times_ref = wp_s[:, 0]
     times = wp_s[:, 1]
@@ -16,6 +17,31 @@ def convert_timestamp(timestamp_ref, wp_s):
     timestamp = times[closest_index]
     return timestamp
 
+"""
+    AWS Lambda handler to process uploaded S3 video, convert it to audio, analyze tempo, 
+    synchronize with a reference video, match chord changes, and put the review in DynamoDB.
+
+    Parameters:
+    event (dict): The event object containing request parameters.
+        - body (str): JSON stringified body containing:
+            - userId (str): ID of the user.
+            - fileId (str): ID of the file being processed.
+    context (object): The context object containing runtime information.
+
+    Returns:
+    dict: The response object containing:
+        - statusCode (int): HTTP status code of the response.
+        - headers (dict): HTTP headers of the response.
+        - body (str, optional): JSON stringified error message if an exception occurs.
+
+    The function performs the following steps:
+    1. Downloads the upload and reference videos from S3.
+    2. Converts the videos to audio using ffmpeg.
+    3. Analyzes the tempo of the upload and reference audios and generates a plot.
+    4. Synchronizes the upload and reference audios using dynamic time warping (DTW) and generates a plot.
+    5. Compares chords between the upload and reference audios using Chordino and DTW.
+    6. Saves the chord comparison to dynamoDB and uploads the plots to S3.
+    """
 def handler(event, context):
     try:
         body = json.loads(event['body'])
@@ -109,6 +135,7 @@ def handler(event, context):
         plt.savefig('/tmp/sync.png')
         s3.upload_file('/tmp/sync.png', BUCKET_NAME, f'{userId}/{fileId}/sync.png')
 
+
         # Compares chord closest in time to reference chord
         # whenever there is a chord change.
         # uses dtw syncing to match up times
@@ -145,20 +172,15 @@ def handler(event, context):
             "headers": {
                 "Content-Type": "application/json"
             },
-            "body": json.dumps({
-                "yes": "yeee"
-            })
         }
 
     except Exception as e:
-        print("error ", e)
         return {
-            "statusCode": 420,
+            "statusCode": 422,
             "headers": {
                 "Content-Type": "application/json"
             },
             "body": json.dumps({
-                "no": "no"
+                "error": "e.message"
             })
         }
-        raise e

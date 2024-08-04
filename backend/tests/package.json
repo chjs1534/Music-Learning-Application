@@ -1,8 +1,12 @@
 {
   "devDependencies": {
     "jest": "^29.7.0"
-  },"scripts": {
+  },
+  "scripts": {
     "test": "jest"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1667.0",
+    "dotenv": "^16.4.5"
   }
 }
-

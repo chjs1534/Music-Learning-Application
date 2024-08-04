@@ -9,12 +9,35 @@ const s3Client = new S3Client({});
 
 BUCKET_NAME = "truly-entirely-hip-raccoon"
 
+/**
+ * AWS Lambda handler to generate presigned URLs for uploading video and thumbnail to S3 and to record the upload details in DynamoDB.
+ *
+ * @param {object} event - The event object containing request parameters.
+ * @param {object} context - The context object containing runtime information.
+ * @param {function} callback - The callback function to send the response.
+ * 
+ * Event body:
+ * @param {string} userId               The ID of the user uploading a video
+ * @param {string} fileId               FileId required when isRef is true to attach reference to existing fileId.
+ * @param {boolean} isRef               Marks if upload is an original upload or a reference video for an existing upload.
+ * 
+ * Response body:
+ * @param {string} uploadVideoUrl      A AWS S3 presigned URL. Make a PUT request with the file data.
+ * @param {string} uploadThumbnailUrl  A AWS S3 presigned URL. Make a PUT request with the file data.
+ * @param {string} fileId              The fileId of the upload.
+ */
 exports.handler = async (event, context, callback) => {
   try {
     const requestBody = JSON.parse(event.body);
     const userId = requestBody.userId;
     const fileId = requestBody.fileId;
     const isRef = requestBody.isRef;
+    
+    if (!userId || !fileId) {
+      throw new Error('Missing required body parameters');
+    }
+
+    // use timestamp as Id
     let time = Date.now();
     if (isRef) time = fileId;
   
@@ -42,7 +65,7 @@ exports.handler = async (event, context, callback) => {
   
     // put in dynamo database 
     if (!isRef) {
-      docClient.send(new PutCommand({
+      const response = docClient.send(new PutCommand({
         TableName: 'VideosTable',
         Item: {
           userId: `${userId}`,
@@ -50,6 +73,9 @@ exports.handler = async (event, context, callback) => {
           review: ['empty'],
         }
       }));
+      if (!response) {
+        throw new Error('Failed to put in database.')
+      }
     }
   
     callback(null, {
@@ -64,11 +90,21 @@ exports.handler = async (event, context, callback) => {
       },
     });
   } catch (e) {
-    console.log(e)
+    let statusCode = 400;
+    let message = e.message;
+
+    if (message.includes('Missing required body parameters')) {
+      statusCode = 400;
+    } else {
+      statusCode = 500;
+      message = 'Internal Server Error';
+    }
+
     callback(null, {
-      statusCode: 203,
+      statusCode: statusCode,
+      body: JSON.stringify({ error: message }),
       headers: {
-          'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': '*',
       },
     });
   }

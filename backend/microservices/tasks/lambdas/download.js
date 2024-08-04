@@ -5,6 +5,21 @@ BUCKET_NAME = 'gently-weekly-tough-lion'
 
 const s3Client = new S3Client({});
 
+/**
+ * AWS Lambda handler to get a download URL of a task's attached file.
+ *
+ * @param {object} event - The event object containing request parameters.
+ * @param {object} context - The context object containing runtime information.
+ * @param {function} callback - The callback function to send the response.
+ * 
+ * Event parameters:
+ * @param {string} studentId     The ID of the student who has been assigned the task.
+ * @param {string} taskId        The ID of the task
+ * @param {string} filename      The filename of the file attached to the task.
+ * 
+ * Response body:
+ * @param {string} downloadUrl   A S3 presigned URL. Use a GET request to download file.
+ */
 exports.handler = async (event, context, callback) => {
   const studentId = event.queryStringParameters.studentId;
   const taskId = event.queryStringParameters.taskId;

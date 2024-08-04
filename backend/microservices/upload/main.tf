@@ -185,7 +185,7 @@ resource "aws_iam_policy" "lambda_dynamodb_policy_user" {
   })
 }
 
-# policy for s3, need to find correct actions
+# policy for s3
 resource "aws_iam_policy" "lambda_s3_policy" {
   name = "lambda_s3_policy"
   policy = jsonencode({
@@ -254,8 +254,8 @@ resource "aws_apigatewayv2_route" "upload" {
 
   route_key = "POST /upload"
   target    = "integrations/${aws_apigatewayv2_integration.upload.id}"
-  # authorization_type = "JWT"
-  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+  authorization_type = "JWT"
+  authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
 }
 
 resource "aws_lambda_permission" "api_gw_upload" {
@@ -296,8 +296,8 @@ resource "aws_apigatewayv2_route" "download" {
 
   route_key = "GET /download"
   target    = "integrations/${aws_apigatewayv2_integration.download.id}"
-  # authorization_type = "JWT"
-  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+  authorization_type = "JWT"
+  authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
 }
 
 resource "aws_lambda_permission" "api_gw_download" {
@@ -380,8 +380,8 @@ resource "aws_apigatewayv2_route" "comment" {
 
   route_key = "POST /comment"
   target    = "integrations/${aws_apigatewayv2_integration.comment.id}"
-  # authorization_type = "JWT"
-  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+  authorization_type = "JWT"
+  authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
 }
 
 resource "aws_lambda_permission" "api_gw_comment" {
@@ -422,8 +422,8 @@ resource "aws_apigatewayv2_route" "comments" {
 
   route_key = "GET /comments"
   target    = "integrations/${aws_apigatewayv2_integration.comments.id}"
-  # authorization_type = "JWT"
-  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+  authorization_type = "JWT"
+  authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
 }
 
 resource "aws_lambda_permission" "api_gw_comments" {
@@ -449,7 +449,6 @@ resource "aws_lambda_function" "tts" {
   role = aws_iam_role.lambda_exec.arn
 
   timeout = 30
-  # memory_size = 512
 }
 
 resource "aws_apigatewayv2_integration" "tts" {
@@ -465,8 +464,8 @@ resource "aws_apigatewayv2_route" "tts" {
 
   route_key = "GET /tts"
   target    = "integrations/${aws_apigatewayv2_integration.tts.id}"
-  # authorization_type = "JWT"
-  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+  authorization_type = "JWT"
+  authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
 }
 
 resource "aws_lambda_permission" "api_gw_tts" {
@@ -507,8 +506,8 @@ resource "aws_apigatewayv2_route" "getReview" {
 
   route_key = "GET /getReview"
   target    = "integrations/${aws_apigatewayv2_integration.getReview.id}"
-  # authorization_type = "JWT"
-  # authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
+  authorization_type = "JWT"
+  authorizer_id = data.terraform_remote_state.Mewsic-workspace-apigateway.outputs.mewsic_gateway_auth_id
 }
 
 resource "aws_lambda_permission" "api_gw_getReview" {
